@@ -1,0 +1,283 @@
+﻿<%-- 
+Name: ViewModule.ascx.cst
+Author: Keith Stone
+Description: Generates the DotNetNuke View[ModuleName].ascx for C# and VB
+Revision: 2014.04.29
+Note: For the latest version of this template, http://www.crewstone.com		
+--%>
+<%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="<%=Language%>" Description="Generates the View[ModuleName].ascx web control." %>
+<%@ Property Category="Auditing" Name="DateCreated" Type="System.String" Default="" Optional="True" Description="The name of the field that designates the date/time a row was created" %>
+<%@ Property Category="Auditing" Name="CreatedBy" Type="System.String" Default="" Optional="True" Description="The name of the field that designates the DNN userid that created a row" %>
+<%@ Property Category="Auditing" Name="DateUpdated" Type="System.String" Default="" Optional="True" Description="The name of the field that designates the date/time a row was updated" %>
+<%@ Property Category="Auditing" Name="UpdatedBy" Type="System.String" Default="" Optional="True" Description="The name of the field that designates the DNN userid that updated a row" %>
+<%@ Property Category="DataSource" Name="SourceTable" Type="SchemaExplorer.TableSchema" Description="Table that the object is based on." %>
+<%@ Property Category="DataSource" Name="ObjectQualifier" Type="System.String" Default="" Optional="True" Description="Prefix for objects to be generated." %>
+<%@ Property Category="Naming Convention" Name="CompanyName" Type="System.String" Default="YourCompany" Description="Used to generate the copyright declaration." %>
+<%@ Property Category="Naming Convention" Name="ModuleName" Type="System.String" Default="YourModule" Description="" %>
+<%@ Property Category="Naming Convention" Name="Namespace" Type="System.String" Default="NameSpace" Description="Used to generate the Namespace declaration." %>
+<%@ Property Category="DotNetNuke Options" Name="Language" Type="System.String" Default="vb" Optional="True" Description="vb for Visual Basic, cs for CSharp" %>
+<%@ Property Category="Style" Name="SelectKeyword" Type="System.String" Default="Get" Description="Suffix to use for all generated SELECT stored procedures." %>
+<%@ Property Category="Style" Name="InsertKeyword" Type="System.String" Default="Add" Description="Suffix to use for all generated INSERT stored procedures." %>
+<%@ Property Category="Style" Name="UpdateKeyword" Type="System.String" Default="Update" Description="Suffix to use for all generated UPDATE stored procedures." %>
+<%@ Property Category="Style" Name="DeleteKeyword" Type="System.String" Default="Delete" Description="Suffix to use for all generated DELETE stored procedures." %>
+<%@ Property Category="Style" Name="ListKeyword" Type="System.String" Default="List" Description="Suffix to use for all generated SELECT stored procedures." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+
+<%
+string ColumnName = "";
+%>
+<%%@ Control Language="<%=Language%>" AutoEventWireup="false" CodeBehind="View<%=GetTableName(SourceTable)%>.ascx.<%=Language%>" Inherits="<%=Namespace%>.Modules.<%=ModuleName%>.View<%=GetTableName(SourceTable)%>" %>
+<%%@ Register TagPrefix="dnn" TagName="Label" Src="~/controls/LabelControl.ascx" %>
+<%%@ Register TagPrefix="dnn" TagName="URL" Src="~/controls/URLControl.ascx" %>
+<%%@ Register TagPrefix="dnn" Assembly="DotNetNuke" Namespace="DotNetNuke.UI.WebControls"  %>   
+<%%@ Register TagPrefix="dnn" Assembly="DotNetNuke.Web" Namespace="DotNetNuke.Web.UI.WebControls" %>
+<%%@ Register TagPrefix="dnn" TagName="Audit" Src="~/controls/ModuleAuditControl.ascx" %>
+<table border="0">
+	<tr>
+		<td ><asp:label id="lblSearch" cssclass="SubHead" meta:resourcekey="Search" runat="server">Search:</asp:label></td>
+		<td class="Normal">
+			<asp:textbox id="txtSearch" Runat="server"></asp:textbox>
+			<asp:DropDownList id="ddlSearchType" Runat="server">
+			<% 	for(int i = 0; i < SourceTable.Columns.Count; i++) { 
+					if(!SourceTable.Columns[i].IsPrimaryKeyMember && ColumnName.ToLower() != "portalid" && ColumnName.ToLower() != "moduleid") { %>
+				<asp:ListItem Value="<%=SourceTable.Columns[i].Name%>"><%=SourceTable.Columns[i].Name%></asp:ListItem>
+			<% } } %>
+			</asp:DropDownList>
+			<asp:imagebutton id="btnSearch" Runat="server" ImageUrl="~/images/icon_search_16px.gif"></asp:imagebutton>
+		</td>
+	</tr>
+	<tr><td colspan="3" ></td></tr>
+</table>
+<br />
+<asp:Button ID="Add<%=GetTableName(SourceTable)%>ItemButton" runat="server" EnableViewState="False" Text="Add <%=GetTableName(SourceTable)%>"></asp:Button>
+<br /><br /><asp:label id="lblStatus" runat="server" /><br /><br />
+<asp:FormView ID="Form<%=GetTableName(SourceTable)%>" runat="server" 
+	DataKeyNames="<%=GetPrimaryKeyParameters(SourceTable, false, "vb")%>" 
+	DataSourceID="<%=GetTableName(SourceTable)%>DataSource"
+    DefaultMode="ReadOnly" Visible="True">
+    <EditItemTemplate>
+	<table>
+	<tr><td colspan = "2">
+		<asp:ValidationSummary
+			HeaderText="The following fields have errors:"
+			DisplayMode="BulletList"
+			EnableClientScript="true"
+			runat="server"/>
+	</td></tr>
+<% 	for(int i = 0; i < SourceTable.Columns.Count; i++)
+	{
+		ColumnName = SourceTable.Columns[i].Name;
+		
+		if(ColumnName.ToLower() == "portalid" || ColumnName.ToLower() == "moduleid")
+		{
+%>   
+        <tr><td></td>
+		<td><asp:TextBox ID="txt<%=ColumnName%>Edit" runat="server" Text='<%%# Bind("<%=ColumnName%>") %>' Visible="False"></asp:TextBox></td>
+		</tr>
+<%
+		}		
+		else if(!SourceTable.Columns[i].IsPrimaryKeyMember && SourceTable.Columns[i].NativeType != "timestamp")
+		{
+			if (GetLookupTable(SourceTable.Columns[i]).Length > 0) { %>
+        <tr>
+        <td class="SubHead"><dnn:Label id="lbl<%=ColumnName%>Edit" runat="server" controlname="lbl<%=ColumnName%>Edit" suffix=":"></dnn:Label></td>
+        <td class="Normal">
+			<asp:DropDownList ID="drp<%=ColumnName%>Edit" runat="server" 
+				DataSourceID="<%=GetLookupTable(SourceTable.Columns[i],true)%>DataSource"
+                DataTextField="<%=GetLookupValue(SourceTable.Columns[i],true)%>" 
+            	DataValueField="<%=GetLookupField(SourceTable.Columns[i])%>" 
+				<% if (SourceTable.Columns[i].AllowDBNull) { %>
+		        SelectedValue='<%%# Bind("<%=ColumnName%>") %>'
+				AppendDataBoundItems="true">
+		        <asp:ListItem Text="None" Value="-1"></asp:ListItem>
+				<% } else { %>
+		        SelectedValue='<%%# Bind("<%=ColumnName%>") %>'>
+				<% } %>
+				&nbsp;(<asp:Label ID="dsp<%=ColumnName%>Edit" runat="server" Text='<%%# Eval("<%=ColumnName%>") %>' />)
+		</td>
+        </tr>
+<%			} else { %>
+        <tr>
+        <td class="SubHead"><dnn:Label id="lbl<%=ColumnName%>Edit" runat="server" controlname="lbl<%=ColumnName%>" suffix=":"></dnn:Label></td>
+        <td class="Normal"><%=GetInputEditControls(SourceTable.Columns[i])%></td>
+        </tr>
+<%			}
+		}
+	}
+%>       </table> 
+         <p>
+             <asp:LinkButton ID="Update<%=GetTableName(SourceTable)%>ItemButton" runat="server" 
+                 CausesValidation="True" CommandName="Update"
+                 Text="Save" OnClick="Update<%=GetTableName(SourceTable)%>ItemButton_Click">
+             </asp:LinkButton>&nbsp;
+             <asp:LinkButton ID="Update<%=GetTableName(SourceTable)%>CancelButton" runat="server" 
+                 CausesValidation="False" CommandName="Cancel"
+                 Text="Cancel" OnClick="Update<%=GetTableName(SourceTable)%>CancelButton_Click">
+             </asp:LinkButton>
+         </p>
+    </EditItemTemplate>
+    <InsertItemTemplate>
+	<table>
+	<tr><td colspan="2">
+		<asp:ValidationSummary
+			HeaderText="The following fields have errors:"
+			DisplayMode="BulletList"
+			EnableClientScript="true"
+			runat="server"/>
+	</td></tr>
+<% 	for(int i = 0; i < SourceTable.Columns.Count; i++)
+	{
+		ColumnName = SourceTable.Columns[i].Name;
+		
+		if(ColumnName.ToLower() == "portalid" || ColumnName.ToLower() == "moduleid")
+		{
+%>   
+        <tr><td></td>
+		<td><asp:TextBox ID="txt<%=ColumnName%>" runat="server" Text='<%%# Bind("<%=ColumnName%>") %>' Visible="False"></asp:TextBox></td>
+		</tr>
+<%
+		}		
+		else if(!SourceTable.Columns[i].IsPrimaryKeyMember && SourceTable.Columns[i].NativeType != "timestamp")
+		{
+			if (GetLookupTable(SourceTable.Columns[i]).Length > 0) { %>
+        <tr>
+        <td class="SubHead"><dnn:Label id="lbl<%=ColumnName%>" runat="server" controlname="lbl<%=ColumnName%>" suffix=":"></dnn:Label></td>
+        <td class="Normal">
+			<asp:DropDownList ID="drp<%=ColumnName%>" runat="server" 
+				DataSourceID="<%=GetLookupTable(SourceTable.Columns[i],true)%>DataSource"
+                DataTextField="<%=GetLookupValue(SourceTable.Columns[i],true)%>" 
+            	DataValueField="<%=GetLookupField(SourceTable.Columns[i])%>" 
+				<% if (SourceTable.Columns[i].AllowDBNull) { %>
+		        SelectedValue='<%%# Bind("<%=ColumnName%>") %>'
+				AppendDataBoundItems="true">
+		        <asp:ListItem Text="None" Value="-1"></asp:ListItem>
+				<% } else { %>
+		        SelectedValue='<%%# Bind("<%=ColumnName%>") %>'>
+				<% } %>
+		    </asp:DropDownList>
+			&nbsp;(<asp:Label ID="dsp<%=ColumnName%>Edit" runat="server" Text='<%%# Eval("<%=ColumnName%>") %>' />)
+		</td>
+        </tr>
+<%			} else { %>
+        <tr>
+        <td class="SubHead"><dnn:Label id="lbl<%=ColumnName%>" runat="server" controlname="lbl<%=ColumnName%>" suffix=":"></dnn:Label></td>
+        <td class="Normal"><%=GetInputEditControls(SourceTable.Columns[i])%></td>
+        </tr>
+<%			}
+		}
+	}
+%>       </table> 
+         <p>
+             <asp:LinkButton ID="Insert<%=GetTableName(SourceTable)%>ItemButton" runat="server" 
+                 CausesValidation="True" CommandName="Insert"
+                 Text="Save" OnClick="Insert<%=GetTableName(SourceTable)%>ItemButton_Click">
+             </asp:LinkButton>&nbsp;
+             <asp:LinkButton ID="Insert<%=GetTableName(SourceTable)%>CancelButton" runat="server" 
+                 CausesValidation="False" CommandName="Cancel"
+                 Text="Cancel" OnClick="Insert<%=GetTableName(SourceTable)%>CancelButton_Click">
+             </asp:LinkButton>
+         </p>
+    </InsertItemTemplate>
+    <ItemTemplate>
+	<table>
+<% 	for(int i = 0; i < SourceTable.Columns.Count; i++)
+	{
+		ColumnName = SourceTable.Columns[i].Name;
+		
+		if(ColumnName.ToLower() == "portalid" || ColumnName.ToLower() == "moduleid")
+		{
+%>   
+        <tr><td></td>
+		<td><asp:TextBox ID="txt<%=ColumnName%>View" runat="server" Text='<%%# Bind("<%=ColumnName%>") %>' Visible="False"></asp:TextBox></td>
+		</tr>
+<%
+		}		
+		else if(!SourceTable.Columns[i].IsPrimaryKeyMember && SourceTable.Columns[i].NativeType != "timestamp")
+		{
+			if (GetLookupTable(SourceTable.Columns[i]).Length > 0) { %>
+        <tr>
+        <td class="SubHead"><dnn:Label id="lbl<%=ColumnName%>View" runat="server" controlname="lbl<%=ColumnName%>View" suffix=":"></dnn:Label></td>
+        <td class="Normal"><asp:Label ID="txt<%=ColumnName%>View" runat="server" Text='<%%# Eval("<%=GetLookupValue(SourceTable.Columns[i],true)%>") %>' />)
+		</td>
+        </tr>
+<%			} else { %>
+        <tr>
+        <td class="SubHead"><dnn:Label id="lbl<%=ColumnName%>View" runat="server" controlname="lbl<%=ColumnName%>View" suffix=":"></dnn:Label></td>
+        <td class="Normal"><asp:Label ID="txt<%=ColumnName%>View" runat="server" Text='<%%# Eval("<%=ColumnName%>") %>' /></td>
+        </tr>
+<%			}
+		}
+	}
+%>       </table> 
+         <p>
+			 <asp:LinkButton ID="Edit<%=GetTableName(SourceTable)%>ItemButton" runat="server" 
+                 CausesValidation="True" CommandName="Edit" Enabled="False"  Visible="False"
+                 Text="Edit" OnClick="Edit<%=GetTableName(SourceTable)%>ItemButton_Click">
+             </asp:LinkButton>&nbsp;
+         </p>
+    </ItemTemplate>
+	<EmptyDataTemplate>
+        There are no <%=GetTableName(SourceTable)%> Records
+    </EmptyDataTemplate>
+</asp:FormView>
+<asp:ObjectDataSource ID="<%=GetTableName(SourceTable)%>DataSource" runat="server" 
+    DataObjectTypeName="<%= Namespace %>.Modules.<%=ModuleName%>.Entities.<%=GetTableName(SourceTable)%>Info"
+    DeleteMethod="<%= GetMethodName(GetTableName(SourceTable), DeleteKeyword) %>" 
+    InsertMethod="<%= GetMethodName(GetTableName(SourceTable), InsertKeyword) %>" 
+    OldValuesParameterFormatString="original_{0}"
+    SelectMethod="<%= GetMethodName(GetTableName(SourceTable), SelectKeyword) %>" 
+    TypeName="<%= Namespace %>.Modules.<%=ModuleName%>.Components.FeatureController"
+    UpdateMethod="<%= GetMethodName(GetTableName(SourceTable), UpdateKeyword) %>"
+	ConvertNullToDBNull="true">
+    <SelectParameters>
+		<% foreach (ColumnSchema column in SourceTable.PrimaryKey.MemberColumns) { %>
+        <asp:QueryStringParameter DefaultValue="00" Name="<%=column.Name%>" QueryStringField="<%=column.Name%>" Type="<%=GetASPVariableType(column)%>" />
+		<% } %>
+	</SelectParameters>
+    <InsertParameters>
+		<% foreach (ColumnSchema column in SourceTable.PrimaryKey.MemberColumns) { %>
+		<asp:Parameter Name="<%=column.Name%>" Type="<%=GetASPVariableType(column)%>" ConvertEmptyStringToNull="true" />
+		<% } %>
+		<% foreach (ColumnSchema column in SourceTable.NonPrimaryKeyColumns) { 
+		   if (column.NativeType != "timestamp") { %>
+		<asp:Parameter Name="<%=column.Name%>" Type="<%=GetASPVariableType(column)%>" ConvertEmptyStringToNull="true" />
+		<% } } %>	
+	</InsertParameters>
+	<UpdateParameters>
+		<% foreach (ColumnSchema column in SourceTable.PrimaryKey.MemberColumns) { %>
+		<asp:Parameter Name="<%=column.Name%>" Type="<%=GetASPVariableType(column)%>" ConvertEmptyStringToNull="true" />
+		<% } %>
+		<% foreach (ColumnSchema column in SourceTable.NonPrimaryKeyColumns) { 
+		   if (column.NativeType != "timestamp") { %>
+		<asp:Parameter Name="<%=column.Name%>" Type="<%=GetASPVariableType(column) %>" ConvertEmptyStringToNull="true" />
+		<% } } %>	
+	</UpdateParameters>
+</asp:ObjectDataSource>
+
+<% for (int i = 0; i < SourceTable.Columns.Count; i++) { 
+		if (GetLookupTable(SourceTable.Columns[i]).Length > 0) { %>
+<asp:ObjectDataSource ID="<%=GetLookupTable(SourceTable.Columns[i],true)%>DataSource" runat="server" 
+	DataObjectTypeName="<%= Namespace %>.Modules.<%=ModuleName%>.Entities.<%=GetLookupTable(SourceTable.Columns[i],true)%>Info"
+	TypeName="<%= Namespace %>.Modules.<%=ModuleName%>.Components.FeatureController"
+	SelectMethod="<%= GetMethodName(GetLookupTable(SourceTable.Columns[i],true), ListKeyword, true) %>" 
+	ConvertNullToDBNull="true">
+	<% if(SourceTable.Columns.Contains("portalId"))
+{ %>
+    <SelectParameters>
+        <asp:Parameter DefaultValue="00" Name="PortalId" Type="Int32" />
+    </SelectParameters>
+<% } 
+   if(SourceTable.Columns.Contains("moduleId"))
+{ %>
+    <SelectParameters>
+        <asp:Parameter DefaultValue="00" Name="ModuleId" Type="Int32" />
+    </SelectParameters>
+<% } %>
+</asp:ObjectDataSource>
+<% } } %>
+<asp:Image ID="imgAjax" runat="server" ImageUrl="../../images/icon_wait.gif" CssClass="ceHidden" />

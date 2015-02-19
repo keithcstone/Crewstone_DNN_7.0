@@ -1,0 +1,311 @@
+﻿<%-- 
+Name: EditModule.ascx.cs.cst
+Author: Keith Stone
+Description: Generates the DotNetNuke Edit[ModuleName].cs.ascx for C#
+Revision: 2014.02.22
+Note: For the latest version of this template, http://www.crewstone.com		
+
+--%>
+<%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="C#" Debug="False" CompilerVersion="v3.5" Description="Template description here." %>
+<%@ Property Category="Naming Convention" Name="ModuleName" Type="System.String" Default="" Description="" %>
+<%@ Property Category="Naming Convention" Name="CompanyName" Type="System.String" Default="YourCompany" Description="Used to generate the documentation." %>
+<%@ Property Category="Naming Convention" Name="Namespace" Type="System.String" Default="NameSpace" Description="Used to generate the Namespace declaration." %>
+<%@ Property Category="Naming Convention" Name="FriendlyName" Type="System.String" Default="Your Module" Description="Descriptive module name" %>
+<%@ Property Category="DataSource" Name="SourceTable" Type="SchemaExplorer.TableSchema" Description="Table that the object is based on." %>
+<%@ Property Category="DataSource" Name="ObjectQualifier" Type="System.String" Default="" Optional="True" Description="Prefix for objects to be generated." %>
+<%@ Property Category="Options" Name="ListByPortalID" Type="System.Boolean" Default="False" Description="If true items will be selected using PortalID otherwise ModuleID will be used." %>
+<%@ Property Category="Style" Name="ListKeyword" Type="System.String" Default="List"  Description="Suffix to use for all generated SELECT stored procedures." %>
+<%@ Property Category="Auditing" Name="DateCreated" Type="System.String" Default="" Optional="True" Description="The name of the field that designates the date/time a row was created" %>
+<%@ Property Category="Auditing" Name="CreatedBy" Type="System.String" Default="" Optional="True" Description="The name of the field that designates the DNN userid that created a row" %>
+<%@ Property Category="Auditing" Name="DateUpdated" Type="System.String" Default="" Optional="True" Description="The name of the field that designates the date/time a row was updated" %>
+<%@ Property Category="Auditing" Name="UpdatedBy" Type="System.String" Default="" Optional="True" Description="The name of the field that designates the DNN userid that updated a row" %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+
+<%--int fieldCount = 0;--%>
+/*
+' Module: <%=FriendlyName%>
+' Copyright (c) <%= DateTime.Now.Year.ToString() %> <%=CompanyName%>
+'  All rights reserved.
+' 
+' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+' TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+' THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+' CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+' DEALINGS IN THE SOFTWARE.
+' 
+*/
+using System;
+using System.Web.UI.WebControls;
+using DotNetNuke.Common;
+using DotNetNuke.Common.Utilities;
+using DotNetNuke.Entities.Modules;
+using DotNetNuke.Entities.Modules.Actions;
+using DotNetNuke.Security;
+using DotNetNuke.Services.Exceptions;
+using DotNetNuke.Services.Localization;
+using System.Collections.Generic;
+
+using <%=Namespace%>.Modules.<%=ModuleName%>.Providers;
+
+namespace <%=Namespace%>.Modules.<%=ModuleName%>
+{
+    public partial class Edit<%=GetTableName(SourceTable)%> : PortalModuleBase, IActionable
+    {
+	#region "Private Members"
+
+    private int ItemId = Null.NullInteger;
+
+    #endregion
+    
+ 	protected void Page_Load(object sender, EventArgs e)
+    {
+		try
+		{
+		    // Determine ItemId of DNN_CS_unmodified to Update 
+            if ((Request.QueryString["ItemId"] != null))
+            {
+                ItemId = Int32.Parse(Request.QueryString["ItemId"]);
+            }
+            
+			if (!IsPostBack)
+            {
+                //Ensure content is localized 
+                LocalizePageControls();
+
+                //Bind the grid
+                BindGrid();
+
+                //Ensure edit is hidden
+                pnlAddEdit<%=GetTableName(SourceTable)%>.Visible = false;
+            }
+			
+			if (!HasEditPermissions())
+            {
+				((ButtonColumn)dgr<%=GetTableName(SourceTable)%>.Columns[<%= GetFieldCountInfoToUI(SourceTable)%>]).Visible = false;
+	            ((ButtonColumn)dgr<%=GetTableName(SourceTable)%>.Columns[<%= GetFieldCountInfoToUI(SourceTable)+1%>]).Visible = false;
+
+                btnAdd<%=GetTableName(SourceTable)%>.Visible = false;
+            }
+		}	
+        catch (Exception exc)
+        {
+            //Module failed to load 
+            Exceptions.ProcessModuleLoadException(this, exc);
+        }
+	}
+    
+    protected void Page_PreRender(object sender, EventArgs e)
+    {
+        ClientResourceManager.RegisterStyleSheet(this.Page, base.ControlPath + "Resources/css/module.css", 
+                                                 DotNetNuke.Web.Client.FileOrder.Css.DefaultPriority);
+
+        /* 
+        ClientResourceManager.RegisterScript(this.Page, base.ControlPath + "Resources/js/knockout-2.2.1.js",
+                                             DotNetNuke.Web.Client.FileOrder.Js.jQuery);
+                                             
+        ClientResourceManager.RegisterScript(this.Page, base.ControlPath + "Resources/js/view.js",
+                                             DotNetNuke.Web.Client.FileOrder.Js.DefaultPriority);
+        */
+    }
+        
+    #region Helper Methods (Localization and grid binding)
+        /// <summary>
+        /// Loads the localized text into the various controls
+        /// </summary>
+        private void LocalizePageControls()
+        {
+
+            hlReturn.NavigateUrl = Globals.NavigateURL(TabId);
+
+            //Localize header
+            Localization.LocalizeDataGrid(ref dgr<%=GetTableName(SourceTable)%>, LocalResourceFile);
+            ((ButtonColumn)dgr<%=GetTableName(SourceTable)%>.Columns[<%= GetFieldCountInfoToUI(SourceTable)%>]).Text = GetLocalizedText("EditLink");
+            ((ButtonColumn)dgr<%=GetTableName(SourceTable)%>.Columns[<%= GetFieldCountInfoToUI(SourceTable)+1%>]).Text = GetLocalizedText("DeleteLink");
+
+        }
+        /// <summary>
+        /// Helper method to obtain the localized content
+        /// </summary>
+        /// <param name="keyName">The key name of the value to get</param>
+        /// <returns>The localized content</returns>
+        private string GetLocalizedText(string keyName)
+        {
+            return Localization.GetString(keyName, LocalResourceFile);
+        }
+        /// <summary>
+        /// Binds the grid
+        /// </summary>
+        private void BindGrid()
+        {
+            //Try to bind the course list
+            <%=GetTableName(SourceTable)%>Controller oController = new <%=GetTableName(SourceTable)%>Controller();
+            List<<%=GetTableName(SourceTable)%>Info> o<%=GetTableName(SourceTable)%> = oController.<%= ListKeyword%><%=GetTableName(SourceTable)%>(<% if (ListByPortalID && SourceTable.Columns.Contains("portalId")) {%>PortalId<% } %><% if (!ListByPortalID && SourceTable.Columns.Contains("moduleId")) {%>ModuleId<% } %>);
+
+            if (o<%=GetTableName(SourceTable)%>.Count > 0)
+            {
+                dgr<%=GetTableName(SourceTable)%>.DataSource = o<%=GetTableName(SourceTable)%>;
+                dgr<%=GetTableName(SourceTable)%>.DataBind();
+
+                //Ensure it is displayed
+                lbl<%=GetTableName(SourceTable)%>_NoData.Visible = false;
+                dgr<%=GetTableName(SourceTable)%>.Visible = true;
+            }
+            else
+            {
+                lbl<%=GetTableName(SourceTable)%>_NoData.Visible = true;
+                dgr<%=GetTableName(SourceTable)%>.Visible = false;
+            }
+        }
+		
+		/// <summary>
+        /// Checks if user has edit permissions
+        /// </summary>
+        /// <returns>True if user has edit permissios</returns>
+		private bool HasEditPermissions()
+        {
+             if ((Request.IsAuthenticated == false))
+                return false;
+
+            return (PortalSecurity.IsInRoles(ModuleConfiguration.AuthorizedEditRoles) == true) | 
+             (PortalSecurity.IsInRoles(PortalSettings.ActiveTab.AdministratorRoles) == true) | 
+             (PortalSecurity.IsInRoles(PortalSettings.AdministratorRoleName) == true);
+        }
+    #endregion
+
+
+    #region Add/Edit Button Click Events
+        /// <summary>
+        /// Handles the canceling of an edit
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void btnCancel_Click(object sender, EventArgs e)
+        {
+            //Clear all fields
+		<%-- Loop through table and build code to set default values on UI controls --%>
+		<% 	for(int i = 0; i < SourceTable.Columns.Count; i++) {%>
+			<%-- 
+				PortalId and ModuleId are not rendered to UI
+				The table's key field is rendered as a label
+			--%>
+			<%-- GetUIDefault(ColumnSchema column, string "vb or cs") --%>
+			<%= GetUIDefault(SourceTable.Columns[i], "cs")%>
+		<%}%>
+		
+            //Flip the panels
+            pnlAddEdit<%=GetTableName(SourceTable)%>.Visible = false;
+            pnl<%=GetTableName(SourceTable)%>Display.Visible = true;
+        }
+		
+		
+        /// <summary>
+        /// Reponds to the users request to save
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void btnSave_Click(object sender, EventArgs e)
+        {
+            //Get the items
+            <%=GetTableName(SourceTable)%>Controller oController = new <%=GetTableName(SourceTable)%>Controller();
+            <%=GetTableName(SourceTable)%>Info oInfo = new <%=GetTableName(SourceTable)%>Info();
+                      	
+            //Get remaining values
+			<%-- 
+				Loop through table and build code to set the Info object
+			 	to the values from UI controls.
+			--%>
+			<% 	for(int i = 0; i < SourceTable.Columns.Count; i++) {%>
+			<%= GetUItoInfo(SourceTable.Columns[i])%>;
+			<%}%>
+						
+			// Determine if add or update
+			
+            if (int.Parse(lbl<%= GetPrimaryKeyParameters(SourceTable, false, "cs").Trim() %>.Text).Equals(-1))
+            {
+                // Add
+                oController.Add<%=GetTableName(SourceTable)%>(oInfo);
+            }
+            else
+            {
+                // Update
+                oInfo.<%= GetPrimaryKeyParameters(SourceTable, false, "cs").Trim() %> = int.Parse(lbl<%= GetPrimaryKeyParameters(SourceTable, false, "cs").Trim() %>.Text);
+                oController.Update<%=GetTableName(SourceTable)%>(oInfo);
+            }
+            //Rebind the grid
+            BindGrid();
+
+            //Call the cancel button to rese
+            btnCancel_Click(sender, e);
+        }
+        /// <summary>
+        /// Adds a <%=GetTableName(SourceTable)%> item
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        protected void btnAdd<%=GetTableName(SourceTable)%>_Click(object sender, EventArgs e)
+        {
+            lbl<%= GetPrimaryKeyParameters(SourceTable, false, "cs").Trim() %>.Text = "-1";
+            pnl<%=GetTableName(SourceTable)%>Display.Visible = false;
+            pnlAddEdit<%=GetTableName(SourceTable)%>.Visible = true;
+        }
+        #endregion
+
+        #region Data Grid Events
+        /// <summary>
+        /// Responds to requests for edit or deleting of a course
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="e"></param>
+        protected void dgr<%=GetTableName(SourceTable)%>_ItemCommand(object source, DataGridCommandEventArgs e)
+        {
+            <%=GetTableName(SourceTable)%>Controller oController = new <%=GetTableName(SourceTable)%>Controller();
+
+            //Take action based on the command
+            switch (e.CommandName)
+            {
+                case "Edit":
+                    //Get the records
+                    <%=GetClassNameInfo(SourceTable)%> oInfo = oController.Get<%=GetTableName(SourceTable)%>(int.Parse(e.Item.Cells[<%= GetKeyFieldOffset(SourceTable)%>].Text));
+
+                    //Load values to edit form
+                    <% 	for(int i = 0; i < SourceTable.Columns.Count; i++) {%>
+					<%= GetInfoToUI(SourceTable.Name, SourceTable.Columns[i], "cs")%>
+					<%}%>
+
+                    //Switch the display
+                    pnl<%=GetTableName(SourceTable)%>Display.Visible = false;
+                    pnlAddEdit<%=GetTableName(SourceTable)%>.Visible = true;
+                   
+                    break;
+					
+                case "Delete":
+                    oController.Delete<%=GetTableName(SourceTable)%>(int.Parse(e.Item.Cells[<%= GetKeyFieldOffset(SourceTable)%>].Text));
+
+                    //Rebind grid
+                    BindGrid();
+                    break;
+            }
+        }
+        #endregion
+
+        #region IActionable Members
+        public ModuleActionCollection ModuleActions
+        {
+            get
+            {
+                //Retun to module link!
+                ModuleActionCollection actions = new ModuleActionCollection();
+                //actions.Add(GetNextActionID(), Localization.GetString("Action", LocalResourceFile), ModuleActionType.EditContent,
+                //    "", "", Globals.NavigateURL(TabId), false, DotNetNuke.Security.SecurityAccessLevel.Edit, true, false);
+                return actions;
+            }
+        }
+        #endregion
+    }
+}

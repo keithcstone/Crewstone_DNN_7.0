@@ -1,0 +1,11 @@
+To do:
+
+* lookup fields that allow nulls need to use LEFT OUTER JOIN
+* .ascx files for edit should include Add xxxx Module actions for lookup items
+* More work on C#, only partially complete
+* Code to change module structure to WAP based on ProjectType parameter
+* Add parameter for lookup fields to allow field name designation
+* Validation code to check for child rows when deleting parent row
+* Validation code to check for duplicates when inserting into a keyed field
+* Merge all the "CommonFunctions" into a single CS
+* Move CommonFunctions to an assembly

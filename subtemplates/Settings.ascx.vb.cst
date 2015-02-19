@@ -1,0 +1,104 @@
+﻿<%-- 
+Name: Settings.ascx.vb.cst
+Author: Keith Stone
+Description: DotNetNuke Settings Control for VB
+Revision: 2014.04.26
+Note: For the latest version of this template, http://www.crewstone.com		
+--%>
+<%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="VB" Description="Generates the code-behind for the Settings.ascx web control." %>
+<%@ Property Category="DataSource" Name="ObjectQualifier" Type="System.String" Default="" Optional="True" Description="Prefix for objects to be generated." %>
+<%@ Property Category="Naming Convention" Name="Namespace" Type="System.String" Default="NameSpace" Description="Used to generate the Namespace declaration." %>
+<%@ Property Category="Naming Convention" Name="CompanyName" Type="System.String" Default="YourCompany" Description="Used to generate the copyright declaration." %>
+<%@ Property Category="Naming Convention" Name="ModuleName" Type="System.String" Default="YourModule" Description="" %>
+<%@ Property Category="Naming Convention" Name="FriendlyName" Type="System.String" Default="Your Module" Description="Descriptive module name" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+'
+' Module: <%=FriendlyName%>
+' Copyright (c) <%= DateTime.Now.Year.ToString() %> <%=CompanyName%>
+'  All rights reserved.
+' 
+' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+' TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+' THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+' CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+' DEALINGS IN THE SOFTWARE.
+'
+Imports DotNetNuke
+Imports System.Web.UI
+
+Namespace <%= Namespace %>.Modules.<%=ModuleName%>
+
+    ''' -----------------------------------------------------------------------------
+    ''' <summary>
+    ''' The Settings class manages Module Settings
+    ''' </summary>
+    ''' <remarks>
+    ''' </remarks>
+    ''' <history>
+    ''' </history>
+    ''' -----------------------------------------------------------------------------
+    Partial Class Settings
+        Inherits Dotnetnuke.Entities.Modules.ModuleSettingsBase
+        
+        Protected WithEvents txtTemplate As System.Web.UI.WebControls.Textbox
+        Protected WithEvents chkPurge As System.Web.UI.WebControls.Checkbox
+       
+#Region "Base Method Implementations"
+
+        ''' -----------------------------------------------------------------------------
+        ''' <summary>
+        ''' LoadSettings loads the settings from the Database and displays them
+        ''' </summary>
+        ''' <remarks>
+        ''' </remarks>
+        ''' <history>
+        ''' </history>
+        ''' -----------------------------------------------------------------------------
+        Public Overrides Sub LoadSettings()
+            Try
+                If (Page.IsPostBack = False) Then
+                    If CType(TabModuleSettings("template"), String) <> "" Then
+                        txtTemplate.Text = CType(TabModuleSettings("template"), String)
+                    End If
+                    If CType(ModuleSettings("<%=ModuleName%>PurgeBeforeImport"), String) <> "" Then
+                        chkPurge.Checked = Boolean.Parse(ModuleSettings("<%=ModuleName%>PurgeBeforeImport").ToString())
+                    End If
+                End If
+            Catch exc As Exception           'Module failed to load
+                DotNetNuke.Services.Exceptions.ProcessPageLoadException( exc)
+            End Try
+        End Sub
+
+        ''' -----------------------------------------------------------------------------
+        ''' <summary>
+        ''' UpdateSettings saves the modified settings to the Database
+        ''' </summary>
+        ''' <remarks>
+        ''' </remarks>
+        ''' <history>
+        ''' </history>
+        ''' -----------------------------------------------------------------------------
+        Public Overrides Sub UpdateSettings()
+            Try
+                Dim objModules As New DotNetNuke.Entities.Modules.ModuleController
+
+                objModules.UpdateTabModuleSetting(TabModuleId, "template", txtTemplate.Text)
+                objModules.UpdateModuleSetting(Me.ModuleId, "<%=ModuleName%>PurgeBeforeImport", chkPurge.Checked.ToString())
+
+                ' refresh cache
+                SynchronizeModule()
+            Catch exc As Exception           'Module failed to load
+                DotNetNuke.Services.Exceptions.ProcessPageLoadException( exc)
+            End Try
+        End Sub
+
+#End Region
+
+    End Class
+
+End Namespace

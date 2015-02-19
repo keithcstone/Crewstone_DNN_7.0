@@ -1,0 +1,66 @@
+﻿<%-- 
+Name: ITableRepository.cs.cst
+Author: Keith Stone
+Description: Generates the DNN ITableRepository Class for C#
+Revision: 2014.03.06
+Note: For the latest version of this template, http://www.crewstone.com		
+--%>
+<%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="C#" Description="Generates the DNN ITableRepository Class for C#" %>
+<%@ Property Category="Naming Convention" Name="ModuleName" Type="System.String" Default="YourModule" Description="Module Name" %>
+<%@ Property Category="Naming Convention" Name="FriendlyName" Type="System.String" Default="Your Module" Description="Descriptive module name" %>
+<%@ Property Category="Naming Convention" Name="Namespace" Type="System.String" Default="Namespace" Description="Used to generate the Namespace declaration, no spaces or punctuation" %>
+<%@ Property Category="Naming Convention" Name="CompanyName" Type="System.String" Default="YourCompany" Description="Descriptive name to generate the copyright declaration and documentation." %>
+<%@ Property Category="DataSource" Name="SourceTable" Type="SchemaExplorer.TableSchema" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+/*
+' Module: <%=FriendlyName%>
+' Copyright (c) <%= DateTime.Now.Year.ToString() %> <%=CompanyName%>
+'  All rights reserved.
+' 
+' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+' TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+' THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+' CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+' DEALINGS IN THE SOFTWARE.
+' 
+*/
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using <%= Namespace %>.Modules.<%=ModuleName%>.Entities;
+
+namespace <%= Namespace %>.Modules.<%=ModuleName%>.Components
+{
+    public interface I<%= GetTableName(SourceTable) %>Repository
+    {
+        ///<summary>
+        ///</summary>
+        void ClearCache(int moduleid);
+
+        ///<summary>
+        ///</summary>
+        int Create<%= GetTableName(SourceTable) %>(I<%= GetTableName(SourceTable) %>Model t);
+
+        ///<summary>
+        ///</summary>
+        void Delete<%= GetTableName(SourceTable) %>(int itemId, int moduleId);
+
+        ///<summary>
+        ///</summary>
+        IEnumerable<I<%= GetTableName(SourceTable) %>Model> Get<%= GetTableName(SourceTable) %>s(int moduleId);
+
+        ///<summary>
+        ///</summary>
+        I<%= GetTableName(SourceTable) %>Model Get<%= GetTableName(SourceTable) %>(int itemId, int moduleId);
+
+        ///<summary>
+        ///</summary>
+        void Update<%= GetTableName(SourceTable) %>(I<%= GetTableName(SourceTable) %>Model t);
+    }
+}

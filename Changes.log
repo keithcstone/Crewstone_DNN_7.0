@@ -1,0 +1,56 @@
+2007.10.17
+    Added EditModule.ascx.c#.cst
+	Added EditModule.ascx.vb.cst
+	Added Setting.ascx.c#.cst
+    Merged changes from SmartThinker for C# and stored procedures creating:
+		DataProvider.c#.cst
+		ModuleController.c#.cst
+		SqlDataProvider.c#.cst
+		ModuleInfo.c#.cst
+	DnnMaster.cst
+		* Changes to support C# and VB
+		* Changes to support EditModule.*
+	Module.dnn.cst
+		* Support for EditModule.*
+	
+
+2007.03.03
+
+	ViewModule.ascx.vb.cst
+		* Fixed paging error by adding handler for PageIndexChanging event.
+	
+	CommonFunctions.cs
+		* Changed the GetMemberVariableDeclarationStatement() function to write private member variable declaration as "Private" and not "Dim"
+	
+	DnnMaster.cst
+		* Added code to create the [ModuleName]PartialClass.vb and [ModuleName]Custom.sql output files.
+	
+	Added ModulePartialClasses.vb.cst - allows you to add custom code to your generated classes. CodeSmith v2.6 will not overwrite this file.
+	
+	Added Custom.sql.cst - a placeholder file for adding custom SQL statements. CodeSmith v2.6 will not overwrite this file.
+
+
+2007.02.15
+
+	Fixed error on SqlDataProvider.cst.
+
+
+2007.02.09
+
+	Modified DnnMaster.cst to change the naming convention for the SqlScript output files.
+	
+	Modified DnnMaster.cst, SqlDataProvider.cst to allow modules to call databases other than the default dnn install.
+	
+	Modified SqlDataProvider.cst so that it looks for connection string information in the <connectionStrings> section of web.config instead of the <appSettings>
+	
+	Modified ModuleController.cst to return a list of objects for the Get[ModuleName]By[ColumnName] methods.
+
+2007.02.08
+
+	Modified CommonFunctions.cs, DataProvider.cst, SqlDataProvider.cst, and ModuleController.cst to resolve issues with stripping table prefixes from method names
+	
+	Modified Insert functions in SqlDataProvider.cst, ModuleController.cst to return value for SCOPE_IDENTITY()	
+	
+	Modified DnnMaster.cst to pass in values for IsPortable, IsSearchable to ModuleController.cst.
+	
+	Modified StoredProcedures.cst to fix problem with table names

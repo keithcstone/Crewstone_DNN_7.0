@@ -1,0 +1,166 @@
+﻿<%-- 
+Name: Module.dnn.cst
+Author: Keith Stone
+Description: Generates the DotNetNuke Module Manifest
+Revision: 2014.04.09
+Note: For the latest version of this template, http://www.crewstone.com		
+--%>
+<%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="XML" Description="Generates the DNN Module Definition file." %>
+<%@ Property Category="Naming Convention" Name="Namespace" Type="System.String" Default="NameSpace" Description="Used to generate the Namespace declaration." %>
+<%@ Property Category="Naming Convention" Name="CompanyName" Type="System.String" Default="YourCompany" Description="Used to generate the copyright declaration." %>
+<%@ Property Category="Naming Convention" Name="ModuleName" Type="System.String" Default="" Description="" %>
+<%@ Property Category="Naming Convention" Name="FriendlyName" Type="System.String" Default="Your Module" Description="Descriptive module name" %>
+<%@ Property Category="DataSource" Name="MultiSourceTable" Type="SchemaExplorer.TableSchemaCollection" Description="Table that the object is based on." %>
+<%@ Property Category="DataSource" Name="ObjectQualifier" Type="System.String" Default="" Optional="Yes" Description="Prefix for objects to be generated." %>
+<%@ Property Category="Project Options" Name="Language" Type="System.String" Default="vb" Optional="True" Description="vb for Visual Basic, cs for CSharp" %>
+<%@ Property Category="DotNetNuke Options" Name="IncludeSource" Type="System.Boolean" Default="True" Description="If true source code will be included in installation package." %>
+<%@ Property Category="Web Control Options" Name="CreateViewControl" Type="System.Boolean" Default="True" Description="If true, a View web control will be created." %>
+<%@ Property Category="Web Control Options" Name="CreateListControl" Type="System.Boolean" Default="True" Description="If true, a List web control will be created." %>
+<%@ Property Category="Web Control Options" Name="CreateEditControl" Type="System.Boolean" Default="True" Description="If true, a View web control will be created." %>
+<%@ Property Category="Web Control Options" Name="CreateSettingsControl" Type="System.Boolean" Default="True" Description="If true, a Settings web control will be created." %>
+<%@ Property Category="Web Control Options" Name="CreateModuleMenuControl" Type="System.Boolean" Default="false" Description="If true, a top level web control will be created." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+
+<dotnetnuke type="Package" version="5.0">
+  <packages>
+    <package name="<%= ModuleName %>" type="Module" version="00.00.01">
+      <friendlyName><%= FriendlyName %></friendlyName>
+      <description><%= CompanyName %> <%= ModuleName %> module</description>
+      <iconFile>Images/icon_extensions.gif</iconFile>
+      <owner>
+        <name><%= CompanyName %></name>
+        <organization><%= CompanyName %></organization>
+        <url>http://www.Crewstone.com</url>
+        <email>modules@Crewstone.com</email>
+      </owner>
+      <license src="License.txt"></license>
+      <releaseNotes src="ReleaseNotes.txt"></releaseNotes>
+      <dependencies>
+        <dependency type="CoreVersion">07.00.02</dependency>
+      </dependencies>
+      
+      <components>
+        <component type="Script">
+          <scripts>
+            <basePath>DesktopModules\<%= ModuleName %></basePath>
+            <script type="Install">
+              <path>Providers\DataProviders\SqlDataProvider</path>
+              <name>00.00.01.SqlDataProvider</name>
+              <version>00.00.01</version>
+            </script>
+            <script type="UnInstall">
+              <path>Providers\DataProviders\SqlDataProvider</path>
+              <name>Uninstall.SqlDataProvider</name>
+              <version>00.00.01</version>
+            </script>
+          </scripts>
+        </component>
+
+        <component type="ResourceFile">
+          <resourceFiles>
+            <basePath>DesktopModules/<%= ModuleName %></basePath>
+            <resourceFile>
+              <name>Resources.zip</name>
+            </resourceFile>
+          </resourceFiles>
+        </component>
+
+        <component type="Module">
+          <desktopModule>
+            <moduleName><%= ModuleName %></moduleName>
+            <foldername><%= ModuleName %></foldername>
+            <businessControllerClass><%= Namespace %>.Modules.<%= ModuleName %>.Components.FeatureController</businessControllerClass>
+            <supportedFeatures />
+            <moduleDefinitions>
+              <moduleDefinition>
+                <friendlyName><%= FriendlyName %></friendlyName>
+                <defaultCacheTime>0</defaultCacheTime>
+                <moduleControls>
+                <%if(CreateModuleMenuControl){%>
+                  <moduleControl>
+                    <controlKey />
+                    <controlSrc>DesktopModules/<%= ModuleName %>/<%= ModuleName %>.ascx</controlSrc>
+                    <supportsPartialRendering>False</supportsPartialRendering>
+                    <controlTitle><%= ModuleName %> Menu</controlTitle>
+                    <controlType>View</controlType>
+                    <iconFile />
+                    <helpUrl />
+                    <viewOrder>0</viewOrder>
+                  </moduleControl>
+			    <%}%>
+			<%foreach(SchemaExplorer.TableSchema SourceTable in MultiSourceTable){ %>
+				<%if(CreateListControl){%>
+				<%Debug.WriteLine ("CreateListControl");%>
+                  <moduleControl>
+                    <controlKey>List<%= GetTableName(SourceTable) %></controlKey>
+                    <controlSrc>DesktopModules/<%= ModuleName %>/List<%= GetTableName(SourceTable) %>.ascx</controlSrc>
+                    <supportsPartialRendering>False</supportsPartialRendering>
+                    <controlTitle>List <%= GetTableName(SourceTable) %> Content</controlTitle>
+                    <controlType>View</controlType>
+                    <iconFile />
+                    <helpUrl />
+                    <viewOrder>0</viewOrder>
+                    <supportsPopUps>True</supportsPopUps>
+                  </moduleControl>
+				<%}%>
+				<%if(CreateViewControl){%>
+                  <moduleControl>
+                    <controlKey>View<%= GetTableName(SourceTable) %></controlKey>
+                    <controlSrc>DesktopModules/<%= ModuleName %>/View<%= GetTableName(SourceTable) %>.ascx</controlSrc>
+                    <supportsPartialRendering>False</supportsPartialRendering>
+                    <controlTitle>View <%= GetTableName(SourceTable) %> Content</controlTitle>
+                    <controlType>View</controlType>
+                    <iconFile />
+                    <helpUrl />
+                    <viewOrder>0</viewOrder>
+                    <supportsPopUps>True</supportsPopUps>
+                  </moduleControl>
+            	<%}%>
+				<%if(CreateEditControl){%>
+                  <moduleControl>
+                    <controlKey>Edit<%= GetTableName(SourceTable) %></controlKey>
+                    <controlSrc>DesktopModules/<%= ModuleName %>/Edit<%= GetTableName(SourceTable) %>.ascx</controlSrc>
+                    <supportsPartialRendering>False</supportsPartialRendering>
+                    <controlTitle>Edit <%= GetTableName(SourceTable) %> Content</controlTitle>
+                    <controlType>Edit</controlType>
+                    <iconFile />
+                    <helpUrl />
+                    <viewOrder>0</viewOrder>
+                    <supportsPopUps>True</supportsPopUps>
+                  </moduleControl>
+				<% } %>
+              <%}%>
+			  <%if(CreateSettingsControl){%>
+                  <moduleControl>
+                    <controlKey>Settings</controlKey>
+                    <controlSrc>DesktopModules/<%= ModuleName %>/Settings.ascx</controlSrc>
+                    <supportsPartialRendering>False</supportsPartialRendering>
+                    <controlTitle><%= ModuleName %> Settings</controlTitle>
+                    <controlType>Edit</controlType>
+                    <iconFile />
+                    <helpUrl />
+                    <viewOrder>0</viewOrder>
+                  </moduleControl>
+        	<%}%>
+                </moduleControls>
+              </moduleDefinition>
+            </moduleDefinitions>
+          </desktopModule>
+        </component>
+        <component type="Assembly">
+          <assemblies>
+            <assembly>
+              <name><%= ModuleName %>.dll</name>
+              <path>bin</path>
+            </assembly>
+          </assemblies>
+        </component>
+      </components>
+    </package>
+  </packages>
+</dotnetnuke>

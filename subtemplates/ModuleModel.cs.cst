@@ -1,0 +1,107 @@
+﻿<%-- 
+Name: ModuleModel.cs.cst
+Author: Keith Stone
+Description: Generates the DNN Table Model Class for C#
+Revision: 2014.03.05
+Note: For the latest version of this template, http://www.crewstone.com		
+--%>
+<%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="C#" Description="Generates a very simple business object." %>
+<%@ Property Category="DataSource" Name="SourceTable" Type="SchemaExplorer.TableSchema" Description="Table that the object is based on." %>
+<%@ Property Category="Naming Convention" Name="Namespace" Type="System.String" Default="NameSpace" Description="Used to generate the Namespace declaration." %>
+<%@ Property Category="Naming Convention" Name="CompanyName" Type="System.String" Default="YourCompany" Description="Used to generate the copyright declaration." %>
+<%@ Property Category="Naming Convention" Name="ModuleName" Type="System.String" Default="" Description="" %>
+<%@ Property Category="Naming Convention" Name="FriendlyName" Type="System.String" Default="Your Module" Description="Descriptive module name" %>
+<%@ Property Category="Style" Name="ObjectQualifier" Type="System.String" Default="" Optional="True" Description="Prefix for objects to be generated." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+/*
+' Module: <%=FriendlyName%>
+' Copyright (c) <%= DateTime.Now.Year.ToString() %> <%=CompanyName%>
+'  All rights reserved.
+' 
+' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+' TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+' THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+' CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+' DEALINGS IN THE SOFTWARE.
+' 
+*/
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace <%= Namespace %>.Modules.<%=ModuleName%>.Entities
+{   
+
+    [Serializable(), XmlRoot("<%= GetTableName(SourceTable) %>")]
+	public class <%= GetClassNameInfo(SourceTable) %> : IHydratable
+	{
+	#region "Private Members"
+		<% foreach (ColumnSchema column in SourceTable.PrimaryKey.MemberColumns) { %>
+		<%= GetMemberVariableDeclarationStatement(column) %>
+		<% } %>
+		<% foreach (ColumnSchema column in SourceTable.NonPrimaryKeyColumns) { %>
+		<%= GetMemberVariableDeclarationStatement(column) %>
+		<% } %>
+	#endregion
+	 	
+	#region "Constructors"
+        public <%= GetClassNameInfo(SourceTable) %>()
+        {
+		}
+
+        public <%= GetClassNameInfo(SourceTable) %>(<%= GetPrimaryKeyParameters(SourceTable, true, "cs").Trim() %>, <%= GetNonPrimaryKeyParameters(SourceTable, true, true, true, "cs").Trim() %>)
+		{
+		<% for (int i=0; i<SourceTable.Columns.Count; i++) {%>
+            this.<%=SourceTable.Columns[i].Name%> = <%=GetCamelCaseName(SourceTable.Columns[i].Name)%>;
+        <% } %>
+        }
+	#endregion
+		
+		#region "Public Properties"
+		<% for (int i = 0; i < SourceTable.PrimaryKey.MemberColumns.Count; i++) { %>
+		public <%= GetCSharpVariableType(SourceTable.PrimaryKey.MemberColumns[i]) %> <%= GetPropertyName(SourceTable.PrimaryKey.MemberColumns[i]) %>
+		{
+			get{return <%= GetMemberVariableName(SourceTable.PrimaryKey.MemberColumns[i]) %>;}
+			set{<%= GetMemberVariableName(SourceTable.PrimaryKey.MemberColumns[i]) %> = value;}
+		}
+		<% if (i < SourceTable.PrimaryKey.MemberColumns.Count - 1) Response.Write("\r\n"); %>	
+		<% } %>
+		
+		<% for (int i = 0; i < SourceTable.NonPrimaryKeyColumns.Count; i++) { %>
+		public <%= GetCSharpVariableType(SourceTable.NonPrimaryKeyColumns[i]) %> <%= GetPropertyName(SourceTable.NonPrimaryKeyColumns[i]) %>
+		{
+			get{return <%= GetMemberVariableName(SourceTable.NonPrimaryKeyColumns[i]) %>;}
+			set{<%= GetMemberVariableName(SourceTable.NonPrimaryKeyColumns[i]) %> = value;}
+		}
+		<% if (i < SourceTable.NonPrimaryKeyColumns.Count - 1) Response.Write("\r\n"); %>		
+		<% } %>
+		#endregion
+		
+		#region "IHydratable Interface"
+<% if (SourceTable.PrimaryKey.MemberColumns.Count == 1) { %>
+		
+		public int KeyID
+		{
+			get{return <%= GetMemberVariableName(SourceTable.PrimaryKey.MemberColumns[0]) %>;}
+			set{<%= GetMemberVariableName(SourceTable.PrimaryKey.MemberColumns[0]) %> = value;}
+		}
+		
+        public void Fill(IDataReader dr)
+        {
+			   <% foreach (ColumnSchema column in SourceTable.PrimaryKey.MemberColumns) { %>
+		       <%=column.Name%> = <%= GetConvertStatement(column) %>(Null.SetNull(dr["<%=column.Name%>"], <%=column.Name%>));
+		       <% } %>
+		       <% foreach (ColumnSchema column in SourceTable.NonPrimaryKeyColumns) { %>
+		       <%=column.Name%> = <%= GetConvertStatement(column) %>(Null.SetNull(dr["<%=column.Name%>"], <%=column.Name%>));
+		       <% } %>			
+		}		
+<% } %>		
+		#endregion
+	}
+}

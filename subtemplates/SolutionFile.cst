@@ -1,0 +1,50 @@
+﻿<%-- 
+Name: SolutionFile.cst
+Author: Keith Stone
+Description: Generates the Solution File
+Revision: 2014.08.20
+Note: 
+
+--%>
+<%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="XML"  Description="Generates the Visual Studio Project File." %>
+
+<%@ Property Name="ModuleName" Type="System.String" Default="" Category="Style" Description="" %>
+<%@ Property Category="Project Options" Name="Language" Type="System.String" Default="vb" Optional="True" Description="vb for Visual Basic, cs for CSharp" %>
+<%@ Property Category="Project Options" Name="ProjectIdGUID" Type="System.Guid" Default="" Optional="True" Description="GUID ID language project" %>
+<%@ Property Category="Project Options" Name="ProjectGUID" Type="System.Guid" Default="" Optional="True" Description="GUID for language project" %>
+<%@ Property Category="Project Options" Name="BuildIdGUID" Type="System.Guid" Default="" Optional="True" Description="GUID ID build project" %>
+<%@ Property Category="Project Options" Name="BuildGUID" Type="System.Guid" Default="" Optional="True" Description="GUID for build project" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{<%= ProjectIdGUID%>}") = "<%= ModuleName %>", "<%= ModuleName %>.<%= Language %>proj", "{<%= ProjectGUID%>}"
+EndProject
+Project("{<%= BuildIdGUID%>}") = ".build", ".build", "{<%= BuildGUID%>}"
+	ProjectSection(SolutionItems) = preProject
+		Build.proj = Build.proj
+		.build\MSBuild.Community.Tasks.dll = .build\MSBuild.Community.Tasks.dll
+		.build\MSBuild.Community.Tasks.targets = .build\MSBuild.Community.Tasks.targets
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{<%= ProjectGUID%>}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{<%= ProjectGUID%>}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{<%= ProjectGUID%>}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{<%= ProjectGUID%>}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

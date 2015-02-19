@@ -1,0 +1,8 @@
+<%-- 
+Name: custom.sql.cst
+Author: Keith Stone
+Description: Template for custom sql scripts
+Revision: 2008.10.17
+Note: For the latest version of this template, http://www.crewstone.com		
+--%>
+<%@ CodeTemplate Language="C#" TargetLanguage="VB.NET" Description="Generates a blank file for holding custom SQL statements." %>

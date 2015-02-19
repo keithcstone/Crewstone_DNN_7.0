@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            <xsd:complexType>
+                <xsd:choice maxOccurs="unbounded">
+                    <xsd:element name="data">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" />
+                            <xsd:attribute name="type" type="xsd:string" />
+                            <xsd:attribute name="mimetype" type="xsd:string" />
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="resheader">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required" />
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:choice>
+            </xsd:complexType>
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="ResMimeType">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="Version">
+        <value>1.0.0.0</value>
+    </resheader>
+    <resheader name="Reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=1.0.3300.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="Writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=1.0.3300.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="AddContent.Action">
+        <value>Add Content</value>
+    </data>
+    <data name="ModuleHelp.Text">
+	<value>&lt;P&gt;A ZIP module</value>
+    </data>
+    <data name="DefaultContent.Text">
+	<value>Here is some sample content</value>
+    </data>
+    <data name="Template.Text">
+        <value>[CONTENT]</value>
+    </data>
+	<data name="lblFiveDigitZIP.Text" xml:space="preserve">
+        <value>FiveDigitZIP</value>
+  	</data>
+	<data name="lblFiveDigitZIP.Header" xml:space="preserve">
+        <value>FiveDigitZIP</value>
+  	</data>
+  	<data name="lblFiveDigitZIP.Help" xml:space="preserve">
+		<value>Enter the data for field: FiveDigitZIP</value>
+  	</data>
+  	<data name="valFiveDigitZIP.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: FiveDigitZIP</value>
+  	</data>		
+	<data name="lblSequence.Text" xml:space="preserve">
+        <value>Sequence</value>
+  	</data>
+	<data name="lblSequence.Header" xml:space="preserve">
+        <value>Sequence</value>
+  	</data>
+  	<data name="lblSequence.Help" xml:space="preserve">
+		<value>Enter the data for field: Sequence</value>
+  	</data>
+  	<data name="valSequence.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: Sequence</value>
+  	</data>		
+	<data name="lblPortalId.Text" xml:space="preserve">
+        <value>PortalId</value>
+  	</data>
+ 	<data name="lblPortalId.Header" xml:space="preserve">
+        <value>PortalId</value>
+  	</data>
+	<data name="lblPortalId.Help" xml:space="preserve">
+		<value>Enter the data for field: PortalId</value>
+	</data>
+  	<data name="valPortalId.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: PortalId</value>
+  	</data>
+	<data name="lblCity.Text" xml:space="preserve">
+        <value>City</value>
+  	</data>
+ 	<data name="lblCity.Header" xml:space="preserve">
+        <value>City</value>
+  	</data>
+	<data name="lblCity.Help" xml:space="preserve">
+		<value>Enter the data for field: City</value>
+	</data>
+  	<data name="valCity.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: City</value>
+  	</data>
+	<data name="lblState.Text" xml:space="preserve">
+        <value>State</value>
+  	</data>
+ 	<data name="lblState.Header" xml:space="preserve">
+        <value>State</value>
+  	</data>
+	<data name="lblState.Help" xml:space="preserve">
+		<value>Enter the data for field: State</value>
+	</data>
+  	<data name="valState.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: State</value>
+  	</data>
+	<data name="lblCounty.Text" xml:space="preserve">
+        <value>County</value>
+  	</data>
+ 	<data name="lblCounty.Header" xml:space="preserve">
+        <value>County</value>
+  	</data>
+	<data name="lblCounty.Help" xml:space="preserve">
+		<value>Enter the data for field: County</value>
+	</data>
+  	<data name="valCounty.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: County</value>
+  	</data>
+	<data name="lblCountry.Text" xml:space="preserve">
+        <value>Country</value>
+  	</data>
+ 	<data name="lblCountry.Header" xml:space="preserve">
+        <value>Country</value>
+  	</data>
+	<data name="lblCountry.Help" xml:space="preserve">
+		<value>Enter the data for field: Country</value>
+	</data>
+  	<data name="valCountry.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: Country</value>
+  	</data>
+
+</root>

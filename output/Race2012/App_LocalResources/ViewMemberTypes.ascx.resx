@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            <xsd:complexType>
+                <xsd:choice maxOccurs="unbounded">
+                    <xsd:element name="data">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" />
+                            <xsd:attribute name="type" type="xsd:string" />
+                            <xsd:attribute name="mimetype" type="xsd:string" />
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="resheader">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required" />
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:choice>
+            </xsd:complexType>
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="ResMimeType">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="Version">
+        <value>1.0.0.0</value>
+    </resheader>
+    <resheader name="Reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=1.0.3300.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="Writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=1.0.3300.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="AddContent.Action">
+        <value>Add Content</value>
+    </data>
+    <data name="ModuleHelp.Text">
+	<value>&lt;P&gt;A MemberTypes module</value>
+    </data>
+    <data name="DefaultContent.Text">
+	<value>Here is some sample content</value>
+    </data>
+    <data name="Template.Text">
+        <value>[CONTENT]</value>
+    </data>
+	<data name="lblMemberTypeID.Text" xml:space="preserve">
+        <value>MemberTypeID</value>
+  	</data>
+	<data name="lblMemberTypeID.Header" xml:space="preserve">
+        <value>MemberTypeID</value>
+  	</data>
+  	<data name="lblMemberTypeID.Help" xml:space="preserve">
+		<value>Enter the data for field: MemberTypeID</value>
+  	</data>
+  	<data name="valMemberTypeID.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: MemberTypeID</value>
+  	</data>		
+	<data name="lblPortalId.Text" xml:space="preserve">
+        <value>PortalId</value>
+  	</data>
+	<data name="lblPortalId.Header" xml:space="preserve">
+        <value>PortalId</value>
+  	</data>
+	<data name="lblPortalIdEdit.Text" xml:space="preserve">
+        <value>PortalId</value>
+  	</data>
+	<data name="lblPortalIdView.Text" xml:space="preserve">
+        <value>PortalId</value>
+  	</data>
+  	<data name="lblPortalId.Help" xml:space="preserve">
+		<value>Enter the data for field: PortalId</value>
+	</data>
+  	<data name="lblPortalIdEdit.Help" xml:space="preserve">
+		<value>Enter the data for field: PortalId</value>
+	</data>
+	  	<data name="lblPortalIdView.Help" xml:space="preserve">
+		<value>Enter the data for field: PortalId</value>
+	</data>
+	<data name="valPortalId.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: PortalId</value>
+  	</data>
+	<data name="lblMemberType.Text" xml:space="preserve">
+        <value>MemberType</value>
+  	</data>
+	<data name="lblMemberType.Header" xml:space="preserve">
+        <value>MemberType</value>
+  	</data>
+	<data name="lblMemberTypeEdit.Text" xml:space="preserve">
+        <value>MemberType</value>
+  	</data>
+	<data name="lblMemberTypeView.Text" xml:space="preserve">
+        <value>MemberType</value>
+  	</data>
+  	<data name="lblMemberType.Help" xml:space="preserve">
+		<value>Enter the data for field: MemberType</value>
+	</data>
+  	<data name="lblMemberTypeEdit.Help" xml:space="preserve">
+		<value>Enter the data for field: MemberType</value>
+	</data>
+	  	<data name="lblMemberTypeView.Help" xml:space="preserve">
+		<value>Enter the data for field: MemberType</value>
+	</data>
+	<data name="valMemberType.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: MemberType</value>
+  	</data>
+  	<data name="valMemberTypeReq.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: MemberType</value>
+  	</data>
+	<data name="lblMemberDues.Text" xml:space="preserve">
+        <value>MemberDues</value>
+  	</data>
+	<data name="lblMemberDues.Header" xml:space="preserve">
+        <value>MemberDues</value>
+  	</data>
+	<data name="lblMemberDuesEdit.Text" xml:space="preserve">
+        <value>MemberDues</value>
+  	</data>
+	<data name="lblMemberDuesView.Text" xml:space="preserve">
+        <value>MemberDues</value>
+  	</data>
+  	<data name="lblMemberDues.Help" xml:space="preserve">
+		<value>Enter the data for field: MemberDues</value>
+	</data>
+  	<data name="lblMemberDuesEdit.Help" xml:space="preserve">
+		<value>Enter the data for field: MemberDues</value>
+	</data>
+	  	<data name="lblMemberDuesView.Help" xml:space="preserve">
+		<value>Enter the data for field: MemberDues</value>
+	</data>
+	<data name="valMemberDues.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: MemberDues</value>
+  	</data>
+  <data name="InitialStatus.Text" xml:space="preserve">
+    <value>Click Edit to Update, Add to insert new item</value>
+  </data>
+  <data name="InsertCancel.Text" xml:space="preserve">
+    <value>Insert of MemberTypes cancelled</value>
+  </data>
+  <data name="InsertSuccess.Text" xml:space="preserve">
+    <value>Insert of MemberTypes successful</value>
+  </data>
+  <data name="SaveComplete.Text" xml:space="preserve">
+    <value>Click Save to complete update</value>
+  </data>
+  <data name="UpdateCancel.Text" xml:space="preserve">
+    <value>Update of MemberTypes cancelled</value>
+  </data>
+  <data name="UpdateSuccess.Text" xml:space="preserve">
+    <value>Update of MemberTypes successful</value>
+  </data>
+</root>

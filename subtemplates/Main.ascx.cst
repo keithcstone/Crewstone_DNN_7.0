@@ -1,0 +1,42 @@
+﻿<%-- 
+Name: Main.ascx.cst
+Author: Keith Stone
+Description: Generates the DotNetNuke [ModuleName].ascx for C# and VB
+Revision: 2014.05.04
+Note: For the latest version of this template, http://www.crewstone.com		
+--%>
+
+<%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="VB.NET" Description="Generates the [ModuleName].ascx web control." %>
+<%@ Property Category="DataSource" Name="MultiSourceTable" Type="SchemaExplorer.TableSchemaCollection" Description="Table that the object is based on." %>
+<%@ Property Category="DataSource" Name="ObjectQualifier" Type="System.String" Default="" Optional="True" Description="Prefix for objects to be generated." %>
+<%@ Property Category="Naming Convention" Name="CompanyName" Type="System.String" Default="YourCompany" Description="Used to generate the Namespace declaration." %>
+<%@ Property Category="Naming Convention" Name="ModuleName" Type="System.String" Default="YourModule" Description="" %>
+<%@ Property Category="Naming Convention" Name="Namespace" Type="System.String" Default="NameSpace" Description="Used to generate the Namespace declaration." %>
+<%@ Property Category="DotNetNuke Options" Name="Language" Type="System.String" Default="vb" Optional="True" Description="vb for Visual Basic, cs for CSharp" %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+
+<%%@ Control Language="<%=Language%>" AutoEventWireup="false" CodeBehind="<%= ModuleName %>.ascx.<%=Language%>" Inherits="<%= Namespace %>.Modules.<%=ModuleName%>.<%=ModuleName%>Menu" %>
+<%%@ Register TagPrefix="dnn" TagName="Label" Src="~/controls/LabelControl.ascx" %>
+<table cellspacing="0" cellpadding="2" border="0" summary="<%= ModuleName %> Menu Table">
+
+
+<% foreach(SchemaExplorer.TableSchema SourceTable in MultiSourceTable)
+	{ %>
+	    <tr>
+        <td Class="SubHead" width="25">
+            <dnn:Label ID="lbl<%= GetTableName(SourceTable) %>" runat="server" ControlName="hyp<%= GetTableName(SourceTable) %>"
+               ></dnn:Label>
+        </td>
+        <td valign="bottom">
+            <asp:HyperLink ID="hyp<%= GetTableName(SourceTable) %>" runat="server" EnableViewState="False" />
+        </td>
+    </tr>
+<% } %>
+</table>
+

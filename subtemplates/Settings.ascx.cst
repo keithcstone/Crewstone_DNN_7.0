@@ -1,0 +1,45 @@
+﻿<%-- 
+Name: Settings.ascx.cst
+Author: Keith Stone
+Description: DotNetNuke Settings ascx for VB and C#
+Revision: 2014.04.26
+Note: For the latest version of this template, http://www.crewstone.com		
+--%>
+<%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="VB.NET" Description="Generates the Settings.ascx web control." %>
+<%@ Property Category="Naming Convention" Name="CompanyName" Type="System.String" Default="YourCompany" Description="Used to generate the Namespace declaration." %>
+<%@ Property Category="Naming Convention" Name="Namespace" Type="System.String" Default="NameSpace" Description="Used to generate the Namespace declaration." %>
+<%@ Property Category="DataSource" Name="ObjectQualifier" Type="System.String" Default="" Optional="True" Description="Prefix for objects to be generated." %>
+<%@ Property Category="Naming Convention" Name="ModuleName" Type="System.String" Default="YourModule" Description="" %>
+<%@ Property Category="DotNetNuke Options" Name="Language" Type="System.String" Default="vb" Optional="True" Description="vb for Visual Basic, cs for CSharp" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%%@ Control Language="<%=Language%>" AutoEventWireup="false" CodeBehind="Settings.ascx.<%=Language%>" Inherits="<%=Namespace%>.Modules.<%=ModuleName%>.Settings" %>
+<%%@ Register TagPrefix="dnn" TagName="Label" Src="~/controls/LabelControl.ascx" %>
+<%%@ Register TagPrefix="dnn" TagName="URL" Src="~/controls/URLControl.ascx" %>
+<%%@ Register TagPrefix="dnn" Assembly="DotNetNuke" Namespace="DotNetNuke.UI.WebControls"  %>   
+<%%@ Register TagPrefix="dnn" Assembly="DotNetNuke.Web" Namespace="DotNetNuke.Web.UI.WebControls" %>
+<table cellspacing="0" cellpadding="2" border="0" summary="<%= ModuleName %> Settings Design Table">
+    <tr>
+        <td class="SubHead" width="150">
+            <dnn:Label ID="lblTemplate" runat="server" ControlName="txtTemplate" Suffix=":">
+            </dnn:Label>
+        </td>
+        <td valign="bottom">
+            <asp:TextBox ID="txtTemplate" CssClass="NormalTextBox" Width="390" Columns="30" TextMode="MultiLine"
+                Rows="10" MaxLength="2000" runat="server" />
+        </td>
+    </tr>
+    <tr>
+        <td class="SubHead" width="150">
+            <dnn:Label ID="lblPurgeBeforeImport" runat="server" ControlName="chkPurge" Suffix=":">
+            </dnn:Label>
+        </td>
+        <td valign="bottom">
+            <asp:CheckBox ID="chkPurge" CssClass="NormalTextBox" runat="server" />
+        </td>
+    </tr>
+</table>

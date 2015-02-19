@@ -1,0 +1,237 @@
+﻿<%-- 
+Name: FeatureController.cs.cst
+Author: Keith Stone
+Description: DotNetNuke Feature Controller template for C#
+Revision: 2014.03.06
+Note: For the latest version of this template, http://www.crewstone.com		
+--%>
+<%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="C#" Description="Generates the C# DotNetNuke Business Controller." %>
+<%@ Property Category="Naming Convention" Name="ModuleName" Type="System.String" Default="YourModule" Description="Module Name" %>
+<%@ Property Category="Naming Convention" Name="FriendlyName" Type="System.String" Default="Your Module" Description="Descriptive module name" %>
+<%@ Property Category="Naming Convention" Name="Namespace" Type="System.String" Default="Namespace" Description="Used to generate the Namespace declaration, no spaces or punctuation" %>
+<%@ Property Category="Naming Convention" Name="CompanyName" Type="System.String" Default="YourCompany" Description="Descriptive name to generate the copyright declaration and documentation." %>
+<%@ Property Category="DataSource" Name="MultiSourceTable" Type="SchemaExplorer.TableSchemaCollection" Description="Table that the object is based on." %>
+<%@ Property Category="DataSource" Name="ObjectQualifier" Type="System.String" Default="" Optional="True" Description="Suffix for objects to be generated." %>
+<%@ Property Name="ListByPortalID" Type="System.Boolean" Default="False" Category="Options" Description="If true items will be selected using PortalID otherwise ModuleID will be used." %>
+
+<%@ Property Name="IsSearchable" Type="System.Boolean" Default="True" Category="Options" Description="If true Interface for search will be added." %>
+<%@ Property Name="IsPortable" Type="System.Boolean" Default="True" Category="Options" Description="If true Interface for Import/Export will be added." %>
+
+<%@ Property Name="IncludeInsert" Type="System.Boolean" Default="True" Category="Options" Description="If true insert statements will be generated." %>
+<%@ Property Name="IncludeUpdate" Type="System.Boolean" Default="True" Category="Options" Description="If true update statements will be generated." %>
+<%@ Property Name="IncludeDelete" Type="System.Boolean" Default="True" Category="Options" Description="If true delete statements will be generated." %>
+<%@ Property Name="IncludeGet" Type="System.Boolean" Default="True" Category="Options" Description="If true get statements will be generated." %>
+<%@ Property Name="IncludeList" Type="System.Boolean" Default="True" Category="Options" Description="If true getlist statements will be generated." %>
+<%@ Property Name="IncludeForeignKeyProcs" Type="System.Boolean" Default="True" Category="Options" Description="If true get statements will be generated for every foreign key in the table." %>
+<%@ Property Name="IncludePaging" Type="System.Boolean" Default="True" Category="Options" Description="If true paging/sorting statements will be generated." %>
+<%@ Property Name="PagingKeyword" Type="System.String" Default="GetPage" Category="Style" Description="Suffix to use for all generated PAGING/SORTING stored procedures." %>
+<%@ Property Name="InsertKeyword" Type="System.String" Default="Add" Category="Style" Description="Suffix to use for all generated INSERT stored procedures." %>
+<%@ Property Name="UpdateKeyword" Type="System.String" Default="Update" Category="Style" Description="Suffix to use for all generated UPDATE stored procedures." %>
+<%@ Property Name="DeleteKeyword" Type="System.String" Default="Delete" Category="Style" Description="Suffix to use for all generated DELETE stored procedures." %>
+<%@ Property Name="SelectKeyword" Type="System.String" Default="Get" Category="Style" Description="Suffix to use for all generated SELECT stored procedures." %>
+<%@ Property Name="ListKeyword" Type="System.String" Default="List" Category="Style" Description="Suffix to use for all generated SELECT stored procedures." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+/*
+' Module: <%=FriendlyName%>
+' Copyright (c) <%= DateTime.Now.Year.ToString() %> <%=CompanyName%>
+'  All rights reserved.
+' 
+' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+' TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+' THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+' CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+' DEALINGS IN THE SOFTWARE.
+' 
+*/
+using System.Collections.Generic;
+using System.Xml;
+using DotNetNuke.Common;
+using DotNetNuke.Common.Utilities;
+using DotNetNuke.Services.Search;
+using System.ComponentModel;
+using DotNetNuke.Entities.Modules;
+
+namespace <%= Namespace %>.Modules.<%=ModuleName%>.Components
+{
+	public class FeatureController
+	/*//<% if (IsSearchable) { %> : DotNetNuke.Entities.Modules.ISearchable<% } %><% if (IsPortable) { %><% if (IsSearchable) { %>, DotNetNuke.Entities.Modules.IPortable<% }else { %> : DotNetNuke.Entities.Modules.IPortable<% } %><% } %>*/
+	{
+	#region "Public Methods"		
+		<%
+	foreach(SchemaExplorer.TableSchema SourceTable in MultiSourceTable)
+	{
+		%>
+		<% if (IncludeGet) { %>
+		// Get a single <%= GetTableName(SourceTable) %> item by primary key
+		public <%= GetClassNameInfo(SourceTable) %> <%= SelectKeyword %><%= GetTableName(SourceTable) %>(<%= GetPrimaryKeyParameters(SourceTable, true, "cs").Trim() %>)
+		{
+            return CBO.FillObject<<%= GetClassNameInfo(SourceTable) %>>(DataProvider.Instance().<%= SelectKeyword %><%= GetTableName(SourceTable) %>(<%= GetPrimaryKeyParameters(SourceTable, false, "cs").Trim() %>));
+		}
+	<% } %>
+
+	<% if (IncludeList) { %> 
+		public List<<%= GetClassNameInfo(SourceTable) %>> <%= ListKeyword %><%= GetTableName(SourceTable) %>(<% if (ListByPortalID && SourceTable.Columns.Contains("portalId")) {%>int portalId<% } %><% if (!ListByPortalID && SourceTable.Columns.Contains("moduleId")) {%>int moduleID<% } %>)
+		{
+			return CBO.FillCollection<<%= GetClassNameInfo(SourceTable) %>>(DataProvider.Instance().<%= ListKeyword %><%= GetTableName(SourceTable) %>(<% if (ListByPortalID && SourceTable.Columns.Contains("portalId")) {%>portalId<% } %><% if (!ListByPortalID && SourceTable.Columns.Contains("moduleId")) {%>moduleID<% } %>));
+		}
+	<% } %>
+
+	<% if (IncludeForeignKeyProcs) { %>
+		<% for (int K = 0; K < SourceTable.ForeignKeys.Count; K++) { %>
+		<% TableKeySchema fk = SourceTable.ForeignKeys[K]; %>
+		public <%= GetClassNameInfo(SourceTable) %> <%= SelectKeyword %>By<%= GetTableName(fk.PrimaryKeyTable) %>(<%= GetPrimaryKeyParameters(fk.PrimaryKeyTable, true, "cs") %>)
+		{
+			return CBO.FillObject<<%= GetClassNameInfo(SourceTable) %>>(DataProvider.Instance().<%= SelectKeyword %><%= GetTableName(SourceTable) %>By<%= GetTableName(fk.PrimaryKeyTable) %>(<%= GetPrimaryKeyParameters(fk.PrimaryKeyTable, false, "cs") %>));
+		}
+		<% } %>
+	<% } %>
+	
+	<% if (IncludeInsert) { %>	
+		public void <%= InsertKeyword %><%= GetTableName(SourceTable) %>(<%= GetClassNameInfo(SourceTable) %> obj<%= GetTableName(SourceTable) %>)
+		{
+			DataProvider.Instance().<%= InsertKeyword %><%= GetTableName(SourceTable) %>(<%= GetNonPrimaryKeyParametersForObject(SourceTable, "obj" + GetTableName(SourceTable)) %>);
+		}
+	<% } %>
+	
+	<% if (IncludeUpdate) { %>	
+		public void <%= UpdateKeyword %><%=GetTableName(SourceTable)%>(<%= GetClassNameInfo(SourceTable) %> obj<%= GetTableName(SourceTable) %>)
+		{
+			DataProvider.Instance().<%= UpdateKeyword %><%= GetTableName(SourceTable) %>(<%= GetPrimaryKeyParametersForObject(SourceTable, "obj" + GetTableName(SourceTable)) %>, <%= GetNonPrimaryKeyParametersForObject(SourceTable, "obj" + GetTableName(SourceTable)) %>);
+		}
+	<% } %>
+		
+	<% if (IncludeDelete) { %>	
+		public void <%= DeleteKeyword %><%=GetTableName(SourceTable)%>(<%= GetPrimaryKeyParameters(SourceTable, true, "cs").Trim() %>)
+		{
+			DataProvider.Instance().<%= DeleteKeyword %><%= GetTableName(SourceTable) %>(<%= GetPrimaryKeyParameters(SourceTable, false, "cs") %>);
+		}
+	<% } %>
+	
+	<% } %>
+	
+		#endregion
+
+<% if (IsSearchable || IsPortable) { %>		
+		#region "Optional Interfaces"		
+	<% } %>
+	<% if (IsSearchable) { %>
+  /// ----------------------------------------------------------------------------- 
+        /// <summary> 
+        /// GetSearchItems implements the ISearchable Interface 
+        /// </summary> 
+        /// <remarks> 
+        /// </remarks> 
+        /// <param name="ModInfo">The ModuleInfo for the module to be Indexed</param> 
+        /// <history> 
+        /// </history> 
+        /// ----------------------------------------------------------------------------- 
+        public SearchItemInfoCollection GetSearchItems(<%= ModuleName %> ModInfo)
+        {
+            SearchItemInfoCollection SearchItemCollection = new SearchItemInfoCollection();
+		<%
+	foreach(SchemaExplorer.TableSchema SourceTable in MultiSourceTable)
+	{
+		%>
+			// TODO
+			// Modify to suit fields in table
+            List<<%= GetClassNameInfo(SourceTable) %>> col<%= GetTableName(SourceTable) %> = <%= ListKeyword %><%= GetTableName(SourceTable) %>(<% if (ListByPortalID && SourceTable.Columns.Contains("portalId")) {%>ModInfo.portalId<% } %><% if (!ListByPortalID && SourceTable.Columns.Contains("moduleId")) {%>ModInfo.moduleID<% } %>);
+            foreach (<%= GetClassNameInfo(SourceTable) %> obj<%= GetTableName(SourceTable) %> in col<%= GetTableName(SourceTable) %>)
+            {
+            //    SearchItemInfo SearchItem = new SearchItemInfo(ModInfo.ModuleTitle, objDNN_CS_unmodified.Content, objDNN_CS_unmodified.CreatedByUser, objDNN_CS_unmodified.CreatedDate, ModInfo.ModuleID, objDNN_CS_unmodified.ItemId.ToString(), objDNN_CS_unmodified.Content, "ItemId=" + objDNN_CS_unmodified.ItemId.ToString());
+            //    SearchItemCollection.Add(SearchItem);
+            }
+	<% } %>
+
+            return SearchItemCollection;
+        }
+	<% } %>
+	
+	<% if (IsPortable) { %>
+        /// ----------------------------------------------------------------------------- 
+        /// <summary> 
+        /// ExportModule implements the IPortable ExportModule Interface 
+        /// </summary> 
+        /// <remarks> 
+        /// </remarks> 
+        /// <param name="<% if (ListByPortalID ) {%>portalId<% } %><% if (!ListByPortalID ) {%>moduleId<% } %>">The Id of the module to be exported</param> 
+        /// <history> 
+        /// </history> 
+        /// ----------------------------------------------------------------------------- 
+        public string ExportModule(<% if (ListByPortalID ) {%>int portalId<% } %><% if (!ListByPortalID ) {%>int moduleId<% } %>)
+        {
+
+            string strXML = "";
+		<%
+	foreach(SchemaExplorer.TableSchema SourceTable in MultiSourceTable)
+	{
+		%>
+			// TOTO
+			// Modify to match fields in table
+            List<<%= GetClassNameInfo(SourceTable) %>> col<%= GetTableName(SourceTable) %> = <%= ListKeyword %><%= GetTableName(SourceTable) %>(<% if (ListByPortalID && SourceTable.Columns.Contains("portalId")) {%>int portalId<% } %><% if (!ListByPortalID && SourceTable.Columns.Contains("moduleId")) {%>moduleId<% } %>);
+            if (col<%= GetTableName(SourceTable) %>.Count != 0)
+            {
+                strXML += "<<%= GetTableName(SourceTable) %>s>";
+                foreach (<%= GetClassNameInfo(SourceTable) %> obj<%= GetTableName(SourceTable) %> in col<%= GetTableName(SourceTable) %>)
+                {
+                    strXML += "<<%= GetTableName(SourceTable) %>>";
+					<% 	for(int i = 0; i < SourceTable.Columns.Count; i++) {
+						if (!SourceTable.Columns[i].IsPrimaryKeyMember && SourceTable.Columns[i].Name.ToLower() != "portalid" && SourceTable.Columns[i].Name.ToLower() != "moduleid") { %>
+                    	strXML += "<<%=SourceTable.Columns[i].Name%>>"; 
+							strXML += XmlUtils.XMLEncode(obj<%=GetTableName(SourceTable)%>.<%=SourceTable.Columns[i].Name%>.ToString()); 
+						strXML += "</<%=SourceTable.Columns[i].Name%>>";
+						<%}%>
+					<%}%>					
+                    strXML += "</<%= GetTableName(SourceTable) %>>";
+                }
+                strXML += "</<%= GetTableName(SourceTable) %>s>";
+            }
+	<% } %>
+
+            return strXML;
+        }
+		
+		/// ----------------------------------------------------------------------------- 
+        /// <summary> 
+        /// ImportModule implements the IPortable ImportModule Interface 
+        /// </summary> 
+        /// <remarks> 
+        /// </remarks> 
+        /// <param name="ModuleID">The Id of the module to be imported</param> 
+        /// <param name="Content">The content to be imported</param> 
+        /// <param name="Version">The version of the module to be imported</param> 
+        /// <param name="UserId">The Id of the user performing the import</param> 
+        /// <history> 
+        /// </history> 
+        /// ----------------------------------------------------------------------------- 
+        public void ImportModule(int ModuleID, string Content, string Version, int UserId)
+        {
+		<%
+	foreach(SchemaExplorer.TableSchema SourceTable in MultiSourceTable)
+	{
+		%>
+			// TODO 
+			// Modify to match fields in table
+			// Need to code for different data types on import
+            XmlNode xml<%= GetClassNameInfo(SourceTable) %> = Globals.GetContent(Content, "<%= GetClassNameInfo(SourceTable) %>");
+            foreach (XmlNode xml<%= GetTableName(SourceTable) %> in xml<%= GetClassNameInfo(SourceTable) %>.SelectNodes("<%= GetClassNameInfo(SourceTable) %>"))
+            {
+                // <%= GetClassNameInfo(SourceTable) %> obj<%= GetTableName(SourceTable) %> = new <%= GetClassNameInfo(SourceTable) %>();
+                // obj<%= GetClassNameInfo(SourceTable) %>.ModuleId = ModuleID;
+                // obj<%= GetClassNameInfo(SourceTable) %>.Content = xml<%= GetClassNameInfo(SourceTable) %>.SelectSingleNode("content").InnerText;
+                // obj<%= GetClassNameInfo(SourceTable) %>.CreatedByUser = UserId;
+                // Add<%= GetClassNameInfo(SourceTable) %>(obj<%= GetClassNameInfo(SourceTable) %>);
+            }
+
+        }
+	<% } %>
+	<% } %>
+<% if (IsSearchable || IsPortable) { %>		
+		#endregion
+	<% } %>
+	}
+}

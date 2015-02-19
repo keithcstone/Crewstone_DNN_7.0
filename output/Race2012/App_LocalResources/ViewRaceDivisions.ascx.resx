@@ -1,0 +1,384 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            <xsd:complexType>
+                <xsd:choice maxOccurs="unbounded">
+                    <xsd:element name="data">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" />
+                            <xsd:attribute name="type" type="xsd:string" />
+                            <xsd:attribute name="mimetype" type="xsd:string" />
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="resheader">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required" />
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:choice>
+            </xsd:complexType>
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="ResMimeType">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="Version">
+        <value>1.0.0.0</value>
+    </resheader>
+    <resheader name="Reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=1.0.3300.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="Writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=1.0.3300.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="AddContent.Action">
+        <value>Add Content</value>
+    </data>
+    <data name="ModuleHelp.Text">
+	<value>&lt;P&gt;A RaceDivisions module</value>
+    </data>
+    <data name="DefaultContent.Text">
+	<value>Here is some sample content</value>
+    </data>
+    <data name="Template.Text">
+        <value>[CONTENT]</value>
+    </data>
+	<data name="lblRaceId.Text" xml:space="preserve">
+        <value>RaceId</value>
+  	</data>
+	<data name="lblRaceId.Header" xml:space="preserve">
+        <value>RaceId</value>
+  	</data>
+  	<data name="lblRaceId.Help" xml:space="preserve">
+		<value>Race Identifier</value>
+  	</data>
+  	<data name="valRaceId.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: RaceId</value>
+  	</data>		
+	<data name="lblPriority.Text" xml:space="preserve">
+        <value>Priority</value>
+  	</data>
+	<data name="lblPriority.Header" xml:space="preserve">
+        <value>Priority</value>
+  	</data>
+  	<data name="lblPriority.Help" xml:space="preserve">
+		<value>Award Division Priority</value>
+  	</data>
+  	<data name="valPriority.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: Priority</value>
+  	</data>		
+	<data name="lblPortalId.Text" xml:space="preserve">
+        <value>PortalId</value>
+  	</data>
+	<data name="lblPortalId.Header" xml:space="preserve">
+        <value>PortalId</value>
+  	</data>
+	<data name="lblPortalIdEdit.Text" xml:space="preserve">
+        <value>PortalId</value>
+  	</data>
+	<data name="lblPortalIdView.Text" xml:space="preserve">
+        <value>PortalId</value>
+  	</data>
+  	<data name="lblPortalId.Help" xml:space="preserve">
+		<value>Enter the data for field: PortalId</value>
+	</data>
+  	<data name="lblPortalIdEdit.Help" xml:space="preserve">
+		<value>Enter the data for field: PortalId</value>
+	</data>
+	  	<data name="lblPortalIdView.Help" xml:space="preserve">
+		<value>Enter the data for field: PortalId</value>
+	</data>
+	<data name="valPortalId.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: PortalId</value>
+  	</data>
+	<data name="lblSex.Text" xml:space="preserve">
+        <value>Sex</value>
+  	</data>
+	<data name="lblSex.Header" xml:space="preserve">
+        <value>Sex</value>
+  	</data>
+	<data name="lblSexEdit.Text" xml:space="preserve">
+        <value>Sex</value>
+  	</data>
+	<data name="lblSexView.Text" xml:space="preserve">
+        <value>Sex</value>
+  	</data>
+  	<data name="lblSex.Help" xml:space="preserve">
+		<value>Gender</value>
+	</data>
+  	<data name="lblSexEdit.Help" xml:space="preserve">
+		<value>Gender</value>
+	</data>
+	  	<data name="lblSexView.Help" xml:space="preserve">
+		<value>Gender</value>
+	</data>
+	<data name="valSex.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: Sex</value>
+  	</data>
+	<data name="lblStartAge.Text" xml:space="preserve">
+        <value>StartAge</value>
+  	</data>
+	<data name="lblStartAge.Header" xml:space="preserve">
+        <value>StartAge</value>
+  	</data>
+	<data name="lblStartAgeEdit.Text" xml:space="preserve">
+        <value>StartAge</value>
+  	</data>
+	<data name="lblStartAgeView.Text" xml:space="preserve">
+        <value>StartAge</value>
+  	</data>
+  	<data name="lblStartAge.Help" xml:space="preserve">
+		<value>Start of Age Group</value>
+	</data>
+  	<data name="lblStartAgeEdit.Help" xml:space="preserve">
+		<value>Start of Age Group</value>
+	</data>
+	  	<data name="lblStartAgeView.Help" xml:space="preserve">
+		<value>Start of Age Group</value>
+	</data>
+	<data name="valStartAge.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: StartAge</value>
+  	</data>
+	<data name="lblEndAge.Text" xml:space="preserve">
+        <value>EndAge</value>
+  	</data>
+	<data name="lblEndAge.Header" xml:space="preserve">
+        <value>EndAge</value>
+  	</data>
+	<data name="lblEndAgeEdit.Text" xml:space="preserve">
+        <value>EndAge</value>
+  	</data>
+	<data name="lblEndAgeView.Text" xml:space="preserve">
+        <value>EndAge</value>
+  	</data>
+  	<data name="lblEndAge.Help" xml:space="preserve">
+		<value>End of Age Group</value>
+	</data>
+  	<data name="lblEndAgeEdit.Help" xml:space="preserve">
+		<value>End of Age Group</value>
+	</data>
+	  	<data name="lblEndAgeView.Help" xml:space="preserve">
+		<value>End of Age Group</value>
+	</data>
+	<data name="valEndAge.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: EndAge</value>
+  	</data>
+	<data name="lblStartWeight.Text" xml:space="preserve">
+        <value>StartWeight</value>
+  	</data>
+	<data name="lblStartWeight.Header" xml:space="preserve">
+        <value>StartWeight</value>
+  	</data>
+	<data name="lblStartWeightEdit.Text" xml:space="preserve">
+        <value>StartWeight</value>
+  	</data>
+	<data name="lblStartWeightView.Text" xml:space="preserve">
+        <value>StartWeight</value>
+  	</data>
+  	<data name="lblStartWeight.Help" xml:space="preserve">
+		<value>Start of Weight Group</value>
+	</data>
+  	<data name="lblStartWeightEdit.Help" xml:space="preserve">
+		<value>Start of Weight Group</value>
+	</data>
+	  	<data name="lblStartWeightView.Help" xml:space="preserve">
+		<value>Start of Weight Group</value>
+	</data>
+	<data name="valStartWeight.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: StartWeight</value>
+  	</data>
+	<data name="lblEndWeight.Text" xml:space="preserve">
+        <value>EndWeight</value>
+  	</data>
+	<data name="lblEndWeight.Header" xml:space="preserve">
+        <value>EndWeight</value>
+  	</data>
+	<data name="lblEndWeightEdit.Text" xml:space="preserve">
+        <value>EndWeight</value>
+  	</data>
+	<data name="lblEndWeightView.Text" xml:space="preserve">
+        <value>EndWeight</value>
+  	</data>
+  	<data name="lblEndWeight.Help" xml:space="preserve">
+		<value>End of Weight Group</value>
+	</data>
+  	<data name="lblEndWeightEdit.Help" xml:space="preserve">
+		<value>End of Weight Group</value>
+	</data>
+	  	<data name="lblEndWeightView.Help" xml:space="preserve">
+		<value>End of Weight Group</value>
+	</data>
+	<data name="valEndWeight.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: EndWeight</value>
+  	</data>
+	<data name="lblSurvivor.Text" xml:space="preserve">
+        <value>Survivor</value>
+  	</data>
+	<data name="lblSurvivor.Header" xml:space="preserve">
+        <value>Survivor</value>
+  	</data>
+	<data name="lblSurvivorEdit.Text" xml:space="preserve">
+        <value>Survivor</value>
+  	</data>
+	<data name="lblSurvivorView.Text" xml:space="preserve">
+        <value>Survivor</value>
+  	</data>
+  	<data name="lblSurvivor.Help" xml:space="preserve">
+		<value>Cancer Survivor</value>
+	</data>
+  	<data name="lblSurvivorEdit.Help" xml:space="preserve">
+		<value>Cancer Survivor</value>
+	</data>
+	  	<data name="lblSurvivorView.Help" xml:space="preserve">
+		<value>Cancer Survivor</value>
+	</data>
+	<data name="valSurvivor.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: Survivor</value>
+  	</data>
+	<data name="lblDivision.Text" xml:space="preserve">
+        <value>Division</value>
+  	</data>
+	<data name="lblDivision.Header" xml:space="preserve">
+        <value>Division</value>
+  	</data>
+	<data name="lblDivisionEdit.Text" xml:space="preserve">
+        <value>Division</value>
+  	</data>
+	<data name="lblDivisionView.Text" xml:space="preserve">
+        <value>Division</value>
+  	</data>
+  	<data name="lblDivision.Help" xml:space="preserve">
+		<value>Division</value>
+	</data>
+  	<data name="lblDivisionEdit.Help" xml:space="preserve">
+		<value>Division</value>
+	</data>
+	  	<data name="lblDivisionView.Help" xml:space="preserve">
+		<value>Division</value>
+	</data>
+	<data name="valDivision.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: Division</value>
+  	</data>
+	<data name="lblDepth.Text" xml:space="preserve">
+        <value>Depth</value>
+  	</data>
+	<data name="lblDepth.Header" xml:space="preserve">
+        <value>Depth</value>
+  	</data>
+	<data name="lblDepthEdit.Text" xml:space="preserve">
+        <value>Depth</value>
+  	</data>
+	<data name="lblDepthView.Text" xml:space="preserve">
+        <value>Depth</value>
+  	</data>
+  	<data name="lblDepth.Help" xml:space="preserve">
+		<value>Award Depth</value>
+	</data>
+  	<data name="lblDepthEdit.Help" xml:space="preserve">
+		<value>Award Depth</value>
+	</data>
+	  	<data name="lblDepthView.Help" xml:space="preserve">
+		<value>Award Depth</value>
+	</data>
+	<data name="valDepth.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: Depth</value>
+  	</data>
+	<data name="lblOverall.Text" xml:space="preserve">
+        <value>Overall</value>
+  	</data>
+	<data name="lblOverall.Header" xml:space="preserve">
+        <value>Overall</value>
+  	</data>
+	<data name="lblOverallEdit.Text" xml:space="preserve">
+        <value>Overall</value>
+  	</data>
+	<data name="lblOverallView.Text" xml:space="preserve">
+        <value>Overall</value>
+  	</data>
+  	<data name="lblOverall.Help" xml:space="preserve">
+		<value>Open or Overall Category</value>
+	</data>
+  	<data name="lblOverallEdit.Help" xml:space="preserve">
+		<value>Open or Overall Category</value>
+	</data>
+	  	<data name="lblOverallView.Help" xml:space="preserve">
+		<value>Open or Overall Category</value>
+	</data>
+	<data name="valOverall.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: Overall</value>
+  	</data>
+	<data name="lblMasters.Text" xml:space="preserve">
+        <value>Masters</value>
+  	</data>
+	<data name="lblMasters.Header" xml:space="preserve">
+        <value>Masters</value>
+  	</data>
+	<data name="lblMastersEdit.Text" xml:space="preserve">
+        <value>Masters</value>
+  	</data>
+	<data name="lblMastersView.Text" xml:space="preserve">
+        <value>Masters</value>
+  	</data>
+  	<data name="lblMasters.Help" xml:space="preserve">
+		<value>Masters Category</value>
+	</data>
+  	<data name="lblMastersEdit.Help" xml:space="preserve">
+		<value>Masters Category</value>
+	</data>
+	  	<data name="lblMastersView.Help" xml:space="preserve">
+		<value>Masters Category</value>
+	</data>
+	<data name="valMasters.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: Masters</value>
+  	</data>
+	<data name="lblUSATF.Text" xml:space="preserve">
+        <value>USATF</value>
+  	</data>
+	<data name="lblUSATF.Header" xml:space="preserve">
+        <value>USATF</value>
+  	</data>
+	<data name="lblUSATFEdit.Text" xml:space="preserve">
+        <value>USATF</value>
+  	</data>
+	<data name="lblUSATFView.Text" xml:space="preserve">
+        <value>USATF</value>
+  	</data>
+  	<data name="lblUSATF.Help" xml:space="preserve">
+		<value>USATF Division</value>
+	</data>
+  	<data name="lblUSATFEdit.Help" xml:space="preserve">
+		<value>USATF Division</value>
+	</data>
+	  	<data name="lblUSATFView.Help" xml:space="preserve">
+		<value>USATF Division</value>
+	</data>
+	<data name="valUSATF.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: USATF</value>
+  	</data>
+  <data name="InitialStatus.Text" xml:space="preserve">
+    <value>Click Edit to Update, Add to insert new item</value>
+  </data>
+  <data name="InsertCancel.Text" xml:space="preserve">
+    <value>Insert of RaceDivisions cancelled</value>
+  </data>
+  <data name="InsertSuccess.Text" xml:space="preserve">
+    <value>Insert of RaceDivisions successful</value>
+  </data>
+  <data name="SaveComplete.Text" xml:space="preserve">
+    <value>Click Save to complete update</value>
+  </data>
+  <data name="UpdateCancel.Text" xml:space="preserve">
+    <value>Update of RaceDivisions cancelled</value>
+  </data>
+  <data name="UpdateSuccess.Text" xml:space="preserve">
+    <value>Update of RaceDivisions successful</value>
+  </data>
+</root>

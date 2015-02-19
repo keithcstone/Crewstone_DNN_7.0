@@ -1,0 +1,474 @@
+﻿<%-- 
+Name: FeatureController.vb.cst
+Author: Keith Stone
+Description: DotNetNuke module controller template for VB
+Revision: 2014.04.12
+Note: For the latest version of this template, http://www.crewstone.com		
+--%>
+<%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="VB" Description="Generates the VB DotNetNuke Business Controller." Debug="True" %>
+<%@ Property Category="DataSource" Name="MultiSourceTable" Type="SchemaExplorer.TableSchemaCollection" Description="Table that the object is based on." %>
+<%@ Property Category="DataSource" Name="ObjectQualifier" Type="System.String" Default="" Optional="True" Description="Prefix for objects to be generated." %>
+<%@ Property Category="DotNetNuke Options" Name="IsSearchable" Type="System.Boolean" Default="True" Description="If true Interface for search will be added." %>
+<%@ Property Category="DotNetNuke Options" Name="IsPortable" Type="System.Boolean" Default="True" Description="If true Interface for Import/Export will be added." %>
+<%@ Property Category="Style" Name="InsertKeyword" Type="System.String" Default="Add" Description="Suffix to use for all generated INSERT stored procedures." %>
+<%@ Property Category="Style" Name="UpdateKeyword" Type="System.String" Default="Update" Description="Suffix to use for all generated UPDATE stored procedures." %>
+<%@ Property Category="Style" Name="DeleteKeyword" Type="System.String" Default="Delete" Description="Suffix to use for all generated DELETE stored procedures." %>
+<%@ Property Category="Style" Name="SelectKeyword" Type="System.String" Default="Get" Description="Suffix to use for all generated SELECT stored procedures." %>
+<%@ Property Category="Style" Name="ListKeyword" Type="System.String" Default="List" Description="Suffix to use for all generated SELECT stored procedures." %>
+<%@ Property Category="Naming Convention" Name="ModuleName" Type="System.String" Default="YourModule" Description="Module Name" %>
+<%@ Property Category="Naming Convention" Name="FriendlyName" Type="System.String" Default="Your Module" Description="Descriptive module name" %>
+<%@ Property Category="Naming Convention" Name="Namespace" Type="System.String" Default="Namespace" Description="Used to generate the Namespace declaration, no spaces or punctuation" %>
+<%@ Property Category="Naming Convention" Name="CompanyName" Type="System.String" Default="YourCompany" Description="Descriptive name to generate the copyright declaration and documentation." %>
+<%@ Property Category="Auditing" Name="DateCreated" Type="System.String" Default="" Optional="True" Description="The name of the field that designates the date/time a row was created" %>
+<%@ Property Category="Auditing" Name="CreatedBy" Type="System.String" Default="" Optional="True" Description="The name of the field that designates the DNN userid that created a row" %>
+<%@ Property Category="Auditing" Name="DateUpdated" Type="System.String" Default="" Optional="True" Description="The name of the field that designates the date/time a row was updated" %>
+<%@ Property Category="Auditing" Name="UpdatedBy" Type="System.String" Default="" Optional="True" Description="The name of the field that designates the DNN userid that updated a row" %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Diagnostics" %>
+Option Explicit On
+'
+' Module: <%=FriendlyName%>
+' Copyright (c) <%= DateTime.Now.Year.ToString() %> <%=CompanyName%>
+'  All rights reserved.
+' 
+' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+' TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+' THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+' CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+' DEALINGS IN THE SOFTWARE.
+'
+Imports System
+Imports System.ComponentModel
+Imports System.Configuration
+Imports System.Data
+Imports System.Xml
+Imports System.Xml.Serialization
+Imports System.Web
+Imports System.Collections.Generic
+Imports DotNetNuke
+Imports DotNetNuke.Services.Search
+Imports DotNetNuke.Common.Utilities
+Imports DotNetNuke.Common.Utilities.XmlUtils
+Imports DotNetNuke.Entities.Modules
+Imports System.IO
+Imports Microsoft.VisualBasic
+Imports <%= Namespace %>.Modules.<%=ModuleName%>.Entities
+Imports <%= Namespace %>.Modules.<%=ModuleName%>.Data
+
+Namespace <%= Namespace %>.Modules.<%=ModuleName%>.Components
+
+    ''' <summary>
+    ''' The Controller class for <%=ModuleName%>
+    ''' </summary>
+    ''' <remarks>
+    ''' </remarks>
+    ''' <history>
+    ''' </history>
+    ''' -----------------------------------------------------------------------------
+    <DataObject(True)> _
+	Public Class FeatureController
+<% if (IsSearchable) { %>	
+        Implements ISearchable
+<% }
+if (IsPortable) { %>	
+        Implements IPortable
+<%}%>
+		
+
+<%
+	foreach(SchemaExplorer.TableSchema SourceTable in MultiSourceTable)
+	{
+		%>
+#Region "<%=GetTableName(SourceTable) %> Methods"
+        ''' -----------------------------------------------------------------------------
+        ''' <summary>
+        ''' retrieves a <%=GetTableName(SourceTable)%> from the database
+        ''' </summary>
+        ''' <remarks>
+        ''' </remarks>
+        ''' <history>
+        ''' </history>
+        ''' -----------------------------------------------------------------------------
+        <DataObjectMethod(DataObjectMethodType.Select)> _
+		Public Function <%= GetMethodName(GetTableName(SourceTable), SelectKeyword) %>(<%= GetPrimaryKeyParameters(SourceTable, true, "vb").Trim() %>) As <%= GetClassNameInfo(SourceTable) %>
+            Return CType(CBO.FillObject(Data.Dataprovider.Instance().<%= GetMethodName(GetTableName(SourceTable), SelectKeyword) %>(<%= GetPrimaryKeyParameters(SourceTable, false, "vb")%>), GetType(<%= GetClassNameInfo(SourceTable) %>)), <%= GetClassNameInfo(SourceTable) %>)
+        End Function
+
+<%
+string ColumnName = "";
+
+for( int i = 0; i < SourceTable.NonPrimaryKeyColumns.Count; i++ )
+{
+	if(SourceTable.NonPrimaryKeyColumns[i].ExtendedProperties["CS_Description"].Value.ToString().ToLower().StartsWith("get"))
+	{
+		ColumnName = SourceTable.NonPrimaryKeyColumns[i].Name;
+%>
+        ''' -----------------------------------------------------------------------------
+        ''' <summary>
+        ''' retrieves a collection of <%=GetTableName(SourceTable)%>s from the database by <%=ColumnName%>
+        ''' </summary>
+        ''' <remarks>
+        ''' </remarks>
+        ''' <history>
+        ''' </history>
+        ''' -----------------------------------------------------------------------------
+        <DataObjectMethod(DataObjectMethodType.Select)> _
+		Public Function <%= GetMethodName(GetTableName(SourceTable), SelectKeyword, ColumnName) %>(<%= GetSelectByColumnNameParameter(SourceTable.NonPrimaryKeyColumns[i], true, true, "vb").Trim() %><%= GetModuleIdParameter(SourceTable, true, true, "vb") %>) As List(Of <%= GetClassNameInfo(SourceTable) %>)
+        <% if (SourceTable.PrimaryKey.MemberColumns.Count == 1) { %>
+        Return CBO.FillCollection(Of <%= GetClassNameInfo(SourceTable) %>)(Data.Dataprovider.Instance().<%= GetMethodName(GetTableName(SourceTable), SelectKeyword, ColumnName) %>(<%= GetSelectByColumnNameParameter(SourceTable.NonPrimaryKeyColumns[i], false, true, "vb").Trim() %><%= GetModuleIdParameter(SourceTable, false, true, "vb") %>))
+        <% } else { %>
+		Dim <%= GetClassNameInfo(SourceTable) %>list As List(Of <%= GetClassNameInfo(SourceTable) %>) = New List(Of <%= GetClassNameInfo(SourceTable) %>)
+		
+		Try
+		Using dr As IDataReader = Data.Dataprovider.Instance().<%= GetMethodName(GetTableName(SourceTable), SelectKeyword, ColumnName) %>(<%= GetSelectByColumnNameParameter(SourceTable.NonPrimaryKeyColumns[i], false, true, "vb").Trim() %><%= GetModuleIdParameter(SourceTable, false, true, "vb") %>)
+			While dr.Read
+				Dim <%= GetClassNameInfo(SourceTable) %> As <%= GetClassNameInfo(SourceTable) %> = New <%= GetClassNameInfo(SourceTable) %>
+				<% foreach (ColumnSchema column in SourceTable.PrimaryKey.MemberColumns) { %>
+				<%= GetClassNameInfo(SourceTable) %>.<%=column.Name%> = <%= GetConvertStatement(column) %>(Null.SetNull(dr.Item("<%=column.Name%>")))
+				<% } %>
+				<% foreach (ColumnSchema column in SourceTable.NonPrimaryKeyColumns) { 
+					if(column.NativeType != "timestamp") {%>
+				<%= GetClassNameInfo(SourceTable) %>.<%=column.Name%> = <%= GetConvertStatement(column) %>(Null.SetNull(dr.Item("<%=column.Name%>")))
+				<% } } %>	
+				<%= GetClassNameInfo(SourceTable) %>list.Add(<%= GetClassNameInfo(SourceTable) %>)
+			End While	
+		End Using
+		Catch exc As Exception
+            DotNetNuke.Services.Exceptions.Exceptions.LogException(exc)
+			Throw
+		End Try
+
+		Return <%=GetClassNameInfo(SourceTable) %>list
+		<% } %>
+        End Function
+		
+<%
+	} // if
+} // for
+%>
+        ''' -----------------------------------------------------------------------------
+        ''' <summary>
+        ''' retrieves a collection of <%=SourceTable.Name%>s from the database
+        ''' </summary>
+        ''' <remarks>
+        ''' </remarks>
+        ''' <history>
+		''' Generated by CodeSmith on <%= DateTime.Now.ToLongDateString() %>
+        ''' </history>
+        ''' -----------------------------------------------------------------------------
+        <DataObjectMethod(DataObjectMethodType.Select)> _
+		Public Function <%= GetMethodName(GetTableName(SourceTable), ListKeyword, true) %>(<%= GetModuleIdParameter(SourceTable, true, false, "vb") %>) As List(Of <%= GetClassNameInfo(SourceTable) %>)
+        <% if (SourceTable.PrimaryKey.MemberColumns.Count == 1) { %>
+            Return CBO.FillCollection(Of <%= GetClassNameInfo(SourceTable) %>)(Data.Dataprovider.Instance().<%= GetMethodName(GetTableName(SourceTable), ListKeyword, true) %>(<%= GetModuleIdParameter(SourceTable, false, false, "vb") %>))
+        <% } else { %>
+		Dim <%= GetClassNameInfo(SourceTable) %>list As List(Of <%= GetClassNameInfo(SourceTable) %>) = New List(Of <%= GetClassNameInfo(SourceTable) %>)
+
+		Try
+		Using dr As IDataReader = Data.Dataprovider.Instance().<%= GetMethodName(GetTableName(SourceTable), ListKeyword, true) %>(<%= GetModuleIdParameter(SourceTable, false, false, "vb") %>)
+			While dr.Read
+				Dim obj<%= GetClassNameInfo(SourceTable) %> As <%= GetClassNameInfo(SourceTable) %> = New <%= GetClassNameInfo(SourceTable) %>
+					With obj<%= GetClassNameInfo(SourceTable) %>
+				<% foreach (ColumnSchema column in SourceTable.PrimaryKey.MemberColumns) { %>
+						.<%=column.Name%> = <%= GetConvertStatement(column) %>(Null.SetNull(dr.Item("<%=column.Name%>"),.<%=column.Name%>))
+				<% } %>
+				<% foreach (ColumnSchema column in SourceTable.NonPrimaryKeyColumns) { 
+					if(column.NativeType != "timestamp") {
+						if (GetLookupTable(column).Length > 0) { %>
+						.<%=GetLookupValue(column, true)%> = Convert.ToString(Null.SetNull(dr.Item("<%=GetLookupValue(column, true)%>"),.<%=column.Name%>))	
+					<% } %>
+						.<%=column.Name%> = <%= GetConvertStatement(column) %>(Null.SetNull(dr.Item("<%=column.Name%>"),.<%=column.Name%>))
+				<% } } %>	
+					End With
+					<%= GetClassNameInfo(SourceTable) %>list.Add(obj<%= GetClassNameInfo(SourceTable) %>)
+			End While	
+		End Using
+		Catch exc As Exception
+    		DotNetNuke.Services.Exceptions.Exceptions.LogException(exc)
+			Throw
+		End Try
+
+		Return <%=GetClassNameInfo(SourceTable) %>list
+		<% } %>
+		End Function
+		<% for (int K = 0; K < SourceTable.ForeignKeys.Count; K++) { %>
+		<% TableKeySchema fk = SourceTable.ForeignKeys[K]; %>
+        ''' -----------------------------------------------------------------------------
+        ''' <summary>
+        ''' retrieves a collection of <%=SourceTable.Name%>s from the database by <%= fk.ForeignKeyMemberColumns[0].Name %> using
+        ''' <%= fk.Name %>
+        ''' </summary>
+        ''' <remarks>
+        ''' </remarks>
+        ''' <history>
+		''' Generated by CodeSmith on <%= DateTime.Now.ToLongDateString() %>
+        ''' </history>
+        ''' -----------------------------------------------------------------------------
+        <DataObjectMethod(DataObjectMethodType.Select)> _
+		Public Function <%= GetMethodName(GetTableName(SourceTable), ListKeyword, fk.ForeignKeyMemberColumns[0].Name) %>(<%= GetModuleIdParameter(SourceTable, true, false, "vb") %>) As List(Of <%= GetClassNameInfo(SourceTable) %>)
+        <% if (SourceTable.PrimaryKey.MemberColumns.Count == 1) { %>
+            Return CBO.FillCollection(Of <%= GetClassNameInfo(SourceTable) %>)(Data.Dataprovider.Instance().<%= GetMethodName(GetTableName(SourceTable), ListKeyword, fk.ForeignKeyMemberColumns[0].Name) %>(<%= GetModuleIdParameter(SourceTable, false, false, "vb") %>))
+        <% } else { %>
+		Dim <%= GetClassNameInfo(SourceTable) %>list As List(Of <%= GetClassNameInfo(SourceTable) %>) = New List(Of <%= GetClassNameInfo(SourceTable) %>)
+
+		Try
+		Using dr As IDataReader = Data.Dataprovider.Instance().<%= GetMethodName(GetTableName(SourceTable), ListKeyword, fk.ForeignKeyMemberColumns[0].Name) %>(<%= GetModuleIdParameter(SourceTable, false, false, "vb") %>)
+			While dr.Read
+				Dim obj<%= GetClassNameInfo(SourceTable) %> As <%= GetClassNameInfo(SourceTable) %> = New <%= GetClassNameInfo(SourceTable) %>
+					With obj<%= GetClassNameInfo(SourceTable) %>
+				<% foreach (ColumnSchema column in SourceTable.PrimaryKey.MemberColumns) { %>
+						.<%=column.Name%> = <%= GetConvertStatement(column) %>(Null.SetNull(dr.Item("<%=column.Name%>"),.<%=column.Name%>))
+				<% } %>
+				<% foreach (ColumnSchema column in SourceTable.NonPrimaryKeyColumns) { 
+					if(column.NativeType != "timestamp") {
+						if (GetLookupTable(column).Length > 0) { %>
+						.<%=GetLookupValue(column, true)%> = Convert.ToString(Null.SetNull(dr.Item("<%=GetLookupValue(column, true)%>"),.<%=GetLookupValue(column, true)%>))	
+					<% } %>
+						.<%=column.Name%> = <%= GetConvertStatement(column) %>(Null.SetNull(dr.Item("<%=column.Name%>"),.<%=column.Name%>))
+				<% } } %>	
+					End With
+					<%= GetClassNameInfo(SourceTable) %>list.Add(obj<%= GetClassNameInfo(SourceTable) %>)
+			End While	
+		End Using
+		Catch exc As Exception
+    		DotNetNuke.Services.Exceptions.Exceptions.LogException(exc)
+			Throw
+		End Try
+
+		Return <%=GetClassNameInfo(SourceTable) %>list
+		<% } %>
+		End Function
+	<% } %>
+
+        ''' -----------------------------------------------------------------------------
+        ''' <summary>
+        ''' adds a new <%=SourceTable.Name%> to the database
+        ''' </summary>
+        ''' <remarks>
+        ''' </remarks>
+        ''' <history>
+		''' Generated by CodeSmith on <%= DateTime.Now.ToLongDateString() %>
+        ''' </history>
+        ''' -----------------------------------------------------------------------------
+        <DataObjectMethod(DataObjectMethodType.Insert)> _
+		Public Function <%= GetMethodName(GetTableName(SourceTable), InsertKeyword) %>(ByVal obj<%= SourceTable.Name %> As <%= GetClassNameInfo(SourceTable) %>) As Integer
+                Return Data.Dataprovider.Instance().<%= GetMethodName(GetTableName(SourceTable), InsertKeyword) %>(<%= GetNonPrimaryKeyParametersForObject(SourceTable, "obj" + SourceTable.Name)%>)            
+        End Function
+
+        ''' -----------------------------------------------------------------------------
+        ''' <summary>
+        ''' saves a <%=SourceTable.Name%> to the database
+        ''' </summary>
+        ''' <remarks>
+        ''' </remarks>
+        ''' <history>
+		''' Generated by CodeSmith on <%= DateTime.Now.ToLongDateString() %>
+        ''' </history>
+        ''' -----------------------------------------------------------------------------
+        <DataObjectMethod(DataObjectMethodType.Update)> _
+		Public Sub <%= GetMethodName(GetTableName(SourceTable), UpdateKeyword) %>(ByVal obj<%= SourceTable.Name %> As <%= GetClassNameInfo(SourceTable) %>)
+                Data.Dataprovider.Instance().<%= GetMethodName(GetTableName(SourceTable), UpdateKeyword) %>(<%= GetPrimaryKeyParametersForObject(SourceTable, "obj" + SourceTable.Name)%>, <%= GetNonPrimaryKeyParametersForObject(SourceTable, "obj" + SourceTable.Name)%>)
+        End Sub
+
+        ''' -----------------------------------------------------------------------------
+        ''' <summary>
+        ''' deletes a <%=SourceTable.Name%> from the database
+        ''' </summary>
+        ''' <remarks>
+        ''' </remarks>
+        ''' <history>
+		''' Generated by CodeSmith on <%= DateTime.Now.ToLongDateString() %>
+        ''' </history>
+        ''' -----------------------------------------------------------------------------
+        <DataObjectMethod(DataObjectMethodType.Delete)> _
+		Public Sub <%= GetMethodName(GetTableName(SourceTable), DeleteKeyword) %>(ByVal obj<%= SourceTable.Name %> As <%= GetClassNameInfo(SourceTable) %>)
+            Data.Dataprovider.Instance().<%= GetMethodName(GetTableName(SourceTable), DeleteKeyword) %>(<%= GetPrimaryKeyParametersForObject(SourceTable, "obj" + SourceTable.Name)%>)
+        End Sub
+#End Region
+<%	
+	}
+%>
+		Private Shared Function GetNull(ByVal Field As Object) As Object
+    		Return Null.GetNull(Field, DBNull.Value)
+		End Function
+        
+#Region "<%=ModuleName%> Purge Method"
+        ''' -----------------------------------------------------------------------------
+        ''' <summary>
+        ''' Purges all <%=ModuleName%> data from the database
+        ''' </summary>
+        ''' <remarks>
+        ''' </remarks>
+        ''' <history>
+        ''' Generated by CodeSmith on <%= DateTime.Now.ToLongDateString() %>
+        ''' </history>
+        ''' -----------------------------------------------------------------------------
+        <DataObjectMethod(DataObjectMethodType.Delete)> _
+        Public Sub <%=ModuleName%>Purge(ByVal portalId As Integer)
+            Data.Dataprovider.Instance().Purge<%=ModuleName%>(portalId)
+        End Sub
+#End Region
+
+<% if (IsSearchable || IsPortable) { %>	
+#Region "Optional Interfaces"
+	<% } %>
+	<% if (IsSearchable) { %>
+        ''' -----------------------------------------------------------------------------
+        ''' <summary>
+        ''' GetSearchItems implements the ISearchable Interface for <%=ModuleName%> 
+        ''' </summary>
+        ''' <remarks>
+        ''' </remarks>
+        ''' <history>
+        ''' <param name="ModInfo">The ModuleInfo for the module to be Indexed</param>
+ 		''' Generated by CodeSmith on <%= DateTime.Now.ToLongDateString() %>
+        ''' </history>
+        ''' -----------------------------------------------------------------------------
+        Public Function GetSearchItems(ByVal ModInfo As DotNetNuke.Entities.Modules.ModuleInfo) As DotNetNuke.Services.Search.SearchItemInfoCollection Implements DotNetNuke.Entities.Modules.ISearchable.GetSearchItems
+
+            Dim SearchItemCollection As New SearchItemInfoCollection
+			' Add Implementation Details Here
+            Return SearchItemCollection
+
+        End Function
+	<% } %>
+	<% if (IsPortable) { %>	
+        ''' -----------------------------------------------------------------------------
+        ''' <summary>
+        ''' ExportModule implements the IPortable ExportModule Interface for <%=ModuleName%>
+        ''' </summary>
+        ''' <remarks>
+        ''' </remarks>
+        ''' <history>
+		''' Generated by CodeSmith on <%= DateTime.Now.ToLongDateString() %>
+        ''' </history>
+        ''' -----------------------------------------------------------------------------
+        Public Function ExportModule(ByVal ModuleID As Integer) As String Implements DotNetNuke.Entities.Modules.IPortable.ExportModule
+
+           Dim sXML As New StringBuilder
+            '  Dim TotalRecords As Integer
+            Dim obj<%=ModuleName%> As New <%=ModuleName%>FeatureBase
+            Dim objType As Type = obj<%=ModuleName%>.GetType
+            Dim xser As Xml.Serialization.XmlSerializer
+            Dim ns As New XmlSerializerNamespaces()
+            Dim sw As New IO.StringWriter
+            Dim PortalID As Integer = DotNetNuke.Entities.Portals.PortalController.GetCurrentPortalSettings.PortalId
+            Dim objModule As New DotNetNuke.Entities.Modules.ModuleController
+            Dim Settings As Hashtable = objModule.GetModuleSettings(ModuleID)
+
+            Try
+			<%
+	        foreach(SchemaExplorer.TableSchema SourceTable in MultiSourceTable)
+	        {
+		    %>
+                obj<%=ModuleName%>.<%=GetTableName(SourceTable)%>s = <%= GetMethodName(GetTableName(SourceTable), ListKeyword, false) %>s(PortalId)
+			<%	
+			}
+            %>
+            Catch exc As Exception
+                DotNetNuke.Services.Exceptions.Exceptions.LogException(exc)
+                Throw
+            End Try
+
+            ns.Add("", "")
+            xser = New Xml.Serialization.XmlSerializer(objType)
+            xser.Serialize(sw, obj<%=ModuleName%>, ns)
+			
+			sw.GetStringBuilder().Remove(0,39)
+            sXML.Append(sw.GetStringBuilder().ToString())
+			
+            Return sXML.ToString
+
+        End Function
+		
+        ''' -----------------------------------------------------------------------------
+        ''' <summary>
+        ''' ImportModule implements the IPortable ImportModule Interface for <%=ModuleName%>
+        ''' </summary>
+        ''' <remarks>
+        ''' </remarks>
+        ''' <history>
+		''' Generated by CodeSmith on <%= DateTime.Now.ToLongDateString() %>
+        ''' </history>
+        ''' -----------------------------------------------------------------------------
+        Public Sub ImportModule(ByVal ModuleID As Integer, ByVal Content As String, ByVal Version As String, ByVal UserId As Integer) Implements DotNetNuke.Entities.Modules.IPortable.ImportModule
+            
+            Dim obj<%=ModuleName%> As New <%=ModuleName%>FeatureBase
+            Dim objType As Type = obj<%=ModuleName%>.GetType
+            Dim xser As Xml.Serialization.XmlSerializer
+            Dim xxml As XmlReader
+            Dim PortalID As Integer = DotNetNuke.Entities.Portals.PortalController.GetCurrentPortalSettings.PortalId
+			<% foreach(SchemaExplorer.TableSchema SourceTable in MultiSourceTable)
+			{ %>
+            Dim dic<%=GetTableName(SourceTable) %> As New Dictionary(Of String, Integer)
+			<% } %>
+            Dim objModule As New ModuleController
+            Dim ms As Hashtable = objModule.GetModuleSettings(ModuleID)
+
+            Try
+                Dim xstr As New StringReader(Content)
+                xxml = New XmlTextReader(xstr)
+                xser = New Xml.Serialization.XmlSerializer(objType)
+                obj<%=ModuleName%> = xser.Deserialize(xxml)
+                xstr.Close()
+                xxml.Close()
+            Catch exc As Exception
+                DotNetNuke.Services.Exceptions.Exceptions.LogException(exc)
+                Throw
+            End Try
+			
+            If ms.ContainsKey("<%=ModuleName%>PurgeBeforeImport") And ms("<%=ModuleName%>PurgeBeforeImport").ToString = "True" Then
+                Try
+                    <%=ModuleName%>Purge(PortalId)
+                Catch exc As Exception
+                    DotNetNuke.Services.Exceptions.Exceptions.LogException(exc)
+                    Throw
+                End Try
+            End If
+            
+        Try
+			<%
+	foreach(SchemaExplorer.TableSchema SourceTable in MultiSourceTable)
+	{
+		%>
+            For Each <%=GetClassNameInfo(SourceTable) %> As <%=GetClassNameInfo(SourceTable) %> In obj<%=ModuleName%>.<%=GetTableName(SourceTable) %>s
+				<% if (SourceTable.PrimaryKey.MemberColumns.Count == 1) { %>
+                <%=GetClassNameInfo(SourceTable) %>.PortalId = PortalId
+		       	<% foreach (ColumnSchema column in SourceTable.NonPrimaryKeyColumns) { 
+					if (GetLookupTable(column).Length > 0) { %>
+				<%=GetClassNameInfo(SourceTable) %>.<%=column.Name%> = dic<%=GetLookupTable(column, true) %>(<%=GetClassNameInfo(SourceTable) %>.<%=GetLookupValue(column, true)%>)	
+		       	<% } } %>                
+				<%=GetClassNameInfo(SourceTable) %>.<%=SourceTable.PrimaryKey.MemberColumns[0].Name%> = <%=GetMethodName(GetTableName(SourceTable), InsertKeyword)%>(<%=GetClassNameInfo(SourceTable) %>)
+                <% if (SourceTable.Columns.Count > 2) { %>
+                'The following line will require modification to depending on the actual lookup field..
+                dic<%=GetTableName(SourceTable) %>.Add(<%=GetClassNameInfo(SourceTable) %>.<%=SourceTable.Columns[2].Name%>, <%=GetClassNameInfo(SourceTable) %>.<%=SourceTable.PrimaryKey.MemberColumns[0].Name%>)
+				<% } %>
+                <% } else { %>
+                <%=GetClassNameInfo(SourceTable) %>.PortalId = PortalId
+		       	<% foreach (ColumnSchema column in SourceTable.NonPrimaryKeyColumns) { 
+					if (GetLookupTable(column).Length > 0) { %>
+				<%=GetClassNameInfo(SourceTable) %>.<%=column.Name%> = dic<%=GetLookupTable(column, true) %>("<%=GetLookupValue(column, true)%>")	
+		       	<% } } %>                
+                <%=GetMethodName(GetTableName(SourceTable), InsertKeyword)%>(<%=GetClassNameInfo(SourceTable) %>)
+				<% } %>
+            Next
+<%	
+	}
+%>
+        Catch exc As Exception
+            DotNetNuke.Services.Exceptions.Exceptions.LogException(exc)
+            Throw
+        End Try
+
+        End Sub
+	<% } %>
+<% if (IsSearchable || IsPortable) { %>	
+#End Region
+<% } %>
+    End Class
+End Namespace

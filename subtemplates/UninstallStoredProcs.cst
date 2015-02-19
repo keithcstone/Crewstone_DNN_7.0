@@ -1,0 +1,116 @@
+<%-- 
+Name: UninstallStoredProcedures.cst
+Author: Keith Stone
+Description: DotNetNuke Uninstall Stored Procedures for Module
+Revision: 2010.12.28
+Note: For the latest version of this template, http://www.crewstone.com		
+--%>
+<%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main"  TargetLanguage="T-SQL" Description="Generates DROP statements for the SELECT/INSERT/UPDATE/DELETE stored procedure based on a database table schema." %>
+<%@ Property Category="DataSource" Name="MultiSourceTable" Type="SchemaExplorer.TableSchemaCollection" Description="Table that the stored procedures should be based on." %>
+<%@ Property Category="DataSource" Name="ObjectQualifier" Type="System.String" Default="" Optional="True" Description="Prefix for objects to be generated." %>
+<%@ Property Category="Naming Convention" Name="ModuleName" Type="System.String" Default="YourModule" Description="" %>
+<%@ Property Category="Database Options" Name="IncludeDrop" Type="System.Boolean" Default="True" Description="If true drop statements will be generated to drop existing stored procedures." %>
+<%@ Property Category="Database Options" Name="IncludeInsert" Type="System.Boolean" Default="True" Description="If true insert statements will be generated." %>
+<%@ Property Category="Database Options" Name="IncludeUpdate" Type="System.Boolean" Default="True" Description="If true update statements will be generated." %>
+<%@ Property Category="Database Options" Name="IncludePaging" Type="System.Boolean" Default="True" Description="If true paging/sorting statements will be generated." %>
+<%@ Property Category="Database Options" Name="IncludeDelete" Type="System.Boolean" Default="True" Description="If true delete statements will be generated." %>
+<%@ Property Category="Database Options" Name="IncludeGet" Type="System.Boolean" Default="True" Description="If true get statements will be generated." %>
+<%@ Property Category="Database Options" Name="IncludeList" Type="System.Boolean" Default="True" Description="If true list statements will be generated." %>
+<%@ Property Category="Database Options" Name="IncludeForeignKeyProcs" Type="System.Boolean" Default="True" Description="If true get statements will be generated for every foreign key in the table." %>
+<%@ Property Name="PagingKeyword" Type="System.String" Default="GetPage" Category="Style" Description="Suffix to use for all generated PAGING/SORTING stored procedures." %>
+<%@ Property Name="InsertSuffix" Type="System.String" Default="Add" Category="Style" Description="Suffix to use for all generated INSERT stored procedures." %>
+<%@ Property Name="UpdateSuffix" Type="System.String" Default="Update" Category="Style" Description="Suffix to use for all generated UPDATE stored procedures." %>
+<%@ Property Name="DeleteSuffix" Type="System.String" Default="Delete" Category="Style" Description="Suffix to use for all generated DELETE stored procedures." %>
+<%@ Property Name="SelectSuffix" Type="System.String" Default="Get" Category="Style" Description="Suffix to use for all generated SELECT stored procedures." %>
+<%@ Property Name="ListSuffix" Type="System.String" Default="List" Category="Style" Description="Suffix to use for all generated SELECT stored procedures." %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+
+/************************************************************/
+/*****              SqlDataProvider                     *****/
+/*****                                                  *****/
+/*****                                                  *****/
+/***** Note: To manually execute this script you must   *****/
+/*****       perform a search and replace operation     *****/
+/*****       for {databaseOwner} and {objectQualifier}  *****/
+/*****                                                  *****/
+/************************************************************/
+<%
+foreach(SchemaExplorer.TableSchema SourceTable in MultiSourceTable) 
+{ 
+%> 
+/* =====================================================================================
+/   TABLE: <%= GetTableName(SourceTable) %>
+/  ===================================================================================== */
+<% if (SourceTable.PrimaryKey == null) throw new ApplicationException("SourceTable does not contain a primary key."); %>
+<% if (SourceTable.PrimaryKey != null) { %>
+
+	<%-- DROP GET PROCEDURE -------------------------------------------------------------------------------------%>
+	<% if (IncludeGet) { %>
+/****** Object:  Stored Procedure <%= GetTableOwner() %><%= GetObjectQualifier() %><%= GetTableName(SourceTable) %><%= SelectSuffix %>    Script Date: <%= DateTime.Now.ToLongDateString() %> ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'<%= GetTableOwner() %><%= GetObjectQualifier() %><%= GetTableName(SourceTable) %><%= SelectSuffix %>') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure <%= GetTableOwner() %><%= GetObjectQualifier() %><%= GetTableName(SourceTable) %><%= SelectSuffix %>
+GO
+
+	<% } %>
+	<%-- DROP LIST PROCEDURE -------------------------------------------------------------------------------------%>
+	<% if (IncludeList) { %>
+/****** Object:  Stored Procedure <%= GetTableOwner() %><%= GetObjectQualifier() %><%= GetTableName(SourceTable) %><%= ListSuffix %>    Script Date: <%= DateTime.Now.ToLongDateString() %> ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'<%= GetTableOwner() %><%= GetObjectQualifier() %><%= GetTableName(SourceTable) %><%= ListSuffix %>') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure <%= GetTableOwner() %><%= GetObjectQualifier() %><%= GetTableName(SourceTable) %><%= ListSuffix %>
+GO
+
+	<% } %>
+	<%-- DROP GET FOREIGN KEY PROCEDURES -----------------------------------------------------------------------------%>
+	<% if (IncludeForeignKeyProcs) { %>
+		<% for (int K = 0; K < SourceTable.ForeignKeys.Count; K++) { %>
+		<% TableKeySchema fk = SourceTable.ForeignKeys[K]; %>
+/****** Object:  Stored Procedure <%= GetTableOwner() %><%= GetObjectQualifier() %><%= GetTableName(SourceTable) %><%= SelectSuffix %>By<%= GetTableName(fk.PrimaryKeyTable) %>    Script Date: <%= DateTime.Now.ToLongDateString() %> ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'<%= GetTableOwner() %><%= GetObjectQualifier() %><%= GetTableName(SourceTable) %><%= SelectSuffix %>By<%= GetTableName(fk.PrimaryKeyTable) %>') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure <%= GetTableOwner() %><%= GetObjectQualifier() %><%= GetTableName(SourceTable) %><%= SelectSuffix %>By<%= GetTableName(fk.PrimaryKeyTable) %>
+GO
+
+	<% } %>
+	<% } %>
+	<%-- DROP INSERT PROCEDURE -----------------------------------------------------------------------------------%>
+	<% if (IncludeInsert) { %>
+/****** Object:  Stored Procedure <%= GetTableOwner() %><%= GetObjectQualifier() %><%= GetTableName(SourceTable) %><%= InsertSuffix %>    Script Date: <%= DateTime.Now.ToLongDateString() %> ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'<%= GetTableOwner() %><%= GetObjectQualifier() %><%= GetTableName(SourceTable) %><%= InsertSuffix %>') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure <%= GetTableOwner() %><%= GetObjectQualifier() %><%= GetTableName(SourceTable) %><%= InsertSuffix %>
+GO
+
+	<% } %>
+	<%-- DROP UPDATE PROCEDURE -------------------------------------------------------------------------------------%>
+	<% if (IncludeUpdate) { %>
+/****** Object:  Stored Procedure <%= GetTableOwner() %><%= GetObjectQualifier() %><%= GetTableName(SourceTable) %><%= UpdateSuffix %>    Script Date: <%= DateTime.Now.ToLongDateString() %> ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'<%= GetTableOwner() %><%= GetObjectQualifier() %><%= GetTableName(SourceTable) %><%= UpdateSuffix %>') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure <%= GetTableOwner() %><%= GetObjectQualifier() %><%= GetTableName(SourceTable) %><%= UpdateSuffix %>
+GO
+
+	<% } %>
+	<%-- DROP DELETE PROCEDURE -------------------------------------------------------------------------------------%>
+	<% if (IncludeDelete) { %>
+/****** Object:  Stored Procedure <%= GetTableOwner() %><%= GetObjectQualifier() %><%= GetTableName(SourceTable) %><%= DeleteSuffix %>    Script Date: <%= DateTime.Now.ToLongDateString() %> ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'<%= GetTableOwner() %><%= GetObjectQualifier() %><%= GetTableName(SourceTable) %><%= DeleteSuffix %>') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure <%= GetTableOwner() %><%= GetObjectQualifier() %><%= GetTableName(SourceTable) %><%= DeleteSuffix %>
+GO
+	<% } %>
+
+<% } %>
+
+<% 
+} 
+%>
+	
+	<%-- DROP MASS PURGE PROCEDURE -------------------------------------------------------------------------------------%>
+	<% if (IncludeDelete) { %>
+/****** Object:  Stored Procedure <%= GetTableOwner() %><%= GetObjectQualifier() %><%= ModuleName %>Purge    Script Date: <%= DateTime.Now.ToLongDateString() %> ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'<%= GetTableOwner() %><%= GetObjectQualifier() %><%= ModuleName %>Purge') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure <%= GetTableOwner() %><%= GetObjectQualifier() %><%= ModuleName %>Purge
+GO
+	<% } %>

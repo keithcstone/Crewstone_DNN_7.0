@@ -1,0 +1,272 @@
+﻿<%-- 
+Name: SQLDataProvider.cs.cst
+Author: Keith Stone
+Description: Template for DotNetNuke C# SQL Data Provider
+Revision: 2014.05.18
+Note: For the latest version of this template, http://www.crewstone.com		
+--%>
+
+<%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="C#" Description="Generates a very simple business object." %>
+<%@ Property Category="Naming Convention" Name="Namespace" Type="System.String" Default="YourCompany" Description="Used to generate the Namespace declaration." %>
+<%@ Property Category="Naming Convention" Name="ModuleName" Type="System.String" Default="" Description="" %>
+<%@ Property Category="Naming Convention" Name="CompanyName" Type="System.String" Default="MyCompany" Description="Used to generate the copyright declaration." %>
+<%@ Property Category="Naming Convention" Name="FriendlyName" Type="System.String" Default="Your Module" Description="Descriptive module name" %>
+<%@ Property Name="ListByPortalID" Type="System.Boolean" Default="False" Category="Options" Description="If true items will be selected using PortalID otherwise ModuleID will be used." %>
+<%@ Property Category="DataSource" Name="MultiSourceTable" Type="SchemaExplorer.TableSchemaCollection" Description="Table that the object is based on." %>
+<%@ Property Category="DataSource" Name="ObjectQualifier" Type="System.String" Default="" Optional="True" Description="Suffix for objects to be generated." %>
+<%@ Property Name="IncludePaging" Type="System.Boolean" Default="True" Category="Options" Description="If true paging/sorting statements will be generated." %>
+<%@ Property Name="IncludeInsert" Type="System.Boolean" Default="True" Category="Options" Description="If true insert statements will be generated." %>
+<%@ Property Name="IncludeUpdate" Type="System.Boolean" Default="True" Category="Options" Description="If true update statements will be generated." %>
+<%@ Property Name="IncludeDelete" Type="System.Boolean" Default="True" Category="Options" Description="If true delete statements will be generated." %>
+<%@ Property Name="IncludeGet" Type="System.Boolean" Default="True" Category="Options" Description="If true get statements will be generated." %>
+<%@ Property Name="IncludeList" Type="System.Boolean" Default="True" Category="Options" Description="If true getlist statements will be generated." %>
+<%@ Property Name="IncludeForeignKeyProcs" Type="System.Boolean" Default="True" Category="Options" Description="If true get statements will be generated for every foreign key in the table." %>
+<%@ Property Name="PagingKeyword" Type="System.String" Default="GetPage" Category="Style" Description="Suffix to use for all generated PAGING/SORTING stored procedures." %>
+<%@ Property Name="InsertKeyword" Type="System.String" Default="Add" Category="Style" Description="Prefix to use for generated functions for INSERT stored procedures." %>
+<%@ Property Name="UpdateKeyword" Type="System.String" Default="Update" Category="Style" Description="Prefix to use for generated functions for UPDATE stored procedures." %>
+<%@ Property Name="DeleteKeyword" Type="System.String" Default="Delete" Category="Style" Description="Prefix to use for generated functions for DELETE stored procedures." %>
+<%@ Property Name="SelectKeyword" Type="System.String" Default="Get" Category="Style" Description="Prefix to use for generated functions for SELECT stored procedures." %>
+<%@ Property Name="ListKeyword" Type="System.String" Default="List" Category="Style" Description="Prefix to use for generated funcions for SELECT stored procedures." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+/*
+' Module: <%=FriendlyName%>
+' Copyright (c) <%= DateTime.Now.Year.ToString() %> <%=CompanyName%>
+'  All rights reserved.
+' 
+' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+' TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+' THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+' CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+' DEALINGS IN THE SOFTWARE.
+' 
+*/
+using System;
+using System.Data;
+using System.Data.SqlClient;
+using Microsoft.ApplicationBlocks.Data;
+
+using DotNetNuke;
+using DotNetNuke.Common.Utilities;
+using DotNetNuke.Framework.Providers;
+
+namespace <%=Namespace%>.Modules.<%=ModuleName%>.Data
+{
+    /// ----------------------------------------------------------------------------- 
+    /// <summary> 
+    /// SQL Server implementation of the concrete DataProvider class 
+    /// </summary> 
+    /// <remarks> 
+    /// </remarks> 
+    /// <history> 
+    /// Generated by CodeSmith on <%= DateTime.Now.ToLongDateString() %>
+    /// </history> 
+    /// ----------------------------------------------------------------------------- 
+    public class SqlDataProvider : DataProvider
+    {
+
+    #region "Private Members"
+
+        private const string ProviderType = "data";
+        private const string ModuleQualifier = "<%=Namespace%>_";
+
+        private ProviderConfiguration _providerConfiguration = 
+                Framework.Providers.ProviderConfiguration.GetProviderConfiguration(ProviderType);
+        private string _connectionString;
+        private string _providerPath;
+        private string _objectQualifier;
+        private string _databaseOwner;
+
+    #endregion
+
+    #region "Constructors"
+
+        public SqlDataProvider()
+        {
+
+            // Read the configuration specific information for this provider 
+            Provider objProvider = (Provider)_providerConfiguration.Providers[_providerConfiguration.DefaultProvider];
+
+            // Read the attributes for this provider 
+
+            //Get Connection string from web.config 
+            _connectionString = Config.GetConnectionString();
+
+            if (_connectionString == "")
+            {
+                // Use connection string specified in provider 
+                _connectionString = objProvider.Attributes["connectionString"];
+            }
+
+            _providerPath = objProvider.Attributes["providerPath"];
+
+            _objectQualifier = objProvider.Attributes["objectQualifier"];
+            if (_objectQualifier != "" & _objectQualifier.EndsWith("_") == false)
+            {
+                _objectQualifier += "_";
+            }
+
+            _databaseOwner = objProvider.Attributes["databaseOwner"];
+            if (_databaseOwner != "" & _databaseOwner.EndsWith(".") == false)
+            {
+                _databaseOwner += ".";
+            }
+
+        }
+
+    #endregion
+
+    #region "Properties"
+
+        public string ConnectionString
+        {
+            get { return _connectionString; }
+        }
+
+        public string ProviderPath
+        {
+            get { return _providerPath; }
+        }
+
+        public string ObjectQualifier
+        {
+            get { return _objectQualifier; }
+        }
+
+        public string DatabaseOwner
+        {
+            get { return _databaseOwner; }
+        }
+
+    #endregion
+
+    #region "Private Methods"
+
+        private string GetFullyQualifiedName(string name)
+        {
+            return DatabaseOwner + ObjectQualifier + ModuleQualifier + name;
+        }
+
+        private object GetNull(object Field)
+        {
+            return DotNetNuke.Common.Utilities.Null.GetNull(Field, DBNull.Value);
+        }
+
+    #endregion
+	
+<% 
+foreach(SchemaExplorer.TableSchema SourceTable in MultiSourceTable) 
+{ 
+%> 
+	#region "<%= GetTableName(SourceTable) %> Methods"
+
+<% if (IncludeGet) { %>
+    /* -----------------------------------------------------------------------------
+    * <summary>
+    * Retrieves a single <%= GetTableName(SourceTable) %> by primary key
+    * </summary>
+    * <remarks>
+    * </remarks>
+    * <history>
+    *     Generated by CodeSmith on <%= DateTime.Now.ToLongDateString() %>
+    * </history>
+    * ----------------------------------------------------------------------------- */
+	public override IDataReader <%= SelectKeyword %><%= GetTableName(SourceTable) %>(<%= GetPrimaryKeyParameters(SourceTable, true, "cs").Trim() %>)
+	{
+		return SqlHelper.ExecuteReader(ConnectionString, GetFullyQualifiedName("<%= GetUnqualifiedStoredProcName(SourceTable, SelectKeyword) %>"), <%= GetPrimaryKeyParameters(SourceTable, false, "cs") %>);
+	}
+<% } %>
+<% if (IncludeList) { %>
+    /* -----------------------------------------------------------------------------
+    * <summary>
+    * Retrieves a list of <%= GetTableName(SourceTable) %> 
+    * </summary>
+    * <remarks>
+    * </remarks>
+    * <history>
+    *     Generated by CodeSmith on <%= DateTime.Now.ToLongDateString() %>
+    * </history>
+    * ----------------------------------------------------------------------------- */
+    public override IDataReader <%= ListKeyword %><%= GetTableName(SourceTable) %>(<% if (!ListByPortalID && SourceTable.Columns.Contains("moduleId")) {%>int moduleId<% } %><% if (ListByPortalID && SourceTable.Columns.Contains("portalId")) {%>int portalId<% } %>)
+	{
+		return SqlHelper.ExecuteReader(ConnectionString, GetFullyQualifiedName("<%= GetUnqualifiedStoredProcName(SourceTable, ListKeyword) %>") <% if (!ListByPortalID && SourceTable.Columns.Contains("moduleId")) {%>, moduleId<% } %><% if (ListByPortalID && SourceTable.Columns.Contains("portalId")) {%>, portalId<% } %>);
+	}
+<% } %>
+<% if (IncludeForeignKeyProcs) { %>
+	<% for (int K = 0; K < SourceTable.ForeignKeys.Count; K++) { %>
+	<% TableKeySchema fk = SourceTable.ForeignKeys[K]; %>
+	/* -----------------------------------------------------------------------------
+    * <summary>
+    * Retrieves a list of <%= GetTableName(SourceTable) %> by <%=fk.ForeignKeyMemberColumns[0].Name %>
+    * </summary>
+    * <remarks>
+    * </remarks>
+    * <history>
+    *     Generated by CodeSmith on <%= DateTime.Now.ToLongDateString() %>
+    * </history>
+    * ----------------------------------------------------------------------------- */
+    public override IDataReader <%= SelectKeyword %><%= GetTableName(SourceTable) %>By<%= GetTableName(fk.PrimaryKeyTable) %>(<%= GetPrimaryKeyParameters(fk.PrimaryKeyTable, true, "cs") %>)
+	{
+		return SqlHelper.ExecuteReader(ConnectionString, GetFullyQualifiedName("<%= GetTableName(SourceTable) %><%= SelectKeyword %>By<%= GetTableName(fk.PrimaryKeyTable) %>"), <%= GetPrimaryKeyParameters(fk.PrimaryKeyTable, false, "cs") %>);
+	}
+	<% } %>
+<% } %>
+<% if (IncludeInsert) { %>	
+	/* -----------------------------------------------------------------------------
+    * <summary>
+    * Inserts a single <%= GetTableName(SourceTable) %> 
+    * </summary>
+    * <remarks>
+    * </remarks>
+    * <history>
+    *     Generated by CodeSmith on <%= DateTime.Now.ToLongDateString() %>
+    * </history>
+    * ----------------------------------------------------------------------------- */
+    public override void <%= InsertKeyword %><%= GetTableName(SourceTable) %>(<%= GetNonPrimaryKeyParameters(SourceTable, true, false, true, "cs").Trim() %>)
+	{
+		SqlHelper.ExecuteScalar(ConnectionString, GetFullyQualifiedName("<%= GetTableName(SourceTable) %><%= InsertKeyword %>"), <%= GetNonPrimaryKeyParameters(SourceTable, false, true, true, "cs") %>).ToString();
+	}
+<% } %>
+	
+<% if (IncludeUpdate) { %>
+	/* -----------------------------------------------------------------------------
+    * <summary>
+    * Updates a single <%= GetTableName(SourceTable) %> using primary key
+    * </summary>
+    * <remarks>
+    * </remarks>
+    * <history>
+    *     Generated by CodeSmith on <%= DateTime.Now.ToLongDateString() %>
+    * </history>
+    * ----------------------------------------------------------------------------- */
+	public override void <%= UpdateKeyword %><%= GetTableName(SourceTable) %>(<%= GetPrimaryKeyParameters(SourceTable, true, "cs").Trim() %>, <%= GetNonPrimaryKeyParameters(SourceTable, true, false, true, "cs").Trim() %>)
+	{
+		SqlHelper.ExecuteNonQuery(ConnectionString, GetFullyQualifiedName("<%= GetTableName(SourceTable) %><%= UpdateKeyword %>"), <%= GetPrimaryKeyParameters(SourceTable, false, "cs") %>, <%= GetNonPrimaryKeyParameters(SourceTable, false, true, true, "cs") %>);
+	}
+<% } %>
+
+<% if (IncludeDelete) { %>
+	/* -----------------------------------------------------------------------------
+    * <summary>
+    * Deletes a single <%= GetTableName(SourceTable) %> using primary key
+    * </summary>
+    * <remarks>
+    * </remarks>
+    * <history>
+    *     Generated by CodeSmith on <%= DateTime.Now.ToLongDateString() %>
+    * </history>
+    * ----------------------------------------------------------------------------- */
+	public override void <%= DeleteKeyword %><%= GetTableName(SourceTable) %>(<%= GetPrimaryKeyParameters(SourceTable, true, "cs").Trim() %>)
+	{
+		SqlHelper.ExecuteNonQuery(ConnectionString, GetFullyQualifiedName("<%= GetTableName(SourceTable) %><%= DeleteKeyword %>"), <%= GetPrimaryKeyParameters(SourceTable, false, "cs") %>);
+	}
+<% } %>
+
+	#endregion
+<% } %> 
+	}
+}

@@ -1,0 +1,48 @@
+﻿<%-- 
+Name: Services.cs.cst
+Author: Keith Stone
+Description: Generates the Services mapping for CS
+Revision: 2014.03.16
+Note: 
+
+Need to add references to DotNetNuke.dll and Imports Microsoft.ApplicationBlocks.Data
+--%>
+<%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="C#" Description="Generates the Services mapping for CS" %>
+<%@ Property Category="Naming Convention" Name="ModuleName" Type="System.String" Default="YourModule" Description="Module Name" %>
+<%@ Property Category="Naming Convention" Name="FriendlyName" Type="System.String" Default="Your Module" Description="Descriptive module name" %>
+<%@ Property Category="Naming Convention" Name="Namespace" Type="System.String" Default="Namespace" Description="Used to generate the Namespace declaration, no spaces or punctuation" %>
+<%@ Property Category="Naming Convention" Name="CompanyName" Type="System.String" Default="YourCompany" Description="Descriptive name to generate the copyright declaration and documentation." %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+/*
+' Module: <%=FriendlyName%>
+' Copyright (c) <%= DateTime.Now.Year.ToString() %> <%=CompanyName%>
+'  All rights reserved.
+' 
+' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+' TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+' THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+' CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+' DEALINGS IN THE SOFTWARE.
+' 
+*/
+using System;
+using DotNetNuke.Web.Api;
+using <%=Namespace%>.Modules.<%=ModuleName%>.Components.Common;
+
+namespace <%=Namespace%>.Modules.<%=ModuleName%>.Services
+{
+    public class <%=ModuleName%>Services : IServiceRouteMapper
+    {
+        public void RegisterRoutes(IMapRoute routeManager)
+        {
+            routeManager.MapHttpRoute(Constants.DESKTOPMODULE_NAME, "default", "{controller}/{action}",
+                    new[] { "<%=Namespace%>.Modules.<%=ModuleName%>.Services.Controllers" });
+        }
+    }
+}

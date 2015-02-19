@@ -1,0 +1,404 @@
+﻿/************************************************************/
+/*****              SqlDataProvider                     *****/
+/*****                                                  *****/
+/*****                                                  *****/
+/***** Note: To manually execute this script you must   *****/
+/*****       perform a search and replace operation     *****/
+/*****       for {databaseOwner} and {objectQualifier}  *****/
+/*****                                                  *****/
+/************************************************************/
+/* =====================================================================================
+/   TABLE: Bounces
+/  ===================================================================================== */
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}BouncesGet    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}BouncesGet') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}BouncesGet
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}BouncesList    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}BouncesList') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}BouncesList
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}BouncesAdd    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}BouncesAdd') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}BouncesAdd
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}BouncesUpdate    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}BouncesUpdate') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}BouncesUpdate
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}BouncesDelete    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}BouncesDelete') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}BouncesDelete
+GO
+
+
+/* =====================================================================================
+/   TABLE: ContactTypes
+/  ===================================================================================== */
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}ContactTypesGet    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}ContactTypesGet') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}ContactTypesGet
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}ContactTypesList    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}ContactTypesList') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}ContactTypesList
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}ContactTypesAdd    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}ContactTypesAdd') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}ContactTypesAdd
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}ContactTypesUpdate    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}ContactTypesUpdate') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}ContactTypesUpdate
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}ContactTypesDelete    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}ContactTypesDelete') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}ContactTypesDelete
+GO
+
+
+/* =====================================================================================
+/   TABLE: Divisions
+/  ===================================================================================== */
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}DivisionsGet    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}DivisionsGet') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}DivisionsGet
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}DivisionsList    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}DivisionsList') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}DivisionsList
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}DivisionsAdd    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}DivisionsAdd') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}DivisionsAdd
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}DivisionsUpdate    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}DivisionsUpdate') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}DivisionsUpdate
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}DivisionsDelete    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}DivisionsDelete') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}DivisionsDelete
+GO
+
+
+/* =====================================================================================
+/   TABLE: DoNotEmail
+/  ===================================================================================== */
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}DoNotEmailGet    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}DoNotEmailGet') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}DoNotEmailGet
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}DoNotEmailList    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}DoNotEmailList') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}DoNotEmailList
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}DoNotEmailAdd    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}DoNotEmailAdd') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}DoNotEmailAdd
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}DoNotEmailUpdate    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}DoNotEmailUpdate') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}DoNotEmailUpdate
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}DoNotEmailDelete    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}DoNotEmailDelete') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}DoNotEmailDelete
+GO
+
+
+/* =====================================================================================
+/   TABLE: Entrants
+/  ===================================================================================== */
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}EntrantsGet    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}EntrantsGet') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}EntrantsGet
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}EntrantsList    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}EntrantsList') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}EntrantsList
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}EntrantsGetByContactTypes    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}EntrantsGetByContactTypes') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}EntrantsGetByContactTypes
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}EntrantsGetByEntrants    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}EntrantsGetByEntrants') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}EntrantsGetByEntrants
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}EntrantsAdd    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}EntrantsAdd') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}EntrantsAdd
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}EntrantsUpdate    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}EntrantsUpdate') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}EntrantsUpdate
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}EntrantsDelete    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}EntrantsDelete') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}EntrantsDelete
+GO
+
+
+/* =====================================================================================
+/   TABLE: Events
+/  ===================================================================================== */
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}EventsGet    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}EventsGet') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}EventsGet
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}EventsList    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}EventsList') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}EventsList
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}EventsGetByEntrants    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}EventsGetByEntrants') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}EventsGetByEntrants
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}EventsGetByRaces    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}EventsGetByRaces') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}EventsGetByRaces
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}EventsAdd    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}EventsAdd') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}EventsAdd
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}EventsUpdate    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}EventsUpdate') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}EventsUpdate
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}EventsDelete    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}EventsDelete') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}EventsDelete
+GO
+
+
+/* =====================================================================================
+/   TABLE: EventTypes
+/  ===================================================================================== */
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}EventTypesGet    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}EventTypesGet') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}EventTypesGet
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}EventTypesList    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}EventTypesList') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}EventTypesList
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}EventTypesAdd    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}EventTypesAdd') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}EventTypesAdd
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}EventTypesUpdate    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}EventTypesUpdate') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}EventTypesUpdate
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}EventTypesDelete    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}EventTypesDelete') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}EventTypesDelete
+GO
+
+
+/* =====================================================================================
+/   TABLE: MemberTypes
+/  ===================================================================================== */
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}MemberTypesGet    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}MemberTypesGet') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}MemberTypesGet
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}MemberTypesList    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}MemberTypesList') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}MemberTypesList
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}MemberTypesAdd    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}MemberTypesAdd') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}MemberTypesAdd
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}MemberTypesUpdate    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}MemberTypesUpdate') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}MemberTypesUpdate
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}MemberTypesDelete    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}MemberTypesDelete') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}MemberTypesDelete
+GO
+
+
+/* =====================================================================================
+/   TABLE: Organization
+/  ===================================================================================== */
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}OrganizationGet    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}OrganizationGet') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}OrganizationGet
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}OrganizationList    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}OrganizationList') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}OrganizationList
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}OrganizationAdd    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}OrganizationAdd') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}OrganizationAdd
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}OrganizationUpdate    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}OrganizationUpdate') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}OrganizationUpdate
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}OrganizationDelete    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}OrganizationDelete') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}OrganizationDelete
+GO
+
+
+/* =====================================================================================
+/   TABLE: RaceDivisions
+/  ===================================================================================== */
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}RaceDivisionsGet    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}RaceDivisionsGet') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}RaceDivisionsGet
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}RaceDivisionsList    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}RaceDivisionsList') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}RaceDivisionsList
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}RaceDivisionsGetByRaces    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}RaceDivisionsGetByRaces') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}RaceDivisionsGetByRaces
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}RaceDivisionsAdd    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}RaceDivisionsAdd') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}RaceDivisionsAdd
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}RaceDivisionsUpdate    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}RaceDivisionsUpdate') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}RaceDivisionsUpdate
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}RaceDivisionsDelete    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}RaceDivisionsDelete') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}RaceDivisionsDelete
+GO
+
+
+/* =====================================================================================
+/   TABLE: Races
+/  ===================================================================================== */
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}RacesGet    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}RacesGet') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}RacesGet
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}RacesList    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}RacesList') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}RacesList
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}RacesGetByEventTypes    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}RacesGetByEventTypes') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}RacesGetByEventTypes
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}RacesAdd    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}RacesAdd') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}RacesAdd
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}RacesUpdate    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}RacesUpdate') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}RacesUpdate
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}RacesDelete    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}RacesDelete') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}RacesDelete
+GO
+
+
+/* =====================================================================================
+/   TABLE: ZIP
+/  ===================================================================================== */
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}ZIPGet    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}ZIPGet') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}ZIPGet
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}ZIPList    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}ZIPList') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}ZIPList
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}ZIPAdd    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}ZIPAdd') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}ZIPAdd
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}ZIPUpdate    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}ZIPUpdate') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}ZIPUpdate
+GO
+
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}ZIPDelete    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}ZIPDelete') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}ZIPDelete
+GO
+
+
+	
+/****** Object:  Stored Procedure {databaseOwner}{objectQualifier}Race2012Purge    Script Date: Friday, January 17, 2014 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}{objectQualifier}Race2012Purge') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure {databaseOwner}{objectQualifier}Race2012Purge
+GO

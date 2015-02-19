@@ -1,0 +1,112 @@
+<%-- 
+Name: EditModule.ascx.resx.cst
+Author: Keith Stone
+Description: Generates the DotNetNuke Edit[ModuleName].resx.ascx for C# and VB
+Revision: 2010.12.28
+Note: For the latest version of this template, http://www.crewstone.com		
+--%>
+<%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="XML" Description="Generates the resource file for the Edit[ModuleName].ascx web control." %>
+<%@ Property Category="DataSource" Name="SourceTable" Type="SchemaExplorer.TableSchema" Description="Table that the object is based on." %>
+<%@ Property Category="DataSource" Name="ObjectQualifier" Type="System.String" Default="" Optional="True" Description="Prefix for objects to be generated." %>
+<%@ Property Category="Naming Convention" Name="ModuleName" Type="System.String" Default="YourModule" Description="" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            <xsd:complexType>
+                <xsd:choice maxOccurs="unbounded">
+                    <xsd:element name="data">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" />
+                            <xsd:attribute name="type" type="xsd:string" />
+                            <xsd:attribute name="mimetype" type="xsd:string" />
+                        </xsd:complexType>
+                    </xsd:element>
+                    <xsd:element name="resheader">
+                        <xsd:complexType>
+                            <xsd:sequence>
+                                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                            </xsd:sequence>
+                            <xsd:attribute name="name" type="xsd:string" use="required" />
+                        </xsd:complexType>
+                    </xsd:element>
+                </xsd:choice>
+            </xsd:complexType>
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="ResMimeType">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="Version">
+        <value>1.0.0.0</value>
+    </resheader>
+    <resheader name="Reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=1.0.3300.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="Writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=1.0.3300.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="AddContent.Action">
+        <value>Add Content</value>
+    </data>
+    <data name="ModuleHelp.Text">
+	<value>&lt;P&gt;A <%= GetTableName(SourceTable) %> module</value>
+    </data>
+    <data name="DefaultContent.Text">
+	<value>Here is some sample content</value>
+    </data>
+    <data name="Template.Text">
+        <value>[CONTENT]</value>
+    </data>
+	<% foreach (ColumnSchema column in SourceTable.PrimaryKey.MemberColumns) { %>
+	<data name="lbl<%= column.Name %>.Text" xml:space="preserve">
+        <value><%= column.Name %></value>
+  	</data>
+	<data name="lbl<%= column.Name %>.Header" xml:space="preserve">
+        <value><%= column.Name %></value>
+  	</data>
+  	<data name="lbl<%= column.Name %>.Help" xml:space="preserve">
+		<% if (column.Description.Length > 0) { %>
+		<value><%= column.Description %></value>
+		<% } else {%>
+		<value>Enter the data for field: <%=column.Name %></value>
+		<% } %>    	
+  	</data>
+  	<data name="val<%=column.Name %>.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: <%=column.Name %></value>
+  	</data>		
+	<% } %>
+	<% foreach (ColumnSchema column in SourceTable.NonPrimaryKeyColumns) { %>
+	<data name="lbl<%=column.Name %>.Text" xml:space="preserve">
+        <value><%=column.Name %></value>
+  	</data>
+	<data name="lbl<%=column.Name %>.Header" xml:space="preserve">
+        <value><%=column.Name %></value>
+  	</data>
+  	<data name="lbl<%=column.Name %>.Help" xml:space="preserve">
+		<% if (column.Description.Length > 0) { %>
+		<value><%= column.Description %></value>
+		<% } else {%>
+		<value>Enter the data for field: <%=column.Name %></value>
+		<% } %>  
+	</data>
+  	<data name="val<%=column.Name %>.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: <%=column.Name %></value>
+  	</data>
+	<% if (!column.AllowDBNull) { %>
+  	<data name="val<%=column.Name %>Req.ErrorMessage" xml:space="preserve">
+    	<value>&lt;br&gt;Error in field: <%=column.Name %></value>
+  	</data>
+	<% } } %>	
+
+</root>

@@ -1,0 +1,1591 @@
+﻿<%-- 
+Name: DnnMaster.cst
+Author: Keith Stone
+Description: Master driver for all DotNetNuke C# and VB.Net module templates
+Revision: 2015.01.24
+Note: For the latest version of this template, http://www.crewstone.com		
+--%>
+<%@ CodeTemplate Language="C#" Src="SubTemplates/DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="VB" Description="This template Generates the files necessary to create a new DotNetNuke 7.x module" Debug="True" %>
+<%@ Property Category="Auditing" Name="DateCreated" Type="System.String" Default="" Optional="True" Description="The name of the field that designates the date/time a row was created" %>
+<%@ Property Category="Auditing" Name="CreatedBy" Type="System.String" Default="" Optional="True" Description="The name of the field that designates the DNN userid that created a row" %>
+<%@ Property Category="Auditing" Name="DateUpdated" Type="System.String" Default="" Optional="True" Description="The name of the field that designates the date/time a row was updated" %>
+<%@ Property Category="Auditing" Name="UpdatedBy" Type="System.String" Default="" Optional="True" Description="The name of the field that designates the DNN userid that updated a row" %>
+<%@ Property Category="DataSource" Name="MultiSourceTable" Type="SchemaExplorer.TableSchemaCollection" Description="Collection of tables that the module should be based on." %>
+<%@ Property Category="DataSource" Name="MultiSourceView" Type="SchemaExplorer.ViewSchemaCollection" Description="Collection of views that the module should be based on." %>
+<%@ Property Category="DataSource" Name="DataModel" Type="System.String" Default="DAL" Optional="True" Description="Generate for DAL or DAL2 data model." %>
+<%@ Property Category="DataSource" Name="ObjectQualifier" Type="System.String" Default="" Optional="True" Description="Prefix for objects to be generated." %>
+<%@ Property Category="DataSource" Name="OtherDatabase" Type="System.String" Default="" Optional="True" Description="If a value is entered, the generated modules will execute against the specified database. Requires an additional provider entry in the DotNetNuke/data section of the web.config file. If blank, the generated modules will execute against tables in the DNN default database." %>
+<%@ Property Category="DotNetNuke Options" Name="IsSearchable" Type="System.Boolean" Default="True" Description="If true Interface for search will be added." %>
+<%@ Property Category="DotNetNuke Options" Name="IsPortable" Type="System.Boolean" Default="True" Description="If true Interface for Import/Export will be added." %>
+<%@ Property Category="DotNetNuke Options" Name="ListByPortalID" Type="System.Boolean" Default="False" Description="If true items will be selected using PortalID otherwise ModuleID will be used." %>
+<%@ Property Category="DotNetNuke Options" Name="CreateManifest" Type="System.Boolean" Default="True" Description="If true, a DNN manifest will be created." %>
+<%@ Property Category="DotNetNuke Options" Name="IncludeSource" Type="System.Boolean" Default="True" Description="If true source code will be included in installation package." %>
+<%@ Property Category="Project Options" Name="Language" Type="System.String" Default="vb" Optional="True" Description="vb for Visual Basic, cs for CSharp" %>
+<%@ Property Category="Project Options" Name="ProjectIdGUID" Type="System.Guid" Default="" Optional="True" Description="GUID ID language project" %>
+<%@ Property Category="Project Options" Name="ProjectGUID" Type="System.Guid" Default="" Optional="True" Description="GUID for language project" %>
+<%@ Property Category="Project Options" Name="ProjectTypeGUID" Type="System.Guid" Default="" Optional="True" Description="GUID for language type" %>
+<%@ Property Category="Project Options" Name="BuildIdGUID" Type="System.Guid" Default="" Optional="True" Description="GUID ID build project" %>
+<%@ Property Category="Project Options" Name="BuildGUID" Type="System.Guid" Default="" Optional="True" Description="GUID for build project" %>
+<%@ Property Category="Naming Convention" Name="ModuleName" Type="System.String" Default="YourModule" Description="Module Name" %>
+<%@ Property Category="Naming Convention" Name="FriendlyName" Type="System.String" Default="Your Module" Description="Descriptive module name" %>
+<%@ Property Category="Naming Convention" Name="Namespace" Type="System.String" Default="Namespace" Description="Used to generate the Namespace declaration, no spaces or punctuation" %>
+<%@ Property Category="Naming Convention" Name="CompanyName" Type="System.String" Default="YourCompany" Description="Descriptive name to generate the copyright declaration and documentation." %>
+<%@ Property Category="Web Control Options" Name="CreateViewControl" Type="System.Boolean" Default="True" Description="If true, a View web control will be created." %>
+<%@ Property Category="Web Control Options" Name="CreateListControl" Type="System.Boolean" Default="True" Description="If true, a List web control will be created." %>
+<%@ Property Category="Web Control Options" Name="CreateEditControl" Type="System.Boolean" Default="True" Description="If true, a View web control will be created." %>
+<%@ Property Category="Web Control Options" Name="CreateSettingsControl" Type="System.Boolean" Default="True" Description="If true, a Settings web control will be created." %>
+<%@ Property Category="Web Control Options" Name="CreateModuleMenuControl" Type="System.Boolean" Default="false" Description="If true, a top level web control will be created." %>
+<%@ Property Category="Style" Name="PagingKeyword" Type="System.String" Default="GetPage" Description="Suffix to use for all generated PAGING/SORTING stored procedures." %>
+<%@ Property Category="Style" Name="InsertKeyword" Type="System.String" Default="Add" Description="Suffix to use for all generated INSERT stored procedures." %>
+<%@ Property Category="Style" Name="UpdateKeyword" Type="System.String" Default="Update" Description="Suffix to use for all generated UPDATE stored procedures." %>
+<%@ Property Category="Style" Name="DeleteKeyword" Type="System.String" Default="Delete" Description="Suffix to use for all generated DELETE stored procedures." %>
+<%@ Property Category="Style" Name="SelectKeyword" Type="System.String" Default="Get" Description="Suffix to use for all generated SELECT stored procedures." %>
+<%@ Property Category="Style" Name="ListKeyword" Type="System.String" Default="List" Description="Suffix to use for all generated SELECT stored procedures." %>
+<%@ Property Category="Database Options" Name="IncludeDrop" Type="System.Boolean" Default="True" Description="If true drop statements will be generated to drop existing stored procedures." %>
+<%@ Property Category="Database Options" Name="IncludeInsert" Type="System.Boolean" Default="True" Description="If true insert statements will be generated." %>
+<%@ Property Category="Database Options" Name="IncludeUpdate" Type="System.Boolean" Default="True" Description="If true update statements will be generated." %>
+<%@ Property Category="Database Options" Name="IncludePaging" Type="System.Boolean" Default="True" Description="If true paging/sorting statements will be generated." %>
+<%@ Property Category="Database Options" Name="IncludeDelete" Type="System.Boolean" Default="True" Description="If true delete statements will be generated." %>
+<%@ Property Category="Database Options" Name="IncludeGet" Type="System.Boolean" Default="True" Description="If true get statements will be generated." %>
+<%@ Property Category="Database Options" Name="IncludeList" Type="System.Boolean" Default="True" Description="If true list statements will be generated." %>
+<%@ Property Category="Database Options" Name="IncludeForeignKeyProcs" Type="System.Boolean" Default="True" Description="If true get statements will be generated for every foreign key in the table." %>
+<%@ Property Category="Database Options" Name="IncludePurge" Type="System.Boolean" Default="True" Description="If true a purge SP will be created. This will delete all content for the portal. (Uninstall)." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Assembly Name="System.Design" %>
+<%@ Import NameSpace="System.IO" %>
+
+<script runat="template">
+
+	private string _outputDirectory;
+	private string _subtemplateDirectory = "subtemplates/";
+	private SchemaExplorer.TableSchema _sourceTable;
+
+	// AssemblyInfo Template
+	private CodeTemplate _assemblyInfoTemplate;
+  	string AssemblyInfoTemplateName = "AssemblyInfo.$$.cst";
+
+	// SQL Install Template
+	private CodeTemplate _sqlInstallTemplate;
+	private string SqlInstallTemplateName = "StoredProcedures.cst";
+	
+	// SQL Uninstall Template
+	private CodeTemplate _sqlUninstallTemplate;
+	private string SqlUninstallTemplateName = "UninstallStoredProcs.cst";
+	
+	// Solution Template
+	private CodeTemplate _solutionTemplate;
+	private string SolutionTemplateName = "SolutionFile.cst";	
+
+	// Project Template
+	private CodeTemplate _projectTemplate;
+	private string ProjectTemplateName = "ProjectFile.cst";
+	
+	// Custom SQL Template
+	private CodeTemplate _customSqlTemplate;
+	private string CustomSqlTemplateName = "Custom.sql.cst";
+	
+	// Data Provider Template
+	private CodeTemplate _dataProviderTemplate;
+  	string DataProviderTemplateName = "DataProvider.$$.cst";
+	
+	// SQL Data Provider Template
+	private CodeTemplate _sqlDataProviderTemplate;
+	private string SqlDataProviderTemplateName = "SqlDataProvider.$$.cst";
+	
+	// Feature Base Template
+	private CodeTemplate _featureBaseTemplate;
+	private string FeatureBaseTemplateName = "FeatureBase.$$.cst";
+
+	// Feature Controller Template
+	private CodeTemplate _featureControllerTemplate;
+	private string FeatureControllerTemplateName = "FeatureController.$$.cst";
+
+	// Constants Template
+	private CodeTemplate _constantsTemplate;
+	private string ConstantsTemplateName = "Constants.$$.cst";
+
+	// Module Base Template
+	private CodeTemplate _moduleBaseTemplate;
+	private string ModuleBaseTemplateName = "ModuleBase.$$.cst";
+
+	// Table Model Interface Template
+	private CodeTemplate _itableModelTemplate;
+	private string ITableModelTemplateName = "ITableModel.$$.cst";
+	
+	// Table Model Template
+	private CodeTemplate _tableModelTemplate;
+	private string TableModelTemplateName = "TableModel.$$.cst";
+	
+	// Table Repository Interface Template
+	private CodeTemplate _iTableRepositoryTemplate;
+	private string ITableRepositoryTemplateName = "ITableRepository.$$.cst";
+	
+	// Table Repository Template
+	private CodeTemplate _tableRepositoryTemplate;
+	private string TableRepositoryTemplateName = "TableRepository.$$.cst";
+
+    // Module Table View Model Class Template
+	private CodeTemplate _TableViewModelTemplate;
+	private string TableViewModelTemplateName = "TableViewModel.js.cst";
+			
+	// Services Template
+	private CodeTemplate _servicesTemplate;
+  	string ServicesTemplateName = "Services.$$.cst";
+
+	// Main Control Template
+	private CodeTemplate _mainControlTemplate;
+	private string MainControlTemplateName = "Main.ascx.cst";
+				
+	// List Control Designer Template
+	private CodeTemplate _mainControlDesignerTemplate;
+	private string MainControlDesignerTemplateName = "Main.ascx.designer.$$.cst";
+
+	// Main Control Code Behind Template
+	private CodeTemplate _mainControlCodeBehindTemplate;
+	private string MainControlCodeBehindTemplateName = "Main.ascx.$$.cst";
+		
+	// Main Control resx Template
+	private CodeTemplate _mainControlResxTemplate;
+	private string MainControlResxTemplateName = "Main.ascx.resx.cst";
+		
+	// List Control Template
+	private CodeTemplate _listControlTemplate;
+	private string ListControlTemplateName = "ListModule.ascx.cst";
+			
+	// List Control Designer Template
+	private CodeTemplate _listControlDesignerTemplate;
+	private string ListControlDesignerTemplateName = "ListModule.ascx.designer.$$.cst";
+
+	// List Control Code Behind Template
+	private CodeTemplate _listControlCodeBehindTemplate;
+	private string ListControlCodeBehindTemplateName = "ListModule.ascx.$$.cst";
+
+	// List Control resx Template
+	private CodeTemplate _listControlResxTemplate;
+	private string ListControlResxTemplateName = "ListModule.ascx.resx.cst";
+
+	// View Control Template
+	private CodeTemplate _viewTableControlTemplate;
+	private string ViewTableControlTemplateName = "ViewModuleTable.ascx.cst";
+	
+	// View Control Code Behind Template
+	private CodeTemplate _viewTableControlCodeBehindTemplate;
+	private string ViewTableControlCodeBehindTemplateName = "ViewModuleTable.ascx.$$.cst";
+		
+	// View Control Designer Template
+	private CodeTemplate _viewTableControlDesignerTemplate;
+	private string ViewTableControlDesignerTemplateName = "ViewModuleTable.ascx.designer.$$.cst";
+
+	// View Control resx Template
+	private CodeTemplate _viewTableControlResxTemplate;
+	private string ViewTableControlResxTemplateName = "ViewModuleTable.ascx.resx.cst";
+		
+	// Edit Control Template
+	private CodeTemplate _editTableControlTemplate;
+	private string EditTableControlTemplateName = "EditModuleTable.ascx.cst";
+	
+	// Edit Control Code Behind Template
+	private CodeTemplate _editTableControlCodeBehindTemplate;
+	string EditTableControlCodeBehindTemplateName = "EditModuleTable.ascx.$$.cst";
+	
+	// Edit Control Designer Template
+	private CodeTemplate _editTableControlDesignerTemplate;
+	string EditTableControlDesignerTemplateName = "EditModuleTable.ascx.designer.$$.cst";
+
+	// Edit Control resx Template
+	private CodeTemplate _editTableControlResxTemplate;
+	private string EditTableControlResxTemplateName = "EditModuleTable.ascx.resx.cst";
+	
+	// Settings Control Template
+	private CodeTemplate _settingsControlTemplate;
+	private string SettingsControlTemplateName = "Settings.ascx.cst";
+	
+	// Settings Control Code Behind Template
+	private CodeTemplate _settingsControlCodeBehindTemplate;
+	private string SettingsControlCodeBehindTemplateName = "Settings.ascx.$$.cst";
+
+	// Settings Control resx Template
+	private CodeTemplate _settingsControlResxTemplate;
+	private string SettingsControlResxTemplateName = "Settings.ascx.resx.cst";
+	
+	// Module Definition Template
+	private CodeTemplate _moduleDefinitionTemplate;
+	private string ModuleDefinitionTemplateName = "Module.dnn.cst";	
+	
+	// Module CSS Template
+	private CodeTemplate _moduleCSSTemplate;
+	private string ModuleCSSTemplateName = "Module.css.cst";	
+
+	[Browsable(false)]
+	public string AppCodeDirectory
+	{
+		get
+		{
+            return OutputDirectory + "//" + ModuleName + "//";
+		}
+	}
+    
+	[Browsable(false)]
+	public string DataDirectory
+	{
+		get
+		{
+            return AppCodeDirectory + "//Data//";
+		}
+	}
+
+	[Browsable(false)]
+	public string DesktopModulesDirectory
+	{
+		get
+		{
+		//  return OutputDirectory + "//DesktopModules//" + ModuleName + "//";
+			return OutputDirectory + "//" + ModuleName + "//";
+		}
+	}
+    
+    [Browsable(false)]
+	public string ComponentsDirectory
+	{
+		get
+		{
+			return OutputDirectory + "//" + ModuleName + "//Components//";
+		}
+	}
+        
+    [Browsable(false)]
+	public string CommonDirectory
+	{
+		get
+		{
+			return ComponentsDirectory + "Common//";
+		}
+	}
+            
+    [Browsable(false)]
+	public string EntitiesDirectory
+	{
+		get
+		{
+			return OutputDirectory + "//" + ModuleName + "//Entities//";
+		}
+	}
+    
+	[Browsable(false)]
+	public string ResxFilesDirectory
+	{
+		get
+		{
+			return DesktopModulesDirectory + "App_LocalResources//";
+		}
+	}
+
+	[Browsable(false)]
+	public string ProvidersDirectory
+	{
+		get
+		{
+			return DesktopModulesDirectory + "Providers//";
+		}
+	}
+    
+    [Browsable(false)]
+	public string DataProvidersDirectory
+	{
+		get
+		{
+			return ProvidersDirectory + "DataProviders//";
+		}
+	}
+    
+    [Browsable(false)]
+	public string SqlDataProviderDirectory
+	{
+		get
+		{
+			return DataProvidersDirectory + "SqlDataProvider//";
+		}
+	}
+    
+	[Browsable(false)]
+	public string PropertiesDirectory
+	{
+		get
+		{
+			return DesktopModulesDirectory + "Properties//";
+		}
+	}
+    
+	[Browsable(false)]
+	public string BuildScriptsDirectory
+	{
+		get
+		{
+			return DesktopModulesDirectory + "BuildScripts//";
+		}
+	}
+    
+    [Browsable(false)]
+	public string ResourcesDirectory
+	{
+		get
+		{
+			return DesktopModulesDirectory + "Resources//";
+		}
+	}
+        
+    [Browsable(false)]
+	public string cssDirectory
+	{
+		get
+		{
+			return ResourcesDirectory + "css//";
+		}
+	}
+            
+    [Browsable(false)]
+	public string jsDirectory
+	{
+		get
+		{
+			return ResourcesDirectory + "js//";
+		}
+	}
+    
+	[Browsable(false)]
+	public string ServicesDirectory
+	{
+		get
+		{
+			return DesktopModulesDirectory + "Services//";
+		}
+	}
+        
+    [Browsable(false)]
+	public string ControllersDirectory
+	{
+		get
+		{
+			return ServicesDirectory + "Controllers//";
+		}
+	}
+    
+    [Browsable(false)]
+	public CodeTemplate AssemblyInfoTemplate
+	{
+		get
+		{
+			if (_assemblyInfoTemplate == null)
+				_assemblyInfoTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + AssemblyInfoTemplateName.Replace("$$",Language));
+
+			return _assemblyInfoTemplate;
+		}
+	}	
+            
+    [Browsable(false)]
+	public CodeTemplate SolutionTemplate
+	{
+		get
+		{
+			if (_solutionTemplate == null)
+				_solutionTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + SolutionTemplateName);
+
+			return _solutionTemplate;
+		}
+	}	
+        
+    [Browsable(false)]
+	public CodeTemplate ProjectTemplate
+	{
+		get
+		{
+			if (_projectTemplate == null)
+				_projectTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + ProjectTemplateName);
+
+			return _projectTemplate;
+		}
+	}	
+    
+    [Browsable(false)]
+	public CodeTemplate SqlInstallTemplate
+	{
+		get
+		{
+			if (_sqlInstallTemplate == null)
+				_sqlInstallTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + SqlInstallTemplateName);
+
+			return _sqlInstallTemplate;
+		}
+	}	
+
+	[Browsable(false)]
+	public CodeTemplate SqlUninstallTemplate
+	{
+		get
+		{
+			if (_sqlUninstallTemplate == null)
+				_sqlUninstallTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + SqlUninstallTemplateName);
+
+			return _sqlUninstallTemplate;
+		}
+	}
+
+	[Browsable(false)]
+	public CodeTemplate CustomSqlTemplate
+	{
+		get
+		{
+			if (_customSqlTemplate == null)
+				_customSqlTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + CustomSqlTemplateName);
+
+			return _customSqlTemplate;
+		}
+	}
+
+
+	[Browsable(false)]
+	public CodeTemplate DataProviderTemplate
+	{
+		get
+		{
+			if (_dataProviderTemplate == null)
+				_dataProviderTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + DataProviderTemplateName.Replace("$$",Language));
+
+			return _dataProviderTemplate;
+		}
+	}
+
+	[Browsable(false)]
+	public CodeTemplate SqlDataProviderTemplate
+	{
+		get
+		{
+			if (_sqlDataProviderTemplate == null)
+				_sqlDataProviderTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + SqlDataProviderTemplateName.Replace("$$",Language));
+
+			return _sqlDataProviderTemplate;
+		}
+	}
+	[Browsable(false)]
+	public CodeTemplate ModuleBaseTemplate
+	{
+		get
+		{
+			if (_moduleBaseTemplate == null)
+				_moduleBaseTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + ModuleBaseTemplateName.Replace("$$",Language));
+
+			return _moduleBaseTemplate;
+		}
+	}
+	[Browsable(false)]
+	public CodeTemplate FeatureBaseTemplate
+	{
+		get
+		{
+			if (_featureBaseTemplate == null)
+				_featureBaseTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + FeatureBaseTemplateName.Replace("$$",Language));
+
+			return _featureBaseTemplate;
+		}
+	}
+    
+	[Browsable(false)]
+	public CodeTemplate FeatureControllerTemplate
+	{
+		get
+		{
+			if (_featureControllerTemplate == null)
+				_featureControllerTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + FeatureControllerTemplateName.Replace("$$",Language));
+
+			return _featureControllerTemplate;
+		}
+	}
+    
+	[Browsable(false)]
+	public CodeTemplate ITableRepositoryTemplate
+	{
+		get
+		{
+			if (_iTableRepositoryTemplate == null)
+				_iTableRepositoryTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + ITableRepositoryTemplateName.Replace("$$",Language));
+
+			return _iTableRepositoryTemplate;
+		}
+	}
+    
+	[Browsable(false)]
+	public CodeTemplate TableRepositoryTemplate
+	{
+		get
+		{
+			if (_tableRepositoryTemplate == null)
+				_tableRepositoryTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + TableRepositoryTemplateName.Replace("$$",Language));
+
+			return _tableRepositoryTemplate;
+		}
+	}
+    
+	[Browsable(false)]
+	public CodeTemplate ConstantsTemplate
+	{
+		get
+		{
+			if (_constantsTemplate == null)
+				_constantsTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + ConstantsTemplateName.Replace("$$",Language));
+
+			return _constantsTemplate;
+		}
+	}
+    
+    [Browsable(false)]
+	public CodeTemplate ModuleCSSTemplate
+	{
+		get
+		{
+			if (_moduleCSSTemplate == null)
+				_moduleCSSTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + ModuleCSSTemplateName);
+
+			return _moduleCSSTemplate;
+		}
+	}
+    
+	[Browsable(false)]
+	public CodeTemplate ServicesTemplate
+	{
+		get
+		{
+			if (_servicesTemplate == null)
+				_servicesTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + ServicesTemplateName.Replace("$$",Language));
+
+			return _servicesTemplate;
+		}
+	}
+    
+	[Browsable(false)] 
+	public CodeTemplate ITableModelTemplate
+	{
+		get
+		{
+			if (_itableModelTemplate == null)
+				_itableModelTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + ITableModelTemplateName.Replace("$$",Language));
+
+			return _itableModelTemplate;
+		}
+	}
+    
+	[Browsable(false)] 
+	public CodeTemplate TableModelTemplate
+	{
+		get
+		{
+			if (_tableModelTemplate == null)
+				_tableModelTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + TableModelTemplateName.Replace("$$",Language));
+
+			return _tableModelTemplate;
+		}
+	}
+	
+	[Browsable(false)]
+	public CodeTemplate MainControlResxTemplate
+	{
+		get
+		{
+			if (_mainControlResxTemplate == null)
+				_mainControlResxTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + MainControlResxTemplateName);
+
+			return _mainControlResxTemplate;
+		}
+	}
+
+	[Browsable(false)]
+	public CodeTemplate ListControlResxTemplate
+	{
+		get
+		{
+			if (_listControlResxTemplate == null)
+				_listControlResxTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + ListControlResxTemplateName);
+
+			return _listControlResxTemplate;
+		}
+	}
+	
+	[Browsable(false)]
+	public CodeTemplate ViewTableControlResxTemplate
+	{
+		get
+		{
+			if (_viewTableControlResxTemplate == null)
+				_viewTableControlResxTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + ViewTableControlResxTemplateName);
+
+			return _viewTableControlResxTemplate;
+		}
+	}
+
+	[Browsable(false)]
+	public CodeTemplate EditTableControlResxTemplate
+	{
+		get
+		{
+			if (_editTableControlResxTemplate == null)
+				_editTableControlResxTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + EditTableControlResxTemplateName);
+
+			return _editTableControlResxTemplate;
+		}
+	}
+
+	[Browsable(false)]
+	public CodeTemplate SettingsControlResxTemplate
+	{
+		get
+		{
+			if (_settingsControlResxTemplate == null)
+				_settingsControlResxTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + SettingsControlResxTemplateName);
+
+			return _settingsControlResxTemplate;
+		}
+	}
+	
+	[Browsable(false)]
+	public CodeTemplate TableViewModelTemplate
+	{
+		get
+		{
+			if (_TableViewModelTemplate == null)
+				_TableViewModelTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + TableViewModelTemplateName);
+
+			return _TableViewModelTemplate;
+		}
+	}
+
+    [Browsable(false)]
+	public CodeTemplate MainControlTemplate
+	{
+		get
+		{
+			if (_mainControlTemplate == null)
+				_mainControlTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + MainControlTemplateName);
+
+			return _mainControlTemplate;
+		}
+	}
+    
+	[Browsable(false)]
+	public CodeTemplate MainControlDesignerTemplate
+	{
+		get
+		{
+			if (_mainControlDesignerTemplate == null)
+				_mainControlDesignerTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + MainControlDesignerTemplateName.Replace("$$",Language));
+
+			return _mainControlDesignerTemplate;
+		}
+	}
+	
+
+	[Browsable(false)]
+	public CodeTemplate MainControlCodeBehindTemplate
+	{
+		get
+		{
+			if (_mainControlCodeBehindTemplate == null)
+				_mainControlCodeBehindTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + MainControlCodeBehindTemplateName.Replace("$$",Language));
+
+			return _mainControlCodeBehindTemplate;
+		}
+	}
+	
+	[Browsable(false)]
+	public CodeTemplate ListControlTemplate
+	{
+		get
+		{
+			if (_listControlTemplate == null)
+				_listControlTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + ListControlTemplateName);
+
+			return _listControlTemplate;
+		}
+	}
+	
+	[Browsable(false)]
+	public CodeTemplate ListControlDesignerTemplate
+	{
+		get
+		{
+			if (_listControlDesignerTemplate == null)
+				_listControlDesignerTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + ListControlDesignerTemplateName.Replace("$$",Language));
+
+			return _listControlDesignerTemplate;
+		}
+	}
+    
+	[Browsable(false)]
+	public CodeTemplate ListControlCodeBehindTemplate
+	{
+		get
+		{
+			if (_listControlCodeBehindTemplate == null)
+				_listControlCodeBehindTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + ListControlCodeBehindTemplateName.Replace("$$",Language));
+
+			return _listControlCodeBehindTemplate;
+		}
+	}
+	
+	[Browsable(false)]
+	public CodeTemplate ViewTableControlTemplate
+	{
+		get
+		{
+			if (_viewTableControlTemplate == null)
+				_viewTableControlTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + ViewTableControlTemplateName);
+
+			return _viewTableControlTemplate;
+		}
+	}
+
+	[Browsable(false)]
+	public CodeTemplate ViewTableControlCodeBehindTemplate
+	{
+		get
+		{
+			if (_viewTableControlCodeBehindTemplate == null)
+				_viewTableControlCodeBehindTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + ViewTableControlCodeBehindTemplateName.Replace("$$",Language));
+
+			return _viewTableControlCodeBehindTemplate;
+		}
+	}
+
+	[Browsable(false)]
+	public CodeTemplate ViewTableControlDesignerTemplate
+	{
+		get
+		{
+			if (_viewTableControlDesignerTemplate == null)
+				_viewTableControlDesignerTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + ViewTableControlDesignerTemplateName.Replace("$$",Language));
+
+			return _viewTableControlDesignerTemplate;
+		}
+	}
+	[Browsable(false)]
+	public CodeTemplate EditTableControlTemplate
+	{
+		get
+		{
+			if (_editTableControlTemplate == null)
+				_editTableControlTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + EditTableControlTemplateName);
+
+			return _editTableControlTemplate;
+		}
+	}
+
+	[Browsable(false)]
+	public CodeTemplate EditTableControlCodeBehindTemplate
+	{
+		get
+		{
+			if (_editTableControlCodeBehindTemplate == null)
+				_editTableControlCodeBehindTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + EditTableControlCodeBehindTemplateName.Replace("$$",Language));
+
+			return _editTableControlCodeBehindTemplate;
+		}
+	}
+
+	[Browsable(false)]
+	public CodeTemplate EditTableControlDesignerTemplate
+	{
+		get
+		{
+			if (_editTableControlDesignerTemplate == null)
+				_editTableControlDesignerTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + EditTableControlDesignerTemplateName.Replace("$$",Language));
+
+			return _editTableControlDesignerTemplate;
+		}
+	}
+	[Browsable(false)]
+	public CodeTemplate SettingsControlTemplate
+	{
+		get
+		{
+			if (_settingsControlTemplate == null)
+				_settingsControlTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + SettingsControlTemplateName);
+
+			return _settingsControlTemplate;
+		}
+	}
+
+	[Browsable(false)]
+	public CodeTemplate SettingsControlCodeBehindTemplate
+	{
+		get
+		{
+			if (_settingsControlCodeBehindTemplate == null)
+				_settingsControlCodeBehindTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + SettingsControlCodeBehindTemplateName.Replace("$$",Language));
+
+			return _settingsControlCodeBehindTemplate;
+		}
+	}
+
+	[Browsable(false)]
+	public CodeTemplate ModuleDefinitionTemplate
+	{
+		get
+		{
+			if (_moduleDefinitionTemplate == null)
+				_moduleDefinitionTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + ModuleDefinitionTemplateName);
+
+			return _moduleDefinitionTemplate;
+		}
+	}	
+	
+	public CodeTemplate CompileTemplate(string templateName)
+	{
+		CodeTemplateCompiler compiler = new CodeTemplateCompiler(templateName);
+		Response.WriteLine("Compiling " + templateName);
+		compiler.Compile();
+
+		if (compiler.Errors.Count == 0)
+		{
+			return compiler.CreateInstance();
+		}
+		else
+		{
+			for (int i = 0; i < compiler.Errors.Count; i++)
+			{
+				Response.WriteLine(compiler.Errors[i].ToString());
+			}
+			return null;
+		}
+
+	}
+	
+	public void Generate()
+	{
+			Response.WriteLine("Starting Generation of " + ModuleName);
+			RunTemplates(MultiSourceTable,ModuleName);	
+	}
+	
+	public void RunTemplates(TableSchemaCollection MultiSourceTable,string ModuleName)
+	{		
+		try
+		{	
+			// if DesktopModulesDirectory doesn't exist, create it
+            DirectoryInfo dir = new DirectoryInfo(DesktopModulesDirectory);
+            if(!dir.Exists)
+            {
+                dir.Create();
+ 			    Response.WriteLine(DesktopModulesDirectory + " Created Successfully");
+           }
+			dir = null;
+			
+			// if AppCodeDirectory doesn't exist, create it
+            dir = new DirectoryInfo(AppCodeDirectory);
+            if(!dir.Exists)
+            {
+                dir.Create();
+  			    Response.WriteLine(AppCodeDirectory + " Created Successfully");
+           }
+			dir = null;
+			
+			// if DataDirectory doesn't exist, create it
+            dir = new DirectoryInfo(DataDirectory);
+            if(!dir.Exists)
+            {
+                dir.Create();
+  			    Response.WriteLine(DataDirectory + " Created Successfully");
+           }
+			dir = null;			
+            
+			// if ResxFilesDirectory doesn't exist, create it
+            dir = new DirectoryInfo(ResxFilesDirectory);
+            if(!dir.Exists)
+            {
+                dir.Create();
+    			Response.WriteLine(ResxFilesDirectory + " Created Successfully");
+          	}
+			dir = null;	
+			
+			// if ProvidersDirectory doesn't exist, create it
+            dir = new DirectoryInfo(ProvidersDirectory);
+            if(!dir.Exists)
+            {
+                dir.Create();
+     			Response.WriteLine(ProvidersDirectory + " Created Successfully");
+            }
+            			
+			// if DataProvidersDirectory doesn't exist, create it
+            dir = new DirectoryInfo(DataProvidersDirectory);
+            if(!dir.Exists)
+            {
+                dir.Create();
+     			Response.WriteLine(DataProvidersDirectory + " Created Successfully");
+            }
+            
+			// if SqlDataProviderDirectory doesn't exist, create it
+            dir = new DirectoryInfo(SqlDataProviderDirectory);
+            if(!dir.Exists)
+            {
+                dir.Create();
+     			Response.WriteLine(SqlDataProviderDirectory + " Created Successfully");
+            }
+			dir = null;		
+
+			// if ComponentsDirectory doesn't exist, create it
+            dir = new DirectoryInfo(ComponentsDirectory);
+            if(!dir.Exists)
+            {
+                dir.Create();
+     			Response.WriteLine(ComponentsDirectory + " Created Successfully");
+            }
+			
+			// if CommonDirectory doesn't exist, create it
+            dir = new DirectoryInfo(CommonDirectory);
+            if(!dir.Exists)
+            {
+                dir.Create();
+     			Response.WriteLine(CommonDirectory + " Created Successfully");
+            }
+            
+            // if ResourcesDirectory doesn't exist, create it
+            dir = new DirectoryInfo(ResourcesDirectory);
+            if(!dir.Exists)
+            {
+                dir.Create();
+     			Response.WriteLine(ResourcesDirectory + " Created Successfully");
+            }
+			
+			// if jsDirectory doesn't exist, create it
+            dir = new DirectoryInfo(jsDirectory);
+            if(!dir.Exists)
+            {
+                dir.Create();
+     			Response.WriteLine(jsDirectory + " Created Successfully");
+            }
+            
+			// if PropertiesDirectory doesn't exist, create it
+            dir = new DirectoryInfo(PropertiesDirectory);
+            if(!dir.Exists)
+            {
+                dir.Create();
+     			Response.WriteLine(PropertiesDirectory + " Created Successfully");
+            }			
+			
+			// if BuildScriptsDirectory doesn't exist, create it
+            dir = new DirectoryInfo(BuildScriptsDirectory);
+            if(!dir.Exists)
+            {
+                dir.Create();
+     			Response.WriteLine(BuildScriptsDirectory + " Created Successfully");
+            }		
+ 			 			
+			// if ResourcesDirectory doesn't exist, create it
+            dir = new DirectoryInfo(ResourcesDirectory);
+            if(!dir.Exists)
+            {
+                dir.Create();
+     			Response.WriteLine(ResourcesDirectory + " Created Successfully");
+            }		
+             			
+			// if cssDirectory doesn't exist, create it
+            dir = new DirectoryInfo(cssDirectory);
+            if(!dir.Exists)
+            {
+                dir.Create();
+     			Response.WriteLine(cssDirectory + " Created Successfully");
+            }		
+             			
+			// if jsDirectory doesn't exist, create it
+            dir = new DirectoryInfo(jsDirectory);
+            if(!dir.Exists)
+            {
+                dir.Create();
+     			Response.WriteLine(jsDirectory + " Created Successfully");
+            }		
+            
+			// if ServicesDirectory doesn't exist, create it
+            dir = new DirectoryInfo(ServicesDirectory);
+            if(!dir.Exists)
+            {
+                dir.Create();
+     			Response.WriteLine(ServicesDirectory + " Created Successfully");
+            }		
+  			
+			// if ControllersDirectory doesn't exist, create it
+            dir = new DirectoryInfo(ControllersDirectory);
+            if(!dir.Exists)
+            {
+                dir.Create();
+     			Response.WriteLine(ControllersDirectory + " Created Successfully");
+            }		
+            
+            dir = null;			
+			
+			// ==================================================================================== //
+			// Execute Templates
+			// ==================================================================================== //
+			// Debugger.Break();
+            
+            //  Set up GUIDs for project and build project
+             if (ProjectIdGUID.Equals(Guid.Empty)) {
+                ProjectIdGUID = Guid.NewGuid();
+            }
+            if (ProjectGUID.Equals(Guid.Empty)) {
+                ProjectGUID = Guid.NewGuid();
+            }
+            if (ProjectTypeGUID.Equals(Guid.Empty)) {
+                ProjectTypeGUID = Guid.NewGuid();
+            }
+            if (BuildIdGUID.Equals(Guid.Empty)) {
+                BuildIdGUID = Guid.NewGuid();
+            }
+            if (BuildGUID.Equals(Guid.Empty)) {
+                BuildGUID = Guid.NewGuid();
+            }
+            
+			// Solution Template
+			this.SolutionTemplate.SetProperty("ModuleName", ModuleName);
+			this.SolutionTemplate.SetProperty("ProjectIdGUID", ProjectIdGUID);
+			this.SolutionTemplate.SetProperty("ProjectGUID", ProjectGUID);	
+			this.SolutionTemplate.SetProperty("BuildIdGUID", BuildIdGUID);	
+            this.SolutionTemplate.SetProperty("BuildGUID", BuildGUID);
+			this.SolutionTemplate.RenderToFile(AppCodeDirectory + SolutionTemplateName.Replace("SolutionFile",ModuleName).Replace(".cst", ".sln"),true);
+			Response.WriteLine("File " + SolutionTemplateName.Replace("$$",Language).Replace(".cst", "") + " Created Successfully");
+
+			// Project Template
+			this.ProjectTemplate.SetProperty("ModuleName", ModuleName);
+            this.ProjectTemplate.SetProperty("Namespace", Namespace);
+			this.ProjectTemplate.SetProperty("ProjectIdGUID", ProjectIdGUID);
+			this.ProjectTemplate.SetProperty("ProjectGUID", ProjectGUID);	
+            this.ProjectTemplate.SetProperty("ProjectTypeGUID", ProjectTypeGUID);	
+			this.ProjectTemplate.SetProperty("BuildIdGUID", BuildIdGUID);	
+            this.ProjectTemplate.SetProperty("BuildGUID", BuildGUID);	
+            this.ProjectTemplate.SetProperty("MultiSourceTable", MultiSourceTable);	
+			this.ProjectTemplate.RenderToFile(AppCodeDirectory + ProjectTemplateName.Replace("ProjectFile",ModuleName).Replace(".cst", ".$$proj").Replace("$$",Language), true);
+			Response.WriteLine("File " + ProjectTemplateName.Replace("ProjectFile",ModuleName).Replace(".cst", ".$$proj").Replace("$$",Language) + " Created Successfully");
+
+			// AssemblyInfo Template
+			this.AssemblyInfoTemplate.SetProperty("ModuleName", ModuleName);
+			this.AssemblyInfoTemplate.SetProperty("FriendlyName", FriendlyName);
+			this.AssemblyInfoTemplate.SetProperty("CompanyName", CompanyName);	
+			this.AssemblyInfoTemplate.SetProperty("Namespace", Namespace);	
+			this.AssemblyInfoTemplate.RenderToFile(PropertiesDirectory + AssemblyInfoTemplateName.Replace("$$",Language).Replace(".cst", ""), true);
+			Response.WriteLine("File " + AssemblyInfoTemplateName.Replace("$$",Language).Replace(".cst", "") + " Created Successfully");
+
+			// SQL Install Template
+			// Calls StoredProcedures.cst
+			// Generates script to create all selected stored procedures
+			this.SqlInstallTemplate.SetProperty("MultiSourceTable", MultiSourceTable);	
+			this.SqlInstallTemplate.SetProperty("ModuleName", ModuleName);
+			this.SqlInstallTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);
+			this.SqlInstallTemplate.SetProperty("IncludeDrop", IncludeDrop);
+			this.SqlInstallTemplate.SetProperty("IncludeInsert", IncludeInsert);
+			this.SqlInstallTemplate.SetProperty("IncludeUpdate", IncludeUpdate);
+			this.SqlInstallTemplate.SetProperty("IncludePaging", IncludePaging);
+			this.SqlInstallTemplate.SetProperty("IncludeDelete", IncludeDelete);
+			this.SqlInstallTemplate.SetProperty("IncludePaging", IncludePaging);
+			this.SqlInstallTemplate.SetProperty("IncludeGet", IncludeGet);
+			this.SqlInstallTemplate.SetProperty("IncludeList", IncludeList);
+			this.SqlInstallTemplate.SetProperty("IncludePurge", IncludePurge);
+			this.SqlInstallTemplate.SetProperty("IncludeForeignKeyProcs", IncludeForeignKeyProcs);
+			this.SqlInstallTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+			this.SqlInstallTemplate.SetProperty("PagingKeyword", PagingKeyword);
+			this.SqlInstallTemplate.SetProperty("InsertKeyword", InsertKeyword);
+			this.SqlInstallTemplate.SetProperty("UpdateKeyword", UpdateKeyword);
+			this.SqlInstallTemplate.SetProperty("DeleteKeyword", DeleteKeyword);
+			this.SqlInstallTemplate.SetProperty("SelectKeyword", SelectKeyword);
+			this.SqlInstallTemplate.SetProperty("ListKeyword", ListKeyword);	
+			this.SqlInstallTemplate.RenderToFile(SqlDataProviderDirectory + "01.00.00.SqlDataProvider", true);
+			Response.WriteLine("File 01.00.00.SqlDataProvider Created Successfully");
+			
+			// SQL Uninstall Template
+			this.SqlUninstallTemplate.SetProperty("MultiSourceTable", MultiSourceTable);	
+			this.SqlUninstallTemplate.SetProperty("ModuleName", ModuleName);
+			this.SqlUninstallTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);
+			this.SqlUninstallTemplate.SetProperty("IncludeDrop", IncludeDrop);
+			this.SqlUninstallTemplate.SetProperty("IncludeInsert", IncludeInsert);
+			this.SqlUninstallTemplate.SetProperty("IncludeUpdate", IncludeUpdate);
+			this.SqlUninstallTemplate.SetProperty("IncludePaging", IncludePaging);
+			this.SqlUninstallTemplate.SetProperty("IncludeDelete", IncludeDelete);
+			this.SqlUninstallTemplate.SetProperty("IncludePaging", IncludePaging);
+			this.SqlUninstallTemplate.SetProperty("IncludeGet", IncludeGet);
+			this.SqlUninstallTemplate.SetProperty("IncludeList", IncludeList);
+			this.SqlUninstallTemplate.SetProperty("IncludeForeignKeyProcs", IncludeForeignKeyProcs);
+			this.SqlUninstallTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+			this.SqlUninstallTemplate.SetProperty("PagingKeyword", PagingKeyword);
+			this.SqlUninstallTemplate.SetProperty("InsertKeyword", InsertKeyword);
+			this.SqlUninstallTemplate.SetProperty("UpdateKeyword", UpdateKeyword);
+			this.SqlUninstallTemplate.SetProperty("DeleteKeyword", DeleteKeyword);
+			this.SqlUninstallTemplate.SetProperty("SelectKeyword", SelectKeyword);
+			this.SqlUninstallTemplate.SetProperty("ListKeyword", ListKeyword);	
+			this.SqlUninstallTemplate.RenderToFile(SqlDataProviderDirectory + "Uninstall.SqlDataProvider", true);
+			Response.WriteLine("File Uninstall.SqlDataProvider Created Successfully");
+			
+			// Custom SQL Template
+			string fileName = SqlDataProviderDirectory + CustomSqlTemplateName.Replace(".cst", "");
+			FileInfo file = new FileInfo(fileName);
+			if(!file.Exists)
+			{
+				this.CustomSqlTemplate.RenderToFile(fileName, false); // false = Do Not Overwrite
+				Response.WriteLine("File " + fileName + " Created Successfully");
+			}
+			
+			// Data Provider Template
+			this.DataProviderTemplate.SetProperty("MultiSourceTable", MultiSourceTable);	
+			this.DataProviderTemplate.SetProperty("ModuleName", ModuleName);
+			this.DataProviderTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+			this.DataProviderTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);
+			this.DataProviderTemplate.SetProperty("InsertKeyword", InsertKeyword);
+			this.DataProviderTemplate.SetProperty("UpdateKeyword", UpdateKeyword);
+			this.DataProviderTemplate.SetProperty("DeleteKeyword", DeleteKeyword);
+			this.DataProviderTemplate.SetProperty("SelectKeyword", SelectKeyword);
+			this.DataProviderTemplate.SetProperty("ListKeyword", ListKeyword);
+			this.DataProviderTemplate.SetProperty("CompanyName", CompanyName);	
+			this.DataProviderTemplate.SetProperty("Namespace", Namespace);	
+			this.DataProviderTemplate.RenderToFile(DataDirectory + DataProviderTemplateName.Replace("$$",Language).Replace(".cst", ""), true);
+			Response.WriteLine("File " + DataProviderTemplateName.Replace("$$",Language).Replace(".cst", "") + " Created Successfully");
+			
+			// SQL Data Provider Template
+			this.SqlDataProviderTemplate.SetProperty("MultiSourceTable", MultiSourceTable);	
+			this.SqlDataProviderTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+			this.SqlDataProviderTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);
+			this.SqlDataProviderTemplate.SetProperty("ModuleName", ModuleName);
+			this.SqlDataProviderTemplate.SetProperty("InsertKeyword", InsertKeyword);
+			this.SqlDataProviderTemplate.SetProperty("UpdateKeyword", UpdateKeyword);
+			this.SqlDataProviderTemplate.SetProperty("DeleteKeyword", DeleteKeyword);
+			this.SqlDataProviderTemplate.SetProperty("SelectKeyword", SelectKeyword);
+			this.SqlDataProviderTemplate.SetProperty("ListKeyword", ListKeyword);
+			this.SqlDataProviderTemplate.SetProperty("CompanyName", CompanyName);
+			this.SqlDataProviderTemplate.SetProperty("Namespace", Namespace);
+			this.SqlDataProviderTemplate.SetProperty("OtherDatabase", OtherDatabase);	
+			this.SqlDataProviderTemplate.RenderToFile(SqlDataProviderDirectory + SqlDataProviderTemplateName.Replace("$$",Language).Replace(".cst", ""), true);
+			Response.WriteLine("File " + SqlDataProviderTemplateName.Replace("$$",Language).Replace(".cst", "") + " Created Successfully");
+						
+			// Module Base Template
+			this.ModuleBaseTemplate.SetProperty("MultiSourceTable", MultiSourceTable);	
+			this.ModuleBaseTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+			this.ModuleBaseTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);
+			this.ModuleBaseTemplate.SetProperty("ModuleName", ModuleName);
+			this.ModuleBaseTemplate.SetProperty("CompanyName", CompanyName);	
+			this.ModuleBaseTemplate.SetProperty("Namespace", Namespace);	
+			this.ModuleBaseTemplate.SetProperty("FriendlyName", FriendlyName );
+            this.ModuleBaseTemplate.RenderToFile(AppCodeDirectory + ModuleBaseTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Module", _moduleName + "Module"), true);
+			Response.WriteLine("File " + ModuleBaseTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Module", _moduleName + "Module") + " Created Successfully");
+						
+			// Feature Base Template
+			this.FeatureBaseTemplate.SetProperty("MultiSourceTable", MultiSourceTable);	
+			this.FeatureBaseTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+			this.FeatureBaseTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);
+			this.FeatureBaseTemplate.SetProperty("ModuleName", ModuleName);
+			this.FeatureBaseTemplate.SetProperty("CompanyName", CompanyName);	
+			this.FeatureBaseTemplate.SetProperty("Namespace", Namespace);	
+			this.FeatureBaseTemplate.SetProperty("FriendlyName", FriendlyName );
+            this.FeatureBaseTemplate .RenderToFile(ComponentsDirectory + FeatureBaseTemplateName.Replace("$$",Language).Replace(".cst", ""), true);
+			Response.WriteLine("File " + FeatureBaseTemplateName.Replace("$$",Language).Replace(".cst", "") + " Created Successfully");
+
+			// Feature Controller Template
+			this.FeatureControllerTemplate.SetProperty("MultiSourceTable", MultiSourceTable);	
+			this.FeatureControllerTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+			this.FeatureControllerTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);
+			this.FeatureControllerTemplate.SetProperty("ModuleName", ModuleName);
+			this.FeatureControllerTemplate.SetProperty("FriendlyName", FriendlyName );
+			this.FeatureControllerTemplate.SetProperty("InsertKeyword", InsertKeyword);
+			this.FeatureControllerTemplate.SetProperty("UpdateKeyword", UpdateKeyword);
+			this.FeatureControllerTemplate.SetProperty("DeleteKeyword", DeleteKeyword);
+			this.FeatureControllerTemplate.SetProperty("SelectKeyword", SelectKeyword);
+			this.FeatureControllerTemplate.SetProperty("ListKeyword", ListKeyword);
+			this.FeatureControllerTemplate.SetProperty("CompanyName", CompanyName);	
+			this.FeatureControllerTemplate.SetProperty("Namespace", Namespace);	
+			this.FeatureControllerTemplate.SetProperty("IsSearchable", IsSearchable);
+			this.FeatureControllerTemplate.SetProperty("IsPortable", IsPortable);	
+			this.FeatureControllerTemplate.RenderToFile(ComponentsDirectory + FeatureControllerTemplateName.Replace("$$",Language).Replace(".cst", ""), true);
+			Response.WriteLine("File " + FeatureControllerTemplateName.Replace("$$",Language).Replace(".cst", "") + " Created Successfully");
+			
+            // Constants Template
+            // Debugger.Break();
+			this.ConstantsTemplate.SetProperty("CompanyName", CompanyName);
+            this.ConstantsTemplate.SetProperty("ModuleName", ModuleName);
+			this.ConstantsTemplate.SetProperty("FriendlyName", FriendlyName );
+			this.ConstantsTemplate.SetProperty("Namespace", Namespace);	
+			this.ConstantsTemplate.RenderToFile(CommonDirectory + ConstantsTemplateName.Replace("$$",Language).Replace(".cst", ""), true);
+			Response.WriteLine("File " + ConstantsTemplateName.Replace("$$",Language).Replace(".cst", "") + " Created Successfully");			
+ 
+            // Module CSS Template
+            // Debugger.Break();
+			this.ModuleCSSTemplate.SetProperty("CompanyName", CompanyName);
+            this.ModuleCSSTemplate.SetProperty("ModuleName", ModuleName);
+			this.ModuleCSSTemplate.SetProperty("FriendlyName", FriendlyName );
+			this.ModuleCSSTemplate.SetProperty("Namespace", Namespace);	
+			this.ModuleCSSTemplate.RenderToFile(cssDirectory + ModuleCSSTemplateName.Replace(".cst", ""), true);
+			Response.WriteLine("File " + ModuleCSSTemplateName.Replace(".cst", "") + " Created Successfully");
+
+            // Services Template
+            // Debugger.Break();
+			this.ServicesTemplate.SetProperty("CompanyName", CompanyName);
+            this.ServicesTemplate.SetProperty("ModuleName", ModuleName);
+			this.ServicesTemplate.SetProperty("FriendlyName", FriendlyName );
+			this.ServicesTemplate.SetProperty("Namespace", Namespace);	
+			this.ServicesTemplate.RenderToFile(ServicesDirectory + ServicesTemplateName.Replace("$$",Language).Replace(".cst", ""), true);
+			Response.WriteLine("File " + ServicesTemplateName.Replace("$$",Language).Replace(".cst", "") + " Created Successfully");
+
+			//  MainControlResxTemplate
+		    this.MainControlResxTemplate.SetProperty("MultiSourceTable", MultiSourceTable);	
+			this.MainControlResxTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);
+			this.MainControlResxTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+            this.MainControlResxTemplate.SetProperty("CompanyName", CompanyName);
+			this.MainControlResxTemplate.SetProperty("ModuleName", ModuleName);		
+            this.MainControlResxTemplate.SetProperty("FriendlyName", FriendlyName );
+            this.MainControlResxTemplate.SetProperty("Namespace", Namespace);	
+			this.MainControlResxTemplate.RenderToFile(ResxFilesDirectory + MainControlResxTemplateName.Replace(".cst", "").Replace("Main", ModuleName), true);
+			Response.WriteLine("File " + MainControlResxTemplateName.Replace(".cst", "").Replace("Main", ModuleName) + " Created Successfully");
+						
+			//  MainControlTemplate
+		    this.MainControlTemplate.SetProperty("MultiSourceTable", MultiSourceTable);	
+			this.MainControlTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);
+			this.MainControlTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+            this.MainControlTemplate.SetProperty("CompanyName", CompanyName);
+			this.MainControlTemplate.SetProperty("ModuleName", ModuleName);
+            this.MainControlTemplate.SetProperty("FriendlyName", FriendlyName );
+            this.MainControlTemplate.SetProperty("Namespace", Namespace);	
+			this.MainControlTemplate.RenderToFile(DesktopModulesDirectory + MainControlTemplateName.Replace(".cst", "").Replace("Main", ModuleName), true);
+			Response.WriteLine("File " + MainControlTemplateName.Replace(".cst", "").Replace("Main", ModuleName) + " Created Successfully");
+            
+			//  MainControlDesignerTemplate
+		    this.MainControlDesignerTemplate.SetProperty("MultiSourceTable", MultiSourceTable);	
+			this.MainControlDesignerTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);
+			this.MainControlDesignerTemplate.SetProperty("CompanyName", CompanyName);	
+			this.MainControlDesignerTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+			this.MainControlDesignerTemplate.SetProperty("ModuleName", ModuleName);	
+            this.MainControlDesignerTemplate.SetProperty("FriendlyName", FriendlyName );
+            this.MainControlDesignerTemplate.SetProperty("Namespace", Namespace);	
+			this.MainControlDesignerTemplate.RenderToFile(DesktopModulesDirectory + MainControlDesignerTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Main", ModuleName), true);
+			Response.WriteLine("File " + MainControlDesignerTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Main", ModuleName) + " Created Successfully");
+
+			//  MainControlCodeBehindTemplate
+		    this.MainControlCodeBehindTemplate.SetProperty("MultiSourceTable", MultiSourceTable);	
+			this.MainControlCodeBehindTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);
+			this.MainControlCodeBehindTemplate.SetProperty("CompanyName", CompanyName);	
+			this.MainControlCodeBehindTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+			this.MainControlCodeBehindTemplate.SetProperty("ModuleName", ModuleName);	
+            this.MainControlCodeBehindTemplate.SetProperty("FriendlyName", FriendlyName );
+            this.MainControlCodeBehindTemplate.SetProperty("Namespace", Namespace);	
+			this.MainControlCodeBehindTemplate.RenderToFile(DesktopModulesDirectory + MainControlCodeBehindTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Main", ModuleName), true);
+			Response.WriteLine("File " + MainControlCodeBehindTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Main", ModuleName) + " Created Successfully");
+			
+			foreach(SchemaExplorer.TableSchema SourceTable in MultiSourceTable)
+			{
+                if (DataModel.ToUpper().Equals("DAL2")) {
+    				// ITableModelTemplate
+    				this.ITableModelTemplate.SetProperty("SourceTable", SourceTable);	
+    				this.ITableModelTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+    				this.ITableModelTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);
+                    this.ITableModelTemplate.SetProperty("CompanyName", CompanyName);
+    				this.ITableModelTemplate.SetProperty("ModuleName", ModuleName);
+                    this.ITableModelTemplate.SetProperty("FriendlyName", FriendlyName );		
+    				this.ITableModelTemplate.SetProperty("Namespace", Namespace);		
+    				this.ITableModelTemplate.RenderToFile(EntitiesDirectory + ITableModelTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Table", GetTableName(SourceTable)), true);
+    				
+                    Response.WriteLine("File " + TableModelTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Table", GetTableName(SourceTable)) + " Created Successfully");				// TableModelTemplate
+				}
+                
+                this.TableModelTemplate.SetProperty("SourceTable", SourceTable);
+                this.TableModelTemplate.SetProperty("DataModel", DataModel);
+				this.TableModelTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+				this.TableModelTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);
+				this.TableModelTemplate.SetProperty("CompanyName", CompanyName);		
+				this.TableModelTemplate.SetProperty("ModuleName", ModuleName);
+                this.TableModelTemplate.SetProperty("FriendlyName", FriendlyName );
+				this.TableModelTemplate.SetProperty("Namespace", Namespace);
+                if (DataModel.ToUpper().Equals("DAL2")) 
+				    this.TableModelTemplate.RenderToFile(EntitiesDirectory + TableModelTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("TableModel", GetTableName(SourceTable)), true);
+                else
+				    this.TableModelTemplate.RenderToFile(ComponentsDirectory + TableModelTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("TableModel", GetTableName(SourceTable)), true);
+                        
+				Response.WriteLine("File " + TableModelTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("TableModel", GetTableName(SourceTable)) + " Created Successfully");
+					
+				if(CreateViewControl)
+				{
+					//  ListControlResxTemplate
+					this.ListControlResxTemplate.SetProperty("SourceTable", SourceTable);	
+					this.ListControlResxTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+					this.ListControlResxTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);
+					this.ListControlResxTemplate.SetProperty("CompanyName", CompanyName);
+                    this.ListControlResxTemplate.SetProperty("ModuleName", ModuleName);	
+                    this.ListControlResxTemplate.SetProperty("FriendlyName", FriendlyName );
+					this.ListControlResxTemplate.SetProperty("Namespace", Namespace);	
+                    this.ListControlResxTemplate.SetProperty("InsertKeyword", InsertKeyword);
+					this.ListControlResxTemplate.SetProperty("UpdateKeyword", UpdateKeyword);
+					this.ListControlResxTemplate.SetProperty("DeleteKeyword", DeleteKeyword);
+					this.ListControlResxTemplate.SetProperty("SelectKeyword", SelectKeyword);
+					this.ListControlResxTemplate.SetProperty("ListKeyword", ListKeyword);
+					this.ListControlResxTemplate.RenderToFile(ResxFilesDirectory + ListControlResxTemplateName.Replace(".cst", "").Replace("Module", GetTableName(SourceTable)), true);
+					Response.WriteLine("File " + ListControlResxTemplateName.Replace(".cst", "").Replace("Module", GetTableName(SourceTable)) + " Created Successfully");
+								
+					//  ListControlTemplate
+					this.ListControlTemplate.SetProperty("CompanyName", CompanyName);
+                    this.ListControlTemplate.SetProperty("ModuleName", ModuleName);
+                    this.ListControlTemplate.SetProperty("FriendlyName", FriendlyName );
+					this.ListControlTemplate.SetProperty("Namespace", Namespace);	
+			        this.ListControlTemplate.SetProperty("SourceTable", SourceTable);	
+					this.ListControlTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);
+					this.ListControlTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+					this.ListControlTemplate.SetProperty("InsertKeyword", InsertKeyword);
+					this.ListControlTemplate.SetProperty("UpdateKeyword", UpdateKeyword);
+					this.ListControlTemplate.SetProperty("DeleteKeyword", DeleteKeyword);
+					this.ListControlTemplate.SetProperty("SelectKeyword", SelectKeyword);
+					this.ListControlTemplate.SetProperty("ListKeyword", ListKeyword);
+					this.ListControlTemplate.RenderToFile(DesktopModulesDirectory + ListControlTemplateName.Replace(".cst", "").Replace("Module", GetTableName(SourceTable)), true);
+					Response.WriteLine("File " + ListControlTemplateName.Replace(".cst", "").Replace("Module", GetTableName(SourceTable)) + " Created Successfully");
+
+                    //  ListControlDesignerTemplate
+                    //Debugger.Break();
+					this.ListControlDesignerTemplate.SetProperty("CompanyName", CompanyName);	
+					this.ListControlDesignerTemplate.SetProperty("ModuleName", ModuleName);	
+                    this.ListControlDesignerTemplate.SetProperty("FriendlyName", FriendlyName );
+					this.ListControlDesignerTemplate.SetProperty("Namespace", Namespace);	
+			        this.ListControlDesignerTemplate.SetProperty("SourceTable", SourceTable);	
+					this.ListControlDesignerTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);
+					this.ListControlDesignerTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+					this.ListControlDesignerTemplate.RenderToFile(DesktopModulesDirectory + ListControlDesignerTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Module", GetTableName(SourceTable)), true);
+					Response.WriteLine("File " + ListControlDesignerTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Module", GetTableName(SourceTable)) + " Created Successfully");		
+
+                    //  ListControlCodeBehindTemplate
+					this.ListControlCodeBehindTemplate.SetProperty("CompanyName", CompanyName);	
+					this.ListControlCodeBehindTemplate.SetProperty("ModuleName", ModuleName);	
+                    this.ListControlCodeBehindTemplate.SetProperty("FriendlyName", FriendlyName );
+					this.ListControlCodeBehindTemplate.SetProperty("Namespace", Namespace);	
+			        this.ListControlCodeBehindTemplate.SetProperty("SourceTable", SourceTable);	
+					this.ListControlCodeBehindTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);
+					this.ListControlCodeBehindTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+					this.ListControlCodeBehindTemplate.SetProperty("InsertKeyword", InsertKeyword);
+					this.ListControlCodeBehindTemplate.SetProperty("UpdateKeyword", UpdateKeyword);
+					this.ListControlCodeBehindTemplate.SetProperty("DeleteKeyword", DeleteKeyword);
+					this.ListControlCodeBehindTemplate.SetProperty("SelectKeyword", SelectKeyword);
+					this.ListControlCodeBehindTemplate.SetProperty("ListKeyword", ListKeyword);
+					this.ListControlCodeBehindTemplate.RenderToFile(DesktopModulesDirectory + ListControlCodeBehindTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Module", GetTableName(SourceTable)), true);
+					Response.WriteLine("File " + ListControlCodeBehindTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Module", GetTableName(SourceTable)) + " Created Successfully");
+
+					//  ViewTableControlResxTemplate
+					this.ViewTableControlResxTemplate.SetProperty("CompanyName", CompanyName);	
+                    this.ViewTableControlResxTemplate.SetProperty("ModuleName", ModuleName);	
+                    this.ViewTableControlResxTemplate.SetProperty("FriendlyName", FriendlyName );
+                    this.ViewTableControlResxTemplate.SetProperty("Namespace", Namespace);	
+					this.ViewTableControlResxTemplate.SetProperty("SourceTable", SourceTable);	
+					this.ViewTableControlResxTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+					this.ViewTableControlResxTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);
+					this.ViewTableControlResxTemplate.SetProperty("InsertKeyword", InsertKeyword);
+					this.ViewTableControlResxTemplate.SetProperty("UpdateKeyword", UpdateKeyword);
+					this.ViewTableControlResxTemplate.SetProperty("DeleteKeyword", DeleteKeyword);
+					this.ViewTableControlResxTemplate.SetProperty("SelectKeyword", SelectKeyword);
+					this.ViewTableControlResxTemplate.SetProperty("ListKeyword", ListKeyword);
+					this.ViewTableControlResxTemplate.RenderToFile(ResxFilesDirectory + ViewTableControlResxTemplateName.Replace(".cst", "").Replace("Module", GetTableName(SourceTable)), true);
+					Response.WriteLine("File " + ViewTableControlResxTemplateName.Replace(".cst", "").Replace("Module", GetTableName(SourceTable)) + " Created Successfully");
+								
+					//  ViewTableControlTemplate
+                    //Debugger.Break();
+					this.ViewTableControlTemplate.SetProperty("CompanyName", CompanyName);
+					this.ViewTableControlTemplate.SetProperty("ModuleName", ModuleName);
+                    this.ViewTableControlTemplate.SetProperty("FriendlyName", FriendlyName );
+					this.ViewTableControlTemplate.SetProperty("Namespace", Namespace);	
+			        this.ViewTableControlTemplate.SetProperty("SourceTable", SourceTable);	
+					this.ViewTableControlTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);
+					this.ViewTableControlTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+					this.ViewTableControlTemplate.SetProperty("InsertKeyword", InsertKeyword);
+					this.ViewTableControlTemplate.SetProperty("UpdateKeyword", UpdateKeyword);
+					this.ViewTableControlTemplate.SetProperty("DeleteKeyword", DeleteKeyword);
+					this.ViewTableControlTemplate.SetProperty("SelectKeyword", SelectKeyword);
+					this.ViewTableControlTemplate.SetProperty("ListKeyword", ListKeyword);
+					this.ViewTableControlTemplate.RenderToFile(DesktopModulesDirectory + ViewTableControlTemplateName.Replace(".cst", "").Replace("Module", GetTableName(SourceTable)), true);
+					Response.WriteLine("File " + ViewTableControlTemplateName.Replace(".cst", "").Replace("Module", GetTableName(SourceTable)) + " Created Successfully");
+					
+					//  ViewTableControlCodeBehindTemplate
+					this.ViewTableControlCodeBehindTemplate.SetProperty("CompanyName", CompanyName);	
+					this.ViewTableControlCodeBehindTemplate.SetProperty("ModuleName", ModuleName);	
+                    this.ViewTableControlCodeBehindTemplate.SetProperty("FriendlyName", FriendlyName );
+					this.ViewTableControlCodeBehindTemplate.SetProperty("Namespace", Namespace);	
+			        this.ViewTableControlCodeBehindTemplate.SetProperty("SourceTable", SourceTable);	
+					this.ViewTableControlCodeBehindTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);
+					this.ViewTableControlCodeBehindTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+					this.ViewTableControlCodeBehindTemplate.SetProperty("InsertKeyword", InsertKeyword);
+					this.ViewTableControlCodeBehindTemplate.SetProperty("UpdateKeyword", UpdateKeyword);
+					this.ViewTableControlCodeBehindTemplate.SetProperty("DeleteKeyword", DeleteKeyword);
+					this.ViewTableControlCodeBehindTemplate.SetProperty("SelectKeyword", SelectKeyword);
+					this.ViewTableControlCodeBehindTemplate.SetProperty("ListKeyword", ListKeyword);
+					this.ViewTableControlCodeBehindTemplate.SetProperty("CreatedBy", CreatedBy);
+					this.ViewTableControlCodeBehindTemplate.SetProperty("DateCreated", DateCreated);
+					this.ViewTableControlCodeBehindTemplate.SetProperty("DateUpdated", DateUpdated);
+					this.ViewTableControlCodeBehindTemplate.SetProperty("UpdatedBy", UpdatedBy);
+					this.ViewTableControlCodeBehindTemplate.RenderToFile(DesktopModulesDirectory + ViewTableControlCodeBehindTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Module", GetTableName(SourceTable)), true);
+					Response.WriteLine("File " + ViewTableControlCodeBehindTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Module", GetTableName(SourceTable)) + " Created Successfully");
+            					
+					//  ViewTableControlDesignerTemplate
+					this.ViewTableControlDesignerTemplate.SetProperty("CompanyName", CompanyName);	
+					this.ViewTableControlDesignerTemplate.SetProperty("ModuleName", ModuleName);	
+                    this.ViewTableControlDesignerTemplate.SetProperty("FriendlyName", FriendlyName );
+					this.ViewTableControlDesignerTemplate.SetProperty("Namespace", Namespace);	
+			        this.ViewTableControlDesignerTemplate.SetProperty("SourceTable", SourceTable);	
+					this.ViewTableControlDesignerTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);
+					this.ViewTableControlDesignerTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+					this.ViewTableControlDesignerTemplate.RenderToFile(DesktopModulesDirectory + ViewTableControlDesignerTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Module", GetTableName(SourceTable)), true);
+					Response.WriteLine("File " + ViewTableControlDesignerTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Module", GetTableName(SourceTable)) + " Created Successfully");
+
+        			// TableViewModel Template
+                    // Debugger.Break(); 
+        			this.TableViewModelTemplate.SetProperty("CompanyName", CompanyName);
+        			this.TableViewModelTemplate.SetProperty("ModuleName", ModuleName);
+        			this.TableViewModelTemplate.SetProperty("FriendlyName", FriendlyName );
+        			this.TableViewModelTemplate.SetProperty("Namespace", Namespace);	
+ 			        this.TableViewModelTemplate.SetProperty("SourceTable", SourceTable);	
+					this.TableViewModelTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);  
+                    this.TableViewModelTemplate.RenderToFile(jsDirectory + TableViewModelTemplateName.Replace("TableViewModel", GetTableName(SourceTable)).Replace(".cst", ""), true);
+        			Response.WriteLine("File " + TableViewModelTemplateName.Replace("TableViewModel", GetTableName(SourceTable)).Replace(".cst", "") + " Created Successfully");
+            
+        			// ITableRepository Template
+                    // Debugger.Break(); 
+        			this.ITableRepositoryTemplate.SetProperty("CompanyName", CompanyName);
+        			this.ITableRepositoryTemplate.SetProperty("ModuleName", ModuleName);
+        			this.ITableRepositoryTemplate.SetProperty("FriendlyName", FriendlyName );
+        			this.ITableRepositoryTemplate.SetProperty("Namespace", Namespace);	
+ 			        this.ITableRepositoryTemplate.SetProperty("SourceTable", SourceTable);	
+					this.ITableRepositoryTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);  
+                    this.ITableRepositoryTemplate.RenderToFile(jsDirectory + ITableRepositoryTemplateName.Replace("TableViewModel", GetTableName(SourceTable)).Replace(".cst", ""), true);
+        			Response.WriteLine("File " + ITableRepositoryTemplateName.Replace("TableViewModel", GetTableName(SourceTable)).Replace(".cst", "") + " Created Successfully");
+                            
+        			// TableRepositoryTemplate Template
+                    // Debugger.Break(); 
+        			this.TableRepositoryTemplate.SetProperty("CompanyName", CompanyName);
+        			this.TableRepositoryTemplate.SetProperty("ModuleName", ModuleName);
+        			this.TableRepositoryTemplate.SetProperty("FriendlyName", FriendlyName );
+        			this.TableRepositoryTemplate.SetProperty("Namespace", Namespace);	
+ 			        this.TableRepositoryTemplate.SetProperty("SourceTable", SourceTable);	
+					this.TableRepositoryTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);  
+                    this.TableRepositoryTemplate.RenderToFile(jsDirectory + TableRepositoryTemplateName.Replace("TableViewModel", GetTableName(SourceTable)).Replace(".cst", ""), true);
+        			Response.WriteLine("File " + TableRepositoryTemplateName.Replace("TableViewModel", GetTableName(SourceTable)).Replace(".cst", "") + " Created Successfully");
+                }
+				
+				if(CreateEditControl)
+				{
+					//  EditTableControlResxTemplate
+        			this.EditTableControlResxTemplate.SetProperty("CompanyName", CompanyName);
+					this.EditTableControlResxTemplate.SetProperty("ModuleName", ModuleName);	
+                    this.EditTableControlResxTemplate.SetProperty("FriendlyName", FriendlyName );
+        			this.EditTableControlResxTemplate.SetProperty("Namespace", Namespace);	
+					this.EditTableControlResxTemplate.SetProperty("SourceTable", SourceTable);	
+					this.EditTableControlResxTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+					this.EditTableControlResxTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);
+					this.EditTableControlResxTemplate.SetProperty("InsertKeyword", InsertKeyword);
+					this.EditTableControlResxTemplate.SetProperty("UpdateKeyword", UpdateKeyword);
+					this.EditTableControlResxTemplate.SetProperty("DeleteKeyword", DeleteKeyword);
+					this.EditTableControlResxTemplate.SetProperty("SelectKeyword", SelectKeyword);
+					this.EditTableControlResxTemplate.SetProperty("ListKeyword", ListKeyword);
+					this.EditTableControlResxTemplate.RenderToFile(ResxFilesDirectory + EditTableControlResxTemplateName.Replace(".cst", "").Replace("Module", GetTableName(SourceTable)), true);
+					Response.WriteLine("File " + EditTableControlResxTemplateName.Replace(".cst", "").Replace("Module", GetTableName(SourceTable)) + " Created Successfully");
+					Response.WriteLine("	Folder: " + ResxFilesDirectory);
+								
+					//  EditTableControlTemplate
+					this.EditTableControlTemplate.SetProperty("CompanyName", CompanyName);
+					this.EditTableControlTemplate.SetProperty("ModuleName", ModuleName);
+                    this.EditTableControlTemplate.SetProperty("FriendlyName", FriendlyName );
+					this.EditTableControlTemplate.SetProperty("Namespace", Namespace);	
+			        this.EditTableControlTemplate.SetProperty("SourceTable", SourceTable);	
+					this.EditTableControlTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);
+					this.EditTableControlTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+					this.EditTableControlTemplate.SetProperty("InsertKeyword", InsertKeyword);
+					this.EditTableControlTemplate.SetProperty("UpdateKeyword", UpdateKeyword);
+					this.EditTableControlTemplate.SetProperty("DeleteKeyword", DeleteKeyword);
+					this.EditTableControlTemplate.SetProperty("SelectKeyword", SelectKeyword);
+					this.EditTableControlTemplate.SetProperty("ListKeyword", ListKeyword);
+					this.EditTableControlTemplate.RenderToFile(DesktopModulesDirectory + EditTableControlTemplateName.Replace(".cst", "").Replace("Module", GetTableName(SourceTable)), true);
+					Response.WriteLine("File " + EditTableControlTemplateName.Replace(".cst", "").Replace("Module", GetTableName(SourceTable)) + " Created Successfully");
+					
+					//  EditTableControlCodeBehindTemplate
+					this.EditTableControlCodeBehindTemplate.SetProperty("CompanyName", CompanyName);	
+					this.EditTableControlCodeBehindTemplate.SetProperty("ModuleName", ModuleName);	
+                    this.EditTableControlCodeBehindTemplate.SetProperty("FriendlyName", FriendlyName );
+					this.EditTableControlCodeBehindTemplate.SetProperty("Namespace", Namespace);	
+			        this.EditTableControlCodeBehindTemplate.SetProperty("SourceTable", SourceTable);	
+					this.EditTableControlCodeBehindTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);
+					this.EditTableControlCodeBehindTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+					this.EditTableControlCodeBehindTemplate.SetProperty("InsertKeyword", InsertKeyword);
+					this.EditTableControlCodeBehindTemplate.SetProperty("UpdateKeyword", UpdateKeyword);
+					this.EditTableControlCodeBehindTemplate.SetProperty("DeleteKeyword", DeleteKeyword);
+					this.EditTableControlCodeBehindTemplate.SetProperty("SelectKeyword", SelectKeyword);
+					this.EditTableControlCodeBehindTemplate.SetProperty("ListKeyword", ListKeyword);
+					this.EditTableControlCodeBehindTemplate.SetProperty("CreatedBy", CreatedBy);
+					this.EditTableControlCodeBehindTemplate.SetProperty("DateCreated", DateCreated);
+					this.EditTableControlCodeBehindTemplate.SetProperty("DateUpdated", DateUpdated);
+					this.EditTableControlCodeBehindTemplate.SetProperty("UpdatedBy", UpdatedBy);
+					this.EditTableControlCodeBehindTemplate.RenderToFile(DesktopModulesDirectory + EditTableControlCodeBehindTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Module", GetTableName(SourceTable)), true);
+					Response.WriteLine("File " + EditTableControlCodeBehindTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Module", GetTableName(SourceTable)) + " Created Successfully");
+				
+					//  EditTableControlDesignerTemplate
+					this.EditTableControlDesignerTemplate.SetProperty("CompanyName", CompanyName);	
+					this.EditTableControlDesignerTemplate.SetProperty("ModuleName", ModuleName);	
+                    this.EditTableControlDesignerTemplate.SetProperty("FriendlyName", FriendlyName );
+					this.EditTableControlDesignerTemplate.SetProperty("Namespace", Namespace);	
+			        this.EditTableControlDesignerTemplate.SetProperty("SourceTable", SourceTable);	
+					this.EditTableControlDesignerTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);
+					this.EditTableControlDesignerTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+					this.EditTableControlDesignerTemplate.RenderToFile(DesktopModulesDirectory + EditTableControlDesignerTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Module", GetTableName(SourceTable)), true);
+					Response.WriteLine("File " + EditTableControlDesignerTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Module", GetTableName(SourceTable)) + " Created Successfully");
+                }
+			}
+			
+			if(CreateSettingsControl)
+			{	
+				//  SettingsControlResxTemplate	
+				this.SettingsControlResxTemplate.SetProperty("CompanyName", CompanyName);
+                this.SettingsControlResxTemplate.SetProperty("ModuleName", ModuleName);	
+                this.SettingsControlResxTemplate.SetProperty("FriendlyName", FriendlyName );
+				this.SettingsControlResxTemplate.SetProperty("Namespace", Namespace);	
+                this.SettingsControlResxTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+				this.SettingsControlResxTemplate.RenderToFile(ResxFilesDirectory + SettingsControlResxTemplateName.Replace(".cst", ""), true);
+				Response.WriteLine("File " + SettingsControlResxTemplateName.Replace(".cst", "") + " Created Successfully");
+						
+				//  SettingsControlTemplate
+				this.SettingsControlTemplate.SetProperty("CompanyName", CompanyName);
+				this.SettingsControlTemplate.SetProperty("ModuleName", ModuleName);
+ 				this.SettingsControlTemplate.SetProperty("Namespace", Namespace);	
+			    this.SettingsControlTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+				this.SettingsControlTemplate.RenderToFile(DesktopModulesDirectory + SettingsControlTemplateName.Replace(".cst", ""), true);
+				Response.WriteLine("File " + SettingsControlTemplateName.Replace(".cst", "") + " Created Successfully");
+				
+				//  SettingsControlCodeBehindTemplate
+				this.SettingsControlCodeBehindTemplate.SetProperty("CompanyName", CompanyName);
+				this.SettingsControlCodeBehindTemplate.SetProperty("ModuleName", ModuleName);	
+                this.SettingsControlCodeBehindTemplate.SetProperty("FriendlyName", FriendlyName );
+				this.SettingsControlCodeBehindTemplate.SetProperty("Namespace", Namespace);	
+			    this.SettingsControlCodeBehindTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+				this.SettingsControlCodeBehindTemplate.RenderToFile(DesktopModulesDirectory + SettingsControlCodeBehindTemplateName.Replace("$$",Language).Replace(".cst", ""), true);
+				Response.WriteLine("File " + SettingsControlCodeBehindTemplateName.Replace("$$",Language).Replace(".cst", "") + " Created Successfully");
+			}
+
+			if(CreateManifest)
+			{
+			//  ModuleDefinitionTemplate
+				this.ModuleDefinitionTemplate.SetProperty("CompanyName", CompanyName);
+				this.ModuleDefinitionTemplate.SetProperty("ModuleName", ModuleName);
+                this.ModuleDefinitionTemplate.SetProperty("FriendlyName", FriendlyName );
+				this.ModuleDefinitionTemplate.SetProperty("Namespace", Namespace);	
+			    this.ModuleDefinitionTemplate.SetProperty("MultiSourceTable", MultiSourceTable);	
+				this.ModuleDefinitionTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
+				this.ModuleDefinitionTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);
+				this.ModuleDefinitionTemplate.SetProperty("Language", Language);		
+				this.ModuleDefinitionTemplate.SetProperty("IncludeSource", IncludeSource);		
+				this.ModuleDefinitionTemplate.SetProperty("CreateViewControl", CreateViewControl);		
+				this.ModuleDefinitionTemplate.SetProperty("CreateListControl", CreateListControl);		
+				this.ModuleDefinitionTemplate.SetProperty("CreateEditControl", CreateEditControl);		
+				this.ModuleDefinitionTemplate.SetProperty("CreateSettingsControl", CreateSettingsControl);		
+				this.ModuleDefinitionTemplate.SetProperty("CreateModuleMenuControl", CreateModuleMenuControl);		
+				this.ModuleDefinitionTemplate.RenderToFile(DesktopModulesDirectory + ModuleDefinitionTemplateName.Replace(".cst", "").Replace("Module", _moduleName), true);
+				Response.WriteLine("File " + ModuleDefinitionTemplateName.Replace(".cst", "").Replace("Module", _moduleName) + " Created Successfully");
+			}
+			
+		}
+		catch (Exception ex)
+		{
+			Response.WriteLine("Error: " + ex);
+		}
+	}
+</script>
+<% this.Generate();  %>

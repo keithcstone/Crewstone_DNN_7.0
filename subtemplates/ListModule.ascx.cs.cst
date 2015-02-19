@@ -1,0 +1,213 @@
+﻿<%-- 
+Name: ListModule.ascx.cs.cst
+Author: Keith Stone
+Description: Generates the DotNetNuke List[ModuleName].c#.ascx for C# 
+Revision: 2014.02.23
+Note: For the latest version of this template, http://www.crewstone.com		
+--%>
+<%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="C#" Description="Generates the code-behind for the List[ModuleName].ascx web control." %>
+<%@ Property Category="DataSource" Name="SourceTable" Type="SchemaExplorer.TableSchema" Description="Table that the object is based on." %>
+<%@ Property Category="DataSource" Name="ObjectQualifier" Type="System.String" Default="" Optional="True" Description="Prefix for objects to be generated." %>
+<%@ Property Category="Naming Convention" Name="CompanyName" Type="System.String" Default="YourCompany" Description="Used to generate the Namespace declaration." %>
+<%@ Property Category="Naming Convention" Name="Namespace" Type="System.String" Default="NameSpace"  Description="Used to generate the Namespace declaration." %>
+<%@ Property Category="Naming Convention" Name="ModuleName" Type="System.String" Default="YourModule" Description="" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+/*
+' Copyright (c) <%= DateTime.Now.Year.ToString() %> <%=CompanyName%>
+'  All rights reserved.
+' 
+' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+' TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+' THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+' CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+' DEALINGS IN THE SOFTWARE.
+' 
+*/
+using DotNetNuke;
+using DotNetNuke.Common;
+using DotNetNuke.Common.Globals;
+using System.Web.UI;
+using System.Collections.Generic;
+using System.Reflection;
+using DotNetNuke.Security.PortalSecurity;
+
+namespace <%= Namespace %>.Modules.<%=ModuleName%>
+
+
+	partial class List<%=GetTableName(SourceTable)%> : Entities.Modules.PortalModuleBase, Entities.Modules.IActionable
+	{
+
+		private System.Web.UI.WebControls.ObjectDataSource withEventsField_<%=GetTableName(SourceTable)%>DataSource;
+		protected System.Web.UI.WebControls.ObjectDataSource <%=GetTableName(SourceTable)%>DataSource {
+			get { return withEventsField_<%=GetTableName(SourceTable)%>DataSource; }
+			set {
+				if (withEventsField_<%=GetTableName(SourceTable)%>DataSource != null) {
+					withEventsField_<%=GetTableName(SourceTable)%>DataSource.Selecting -= Set<%=GetTableName(SourceTable)%>PortalId;
+				}
+				withEventsField_<%=GetTableName(SourceTable)%>DataSource = value;
+				if (withEventsField_<%=GetTableName(SourceTable)%>DataSource != null) {
+					withEventsField_<%=GetTableName(SourceTable)%>DataSource.Selecting += Set<%=GetTableName(SourceTable)%>PortalId;
+				}
+			}
+
+		}
+<%
+if(SourceTable.Columns.Contains("moduleId"))
+{
+%>
+
+        Protected Sub SetModuleID(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.ObjectDataSourceSelectingEventArgs) Handles <%=ModuleName%>DataSource.Selecting
+            e.InputParameters("ModuleId") = ModuleId.ToString
+        End Sub
+
+        Protected Sub InsertingItem(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.FormViewInsertEventArgs) Handles Form<%=GetTableName(SourceTable)%>.ItemInserting
+            e.Values.Item("ModuleId") = ModuleId.ToString()
+        End Sub
+<%
+}
+%>
+
+        Protected Sub AddItemButton_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles AddItemButton.Click
+            Me.Form<%=GetTableName(SourceTable)%>.Visible = True
+        End Sub
+
+        Protected Sub InsertItemButton_Click(ByVal sender As Object, ByVal e As System.EventArgs)
+            Me.Form<%=GetTableName(SourceTable)%>.Visible = False
+            AddItemButton.Text = "<%=GetTableName(SourceTable)%> Successfully Added - Click To Add Another"
+        End Sub
+
+        Protected Sub InsertCancelButton_Click(ByVal sender As Object, ByVal e As System.EventArgs)
+            Me.Form<%=GetTableName(SourceTable)%>.Visible = False
+        End Sub
+
+        Protected Sub Grid<%=GetTableName(SourceTable)%>_PageIndexChanging(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewPageEventArgs) Handles Grid<%=GetTableName(SourceTable)%>.PageIndexChanging
+            Grid<%=GetTableName(SourceTable)%>.PageIndex = e.NewPageIndex
+        End Sub
+
+		protected void Page_Load(object sender, System.EventArgs e)
+		{
+			if (HasNecessaryPermission(SecurityAccessLevel.Edit, PortalSettings, ModuleConfiguration, UserId.ToString)) {
+				//
+			} else {
+				//
+			}
+		}
+
+
+		protected void Set<%=GetTableName(SourceTable)%>PortalId(object sender, System.Web.UI.WebControls.ObjectDataSourceSelectingEventArgs e)
+		{
+            <% if(SourceTable.PrimaryKey.MemberColumns.Contains("portalId")) { %>
+			e.InputParameters("PortalId") = PortalId.ToString;
+			<% } %>
+		 	<% if(SourceTable.PrimaryKey.MemberColumns.Contains("moduleId")) { %>
+			e.InputParameters("ModuleId") = ModuleId.ToString;
+			<% } %>   
+		}
+
+		protected void ListView<%=GetTableName(SourceTable)%>_ItemDataBound(object sender, System.Web.UI.WebControls.ListViewItemEventArgs e)
+		{
+			ListViewDataItem dataItem = (ListViewDataItem)e.Item;
+
+			if ((e.Item.ItemType == ListViewItemType.DataItem)) {
+				<%=GetTableName(SourceTable)%>Info rowView = (<%=GetTableName(SourceTable)%>Info)dataItem.DataItem;
+
+				Label lblFullName = (Label)e.Item.FindControl("lblFullName");
+				Label lblNickname = (Label)e.Item.FindControl("lblNickname");
+				Label lblFirstName = (Label)e.Item.FindControl("lblFirstName");
+				Label lblMiddleName = (Label)e.Item.FindControl("lblMiddleName");
+				Label lblLastName = (Label)e.Item.FindControl("lblLastName");
+				Label lblSuffix = (Label)e.Item.FindControl("lblSuffix");
+				Hyperlink hypAbbreviation = (Hyperlink)e.Item.FindControl("hypAbbreviation");
+				hypAbbreviation.Text = rowView.Abbreviation.ToString();
+				hypAbbreviation.NavigateUrl = DotNetNuke.Common.NavigateURL(TabId, "ViewBeletseriContactType", "mid=" + ModuleId, "ContactTypeId=" + rowView.ContactTypeId.ToString());
+				Label lblFirstNameSoundex = (Label)e.Item.FindControl("lblFirstNameSoundex");
+				Label lblLastNameSoundex = (Label)e.Item.FindControl("lblLastNameSoundex");
+				Label lblBirthDate = (Label)e.Item.FindControl("lblBirthDate");
+				Label lblAge = (Label)e.Item.FindControl("lblAge");
+				Label lblWeight = (Label)e.Item.FindControl("lblWeight");
+				Label lblSex = (Label)e.Item.FindControl("lblSex");
+				Label lblTShirt = (Label)e.Item.FindControl("lblTShirt");
+				Label lblSweats = (Label)e.Item.FindControl("lblSweats");
+				Label lblShorts = (Label)e.Item.FindControl("lblShorts");
+				Label lblJersey = (Label)e.Item.FindControl("lblJersey");
+				Label lblShoes = (Label)e.Item.FindControl("lblShoes");
+				Label lblShoeStyle = (Label)e.Item.FindControl("lblShoeStyle");
+				Label lblUSATFNumber = (Label)e.Item.FindControl("lblUSATFNumber");
+				Label lblUSATNumber = (Label)e.Item.FindControl("lblUSATNumber");
+				Label lblUSMSNumber = (Label)e.Item.FindControl("lblUSMSNumber");
+				Label lblWaiver = (Label)e.Item.FindControl("lblWaiver");
+				Label lblSurvivor = (Label)e.Item.FindControl("lblSurvivor");
+				Label lblMemo = (Label)e.Item.FindControl("lblMemo");
+				Label lblMarked = (Label)e.Item.FindControl("lblMarked");
+				Label lblRecency = (Label)e.Item.FindControl("lblRecency");
+				Label lblFrequency = (Label)e.Item.FindControl("lblFrequency");
+				Label lblActiveId = (Label)e.Item.FindControl("lblActiveId");
+				Label lblUserId = (Label)e.Item.FindControl("lblUserId");
+				Label lblUserName = (Label)e.Item.FindControl("lblUserName");
+				Label lblHomeAddress = (Label)e.Item.FindControl("lblHomeAddress");
+				Label lblHomeCity = (Label)e.Item.FindControl("lblHomeCity");
+				Label lblHomeRegion = (Label)e.Item.FindControl("lblHomeRegion");
+				Label lblHomePostalCode = (Label)e.Item.FindControl("lblHomePostalCode");
+				Label lblHomeCountry = (Label)e.Item.FindControl("lblHomeCountry");
+				Label lblHomePrimary = (Label)e.Item.FindControl("lblHomePrimary");
+				Label lblHomeInvalidAddress = (Label)e.Item.FindControl("lblHomeInvalidAddress");
+				Label lblHomePhone = (Label)e.Item.FindControl("lblHomePhone");
+				Label lblMobilePhone = (Label)e.Item.FindControl("lblMobilePhone");
+				Label lblMobileCarrier = (Label)e.Item.FindControl("lblMobileCarrier");
+				Label lblHomeEMail = (Label)e.Item.FindControl("lblHomeEMail");
+				Label lblHomeInvalidEmail = (Label)e.Item.FindControl("lblHomeInvalidEmail");
+				Label lblHomePrimaryEmail = (Label)e.Item.FindControl("lblHomePrimaryEmail");
+				Label lblHomePlainText = (Label)e.Item.FindControl("lblHomePlainText");
+				Label lblHomeDirectEmailOnly = (Label)e.Item.FindControl("lblHomeDirectEmailOnly");
+				Label lblCompany = (Label)e.Item.FindControl("lblCompany");
+				Label lblTitle = (Label)e.Item.FindControl("lblTitle");
+				Label lblWorkAddress = (Label)e.Item.FindControl("lblWorkAddress");
+				Label lblWorkCity = (Label)e.Item.FindControl("lblWorkCity");
+				Label lblWorkRegion = (Label)e.Item.FindControl("lblWorkRegion");
+				Label lblWorkPostalCode = (Label)e.Item.FindControl("lblWorkPostalCode");
+				Label lblWorkCountry = (Label)e.Item.FindControl("lblWorkCountry");
+				Label lblWorkInvalidAddress = (Label)e.Item.FindControl("lblWorkInvalidAddress");
+				Label lblWorkPhone = (Label)e.Item.FindControl("lblWorkPhone");
+				Label lblWorkExtention = (Label)e.Item.FindControl("lblWorkExtention");
+				Label lblWorkEMail = (Label)e.Item.FindControl("lblWorkEMail");
+				Label lblWorkInvalidEmail = (Label)e.Item.FindControl("lblWorkInvalidEmail");
+				Label lblWorkPlainText = (Label)e.Item.FindControl("lblWorkPlainText");
+				Label lblWorkDirectEmailOnly = (Label)e.Item.FindControl("lblWorkDirectEmailOnly");
+				Label lblCreatedDate = (Label)e.Item.FindControl("lblCreatedDate");
+				Label lblCreatedBy = (Label)e.Item.FindControl("lblCreatedBy");
+				Label lblDateModified = (Label)e.Item.FindControl("lblDateModified");
+				Label lblModifiedBy = (Label)e.Item.FindControl("lblModifiedBy");
+				Label lblVersion = (Label)e.Item.FindControl("lblVersion");
+			}
+		}
+
+
+		protected void ListView<%=GetTableName(SourceTable)%>_ItemCommand(object sender, System.Web.UI.WebControls.ListViewCommandEventArgs e)
+		{
+		}
+
+		#region "Optional Interfaces"
+		public Entities.Modules.Actions.ModuleActionCollection ModuleActions {
+			get {
+				Entities.Modules.Actions.ModuleActionCollection Actions = new Entities.Modules.Actions.ModuleActionCollection();
+				try {
+				} catch (Exception exc) {
+					//ProcessModuleLoadException(Me, exc)
+				}
+				return Actions;
+			}
+		}
+		public List<%=GetTableName(SourceTable)%>()
+		{
+			Load += Page_Load;
+		}
+		#endregion
+
+	}
+
+}

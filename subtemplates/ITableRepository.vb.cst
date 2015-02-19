@@ -1,0 +1,63 @@
+﻿<%-- 
+Name: ITableRepository.vb.cst
+Author: Keith Stone
+Description: Generates the DNN ITableRepository Class for VB.NET
+Revision: 2014.03.06
+Note: For the latest version of this template, http://www.crewstone.com		
+--%>
+<%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="VB" Description="Generates the DNN ITableRepository Class for VB.NET" %>
+<%@ Property Category="Naming Convention" Name="ModuleName" Type="System.String" Default="YourModule" Description="Module Name" %>
+<%@ Property Category="Naming Convention" Name="FriendlyName" Type="System.String" Default="Your Module" Description="Descriptive module name" %>
+<%@ Property Category="Naming Convention" Name="Namespace" Type="System.String" Default="Namespace" Description="Used to generate the Namespace declaration, no spaces or punctuation" %>
+<%@ Property Category="Naming Convention" Name="CompanyName" Type="System.String" Default="YourCompany" Description="Descriptive name to generate the copyright declaration and documentation." %>
+<%@ Property Category="DataSource" Name="SourceTable" Type="SchemaExplorer.TableSchema" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+'
+' Module: <%=FriendlyName%>
+' Copyright (c) <%= DateTime.Now.Year.ToString() %> <%=CompanyName%>
+'  All rights reserved.
+' 
+' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+' TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+' THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+' CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+' DEALINGS IN THE SOFTWARE.
+'
+Imports System
+Imports System.Collections.Generic
+Imports System.Linq
+Imports System.Text
+Imports <%= Namespace %>.Modules.<%=ModuleName%>.Entities
+
+Namespace <%= Namespace %>.Modules.<%=ModuleName%>.Components
+	Public Interface I<%= GetTableName(SourceTable) %>Repository
+		'''<summary>
+		'''</summary>
+		Sub ClearCache(moduleid As Integer)
+
+		'''<summary>
+		'''</summary>
+		Function Create<%= GetTableName(SourceTable) %>(t As I<%= GetTableName(SourceTable) %>Model) As Integer
+
+		'''<summary>
+		'''</summary>
+		Sub Delete<%= GetTableName(SourceTable) %>(itemId As Integer, moduleId As Integer)
+
+		'''<summary>
+		'''</summary>
+		Function Get<%= GetTableName(SourceTable) %>s(moduleId As Integer) As IEnumerable(Of I<%= GetTableName(SourceTable) %>Model)
+
+		'''<summary>
+		'''</summary>
+		Function Get<%= GetTableName(SourceTable) %>(itemId As Integer, moduleId As Integer) As I<%= GetTableName(SourceTable) %>Model
+
+		'''<summary>
+		'''</summary>
+		Sub Update<%= GetTableName(SourceTable) %>(t As I<%= GetTableName(SourceTable) %>Model)
+	End Interface
+End Namespace

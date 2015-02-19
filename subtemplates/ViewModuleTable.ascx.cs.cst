@@ -1,0 +1,269 @@
+﻿<%-- 
+Name: ViewModule.ascx.cs.cst
+Author: Keith Stone
+Description: Generates the DotNetNuke View[ModuleName].cs.ascx for C#
+Revision: 2014.02.23
+Note: For the latest version of this template, http://www.crewstone.com		
+--%>
+<%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="C#" Description="Generates the code-behind for the View[ModuleName].ascx web control." %>
+<%@ Property Category="Auditing" Name="DateCreated" Type="System.String" Default="" Optional="True" Description="The name of the field that designates the date/time a row was created" %>
+<%@ Property Category="Auditing" Name="CreatedBy" Type="System.String" Default="" Optional="True" Description="The name of the field that designates the DNN userid that created a row" %>
+<%@ Property Category="Auditing" Name="DateUpdated" Type="System.String" Default="" Optional="True" Description="The name of the field that designates the date/time a row was updated" %>
+<%@ Property Category="Auditing" Name="UpdatedBy" Type="System.String" Default="" Optional="True" Description="The name of the field that designates the DNN userid that updated a row" %>
+<%@ Property Category="DataSource" Name="SourceTable" Type="SchemaExplorer.TableSchema" Description="Table that the object is based on." %>
+<%@ Property Category="DataSource" Name="ObjectQualifier" Type="System.String" Default="" Optional="True" Description="Prefix for objects to be generated." %>
+<%@ Property Category="Naming Convention" Name="CompanyName" Type="System.String" Default="YourCompany" Description="Used to generate the Namespace declaration." %>
+<%@ Property Category="Naming Convention" Name="ModuleName" Type="System.String" Default="YourModule" Description="" %>
+<%@ Property Category="Naming Convention" Name="Namespace" Type="System.String" Default="NameSpace" Description="Used to generate the Namespace declaration." %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+//
+// Copyright (c) <%= DateTime.Now.Year.ToString() %> <%=CompanyName%>
+//  All rights reserved.
+// 
+// THE SOFTWARE Is PROVIDED "AS IS", WITHOUT WARRANTY Of ANY KIND, EXPRESS Or IMPLIED, INCLUDING BUT Not LIMITED
+// To THE WARRANTIES Of MERCHANTABILITY, FITNESS For A PARTICULAR PURPOSE And NONINFRINGEMENT. In NO Event SHALL
+// THE AUTHORS Or COPYRIGHT HOLDERS BE LIABLE For ANY CLAIM, DAMAGES Or OTHER LIABILITY, WHETHER In AN ACTION Of
+// CONTRACT, TORT Or OTHERWISE, ARISING From, OUT Of Or In CONNECTION With THE SOFTWARE Or THE USE Or OTHER
+// DEALINGS In THE SOFTWARE.
+//
+using DotNetNuke;
+using DotNetNuke.Common;
+using System.Web.UI;
+using System.Collections.Generic;
+using System.Reflection;
+using DotNetNuke.Security.PortalSecurity;
+
+namespace <%= Namespace %>.Modules.<%=ModuleName%>
+{
+
+	partial class View<%=GetTableName(SourceTable)%> : Entities.Modules.PortalModuleBase, Entities.Modules.IActionable
+	{
+
+		#region "Private Members"
+		protected System.Web.UI.WebControls.FormView Form<%=GetTableName(SourceTable)%> {
+			get { return withEventsField_Form<%=GetTableName(SourceTable)%>; }
+			set {
+				if (withEventsField_Form<%=GetTableName(SourceTable)%> != null) {
+					withEventsField_Form<%=GetTableName(SourceTable)%>.ItemInserting -= Form<%=GetTableName(SourceTable)%>_ItemInserting;
+					withEventsField_Form<%=GetTableName(SourceTable)%>.ItemInserted -= Form<%=GetTableName(SourceTable)%>_ItemInserted;
+					withEventsField_Form<%=GetTableName(SourceTable)%>.ItemUpdating -= Form<%=GetTableName(SourceTable)%>_ItemUpdating;
+					withEventsField_Form<%=GetTableName(SourceTable)%>.ItemUpdated -= Form<%=GetTableName(SourceTable)%>_ItemUpdated;
+				}
+				withEventsField_Form<%=GetTableName(SourceTable)%> = value;
+				if (withEventsField_Form<%=GetTableName(SourceTable)%> != null) {
+					withEventsField_Form<%=GetTableName(SourceTable)%>.ItemInserting += Form<%=GetTableName(SourceTable)%>_ItemInserting;
+					withEventsField_Form<%=GetTableName(SourceTable)%>.ItemInserted += Form<%=GetTableName(SourceTable)%>_ItemInserted;
+					withEventsField_Form<%=GetTableName(SourceTable)%>.ItemUpdating += Form<%=GetTableName(SourceTable)%>_ItemUpdating;
+					withEventsField_Form<%=GetTableName(SourceTable)%>.ItemUpdated += Form<%=GetTableName(SourceTable)%>_ItemUpdated;
+				}
+			}
+		}
+		private System.Web.UI.WebControls.ObjectDataSource withEventsField_<%=GetTableName(SourceTable)%>DataSource;
+		protected System.Web.UI.WebControls.ObjectDataSource <%=GetTableName(SourceTable)%>DataSource {
+			get { return withEventsField_<%=GetTableName(SourceTable)%>DataSource; }
+			set {
+				if (withEventsField_<%=GetTableName(SourceTable)%>DataSource != null) {
+					withEventsField_<%=GetTableName(SourceTable)%>DataSource.Selecting -= Set<%=GetTableName(SourceTable)%>PortalId;
+				}
+				withEventsField_<%=GetTableName(SourceTable)%>DataSource = value;
+				if (withEventsField_<%=GetTableName(SourceTable)%>DataSource != null) {
+					withEventsField_<%=GetTableName(SourceTable)%>DataSource.Selecting += Set<%=GetTableName(SourceTable)%>PortalId;
+				}
+			}
+		}
+		protected System.Web.UI.WebControls.GridView Grid<%=GetTableName(SourceTable)%>;
+		private System.Web.UI.WebControls.Button withEventsField_Add<%=GetTableName(SourceTable)%>ItemButton;
+		protected System.Web.UI.WebControls.Button Add<%=GetTableName(SourceTable)%>ItemButton {
+			get { Return withEventsField_Add<%=GetTableName(SourceTable)%>ItemButton; }
+			set {
+				if (withEventsField_Add<%=GetTableName(SourceTable)%>ItemButton != null) {
+					withEventsField_Add<%=GetTableName(SourceTable)%>ItemButton.Click -= Add<%=GetTableName(SourceTable)%>ItemButton_Click;
+				}
+				withEventsField_Add<%=GetTableName(SourceTable)%>ItemButton = value;
+				if (withEventsField_Add<%=GetTableName(SourceTable)%>ItemButton != null) {
+					withEventsField_Add<%=GetTableName(SourceTable)%>ItemButton.Click += Add<%=GetTableName(SourceTable)%>ItemButton_Click;
+				}
+			}
+		}
+		protected System.Web.UI.WebControls.Label lblStatus;
+		private System.Web.UI.WebControls.ImageButton withEventsField_btnSearch;
+		protected System.Web.UI.WebControls.ImageButton btnSearch {
+			get { Return withEventsField_btnSearch; }
+			set {
+				if (withEventsField_btnSearch != null) {
+					withEventsField_btnSearch.Click -= btnSearch_Click;
+				}
+				withEventsField_btnSearch = value;
+				if (withEventsField_btnSearch != null) {
+					withEventsField_btnSearch.Click += btnSearch_Click;
+				}
+			}
+		}
+
+		<% foreach (ColumnSchema column in SourceTable.PrimaryKey.MemberColumns) { %>
+		<%= GetMemberVariableDeclarationStatement(column, "cs") %>
+		<% } %>
+        #endregion
+
+		protected void Page_Load(Object sender, System.EventArgs e)
+		{
+		
+			<% foreach (ColumnSchema column in SourceTable.PrimaryKey.MemberColumns) { %>
+		    // Determine <%=column.Name%> to display
+            if ((Request.QueryString("<%=column.Name%>") != null)) {
+            	_<%= GetParseStatement(column,"cs") %>
+			}
+			<% } %>
+
+			if (HasNecessaryPermission(SecurityAccessLevel.Edit, PortalSettings, ModuleConfiguration, UserId.ToString)) {
+				Add<%=GetTableName(SourceTable)%>ItemButton.Enabled = True;
+
+				if ((Request.QueryString("Mode") != null)) {
+					if (Request.QueryString("Mode").ToString == "Insert") {
+						this.Form<%=GetTableName(SourceTable)%>.ChangeMode(FormViewMode.Insert);
+						this.Add<%=GetTableName(SourceTable)%>ItemButton.Visible = False;
+					}
+
+					if (Request.QueryString("Mode").ToString == "Update") {
+						this.Form<%=GetTableName(SourceTable)%>.ChangeMode(FormViewMode.Edit);
+						this.Add<%=GetTableName(SourceTable)%>ItemButton.Visible = False;
+					}
+				}
+			} else {
+				Add<%=GetTableName(SourceTable)%>ItemButton.Enabled = False;
+			}
+		}
+        
+        protected void Set<%=GetTableName(SourceTable)%>PortalId(Object sender, System.Web.UI.WebControls.ObjectDataSourceSelectingEventArgs e)
+		{
+            <% if(SourceTable.PrimaryKey.MemberColumns.Contains("portalId")) { %>
+			e.InputParameters("PortalId") = PortalId.ToString
+			<% } %>
+		 	<% if(SourceTable.PrimaryKey.MemberColumns.Contains("moduleId")) { %>
+			e.InputParameters("ModuleId") = ModuleId.ToString
+			<% } %>
+		}
+
+		protected void Form<%=GetTableName(SourceTable)%>_ItemInserting(Object sender, System.Web.UI.WebControls.FormViewInsertEventArgs e)
+		{
+		    <% if(SourceTable.Columns.Contains("portalId")) { %>
+			e.Values.Item("PortalId") = PortalId.ToString()
+			<% } %>
+			<% if(SourceTable.Columns.Contains("moduleId")) { %>
+			e.Values.Item("ModuleId") = PortalId.ToString()
+			<% } %>
+			<% if(SourceTable.Columns.Contains(CreatedBy)) { %>
+			e.Values.Item("<%=CreatedBy%>") = UserInfo.UserID
+			<% } %>
+			<% if(SourceTable.Columns.Contains(DateCreated)) { %>
+			e.Values.Item("<%=DateCreated%>") = Date.Now
+			<% } %>
+			<% if(SourceTable.Columns.Contains(UpdatedBy)) { %>
+			e.Values.Item("<%=UpdatedBy%>") = UserInfo.UserID
+			<% } %>
+			<% if(SourceTable.Columns.Contains(DateUpdated)) { %>
+			e.Values.Item("<%=DateUpdated%>") = Date.Now
+			<% } %>}
+
+		protected void Form<%=GetTableName(SourceTable)%>_ItemInserted(Object sender, System.Web.UI.WebControls.FormViewInsertedEventArgs e)
+		{
+			this.Form<%=GetTableName(SourceTable)%>.ChangeMode(FormViewMode.ReadOnly);
+			lblStatus.Text = Localization.GetString("InsertSuccess", this.LocalResourceFile);
+			this.Add<%=GetTableName(SourceTable)%>ItemButton.Visible = True;
+		}
+
+		protected void Form<%=GetTableName(SourceTable)%>_ItemUpdating(Object sender, System.Web.UI.WebControls.FormViewUpdateEventArgs e)
+		{
+            <% if(SourceTable.Columns.Contains("portalId")) { %>
+			e.NewValues.Item("PortalId") = PortalId.ToString()
+			<% } %>
+			<% if(SourceTable.Columns.Contains("moduleId")) { %>
+			e.NewValues.Item("ModuleId") = PortalId.ToString()
+			<% } %>
+			<% if(SourceTable.Columns.Contains(CreatedBy)) { %>
+			e.NewValues.Item("<%=CreatedBy%>") = e.OldValues.Item("<%=CreatedBy%>")
+			<% } %>
+			<% if(SourceTable.Columns.Contains(DateCreated)) { %>
+			e.NewValues.Item("<%=DateCreated%>") = e.OldValues.Item("<%=DateCreated%>")
+			<% } %>
+			<% if(SourceTable.Columns.Contains(UpdatedBy)) { %>
+			e.NewValues.Item("<%=UpdatedBy%>") = UserInfo.UserID
+			<% } %>
+			<% if(SourceTable.Columns.Contains(DateUpdated)) { %>
+			e.NewValues.Item("<%=DateUpdated%>") = Date.Now
+			<% } %>
+        }
+
+		protected void Form<%=GetTableName(SourceTable)%>_ItemUpdated(Object sender, System.Web.UI.WebControls.FormViewUpdatedEventArgs e)
+		{
+			this.Form<%=GetTableName(SourceTable)%>.ChangeMode(FormViewMode.ReadOnly);
+			lblStatus.Text = Localization.GetString("UpdateSuccess", this.LocalResourceFile);
+			this.Add<%=GetTableName(SourceTable)%>ItemButton.Visible = True;
+		}
+
+		protected void Add<%=GetTableName(SourceTable)%>ItemButton_Click(Object sender, System.EventArgs e)
+		{
+			this.Form<%=GetTableName(SourceTable)%>.ChangeMode(FormViewMode.Insert);
+			this.Add<%=GetTableName(SourceTable)%>ItemButton.Visible = False;
+		}
+
+		protected void Insert<%=GetTableName(SourceTable)%>ItemButton_Click(Object sender, System.EventArgs e)
+		{
+			lblStatus.Text = Localization.GetString("CompleteSave", this.LocalResourceFile);
+			this.Add<%=GetTableName(SourceTable)%>ItemButton.Visible = False;
+		}
+
+		protected void Insert<%=GetTableName(SourceTable)%>CancelButton_Click(Object sender, System.EventArgs e)
+		{
+			this.Form<%=GetTableName(SourceTable)%>.ChangeMode(FormViewMode.ReadOnly);
+			lblStatus.Text = Localization.GetString("InsertCancel", this.LocalResourceFile);
+			this.Add<%=GetTableName(SourceTable)%>ItemButton.Visible = True;
+		}
+
+		protected void Update<%=GetTableName(SourceTable)%>ItemButton_Click(Object sender, System.EventArgs e)
+		{
+		}
+
+		protected void Edit<%=GetTableName(SourceTable)%>ItemButton_Click(Object sender, System.EventArgs e)
+		{
+			this.Form<%=GetTableName(SourceTable)%>.ChangeMode(FormViewMode.Edit);
+			lblStatus.Text = Localization.GetString("CompleteSave", this.LocalResourceFile);
+			this.Add<%=GetTableName(SourceTable)%>ItemButton.Visible = True;
+		}
+
+		protected void Update<%=GetTableName(SourceTable)%>CancelButton_Click(Object sender, System.EventArgs e)
+		{
+			this.Form<%=GetTableName(SourceTable)%>.ChangeMode(FormViewMode.ReadOnly);
+			lblStatus.Text = Localization.GetString("UpdateCancel", this.LocalResourceFile);
+		}
+
+		protected void btnSearch_Click(Object sender, System.Web.UI.ImageClickEventArgs e)
+		{
+		}
+
+		#region "Optional Interfaces"
+		public Entities.Modules.Actions.ModuleActionCollection ModuleActions {
+			get {
+				Entities.Modules.Actions.ModuleActionCollection Actions = New Entities.Modules.Actions.ModuleActionCollection();
+				try {
+				} catch (Exception exc) {
+					//ProcessModuleLoadException(Me, exc)
+				}
+				return Actions;
+			}
+		}
+		public View<%=GetTableName(SourceTable)%>()
+		{
+			Load += Page_Load;
+		}
+		#endregion
+
+	}
+
+}

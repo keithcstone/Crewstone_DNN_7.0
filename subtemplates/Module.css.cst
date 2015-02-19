@@ -1,0 +1,28 @@
+﻿<%-- 
+Name: Module.css.cst
+Author: Keith Stone
+Description: Generates the DotNetNuke Module CSS
+Revision: 2015.01.24
+Note: For the latest version of this template, http://www.crewstone.com		
+--%>
+<%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="CSS" Description="Generates the DNN Module CSS file." %>
+<%@ Property Category="Naming Convention" Name="Namespace" Type="System.String" Default="NameSpace" Description="Used to generate the Namespace declaration." %>
+<%@ Property Category="Naming Convention" Name="CompanyName" Type="System.String" Default="YourCompany" Description="Used to generate the copyright declaration." %>
+<%@ Property Category="Naming Convention" Name="ModuleName" Type="System.String" Default="" Description="" %>
+<%@ Property Category="Naming Convention" Name="FriendlyName" Type="System.String" Default="Your Module" Description="Descriptive module name" %>
+<%@ Property Category="DataSource" Name="MultiSourceTable" Type="SchemaExplorer.TableSchemaCollection" Description="Table that the object is based on." %>
+<%@ Property Category="DataSource" Name="ObjectQualifier" Type="System.String" Default="" Optional="Yes" Description="Prefix for objects to be generated." %>
+<%@ Property Category="Project Options" Name="Language" Type="System.String" Default="vb" Optional="True" Description="vb for Visual Basic, cs for CSharp" %>
+<%@ Property Category="DotNetNuke Options" Name="IncludeSource" Type="System.Boolean" Default="True" Description="If true source code will be included in installation package." %>
+<%@ Property Category="Web Control Options" Name="CreateViewControl" Type="System.Boolean" Default="True" Description="If true, a View web control will be created." %>
+<%@ Property Category="Web Control Options" Name="CreateListControl" Type="System.Boolean" Default="True" Description="If true, a List web control will be created." %>
+<%@ Property Category="Web Control Options" Name="CreateEditControl" Type="System.Boolean" Default="True" Description="If true, a View web control will be created." %>
+<%@ Property Category="Web Control Options" Name="CreateSettingsControl" Type="System.Boolean" Default="True" Description="If true, a Settings web control will be created." %>
+<%@ Property Category="Web Control Options" Name="CreateModuleMenuControl" Type="System.Boolean" Default="false" Description="If true, a top level web control will be created." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+

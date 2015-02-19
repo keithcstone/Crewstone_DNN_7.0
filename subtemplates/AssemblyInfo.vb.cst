@@ -1,0 +1,55 @@
+﻿<%-- 
+Name: AssemblyInfo.vb.cst
+Author: Keith Stone
+Description: Generates the vb AssemblyInfo File
+Revision: 2014.03.16
+Note: 
+
+Need to add references to DotNetNuke.dll and Imports Microsoft.ApplicationBlocks.Data
+--%>
+<%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="VB" Description="Generates the code-behind for the View[ModuleName].ascx web control." %>
+<%@ Property Category="Naming Convention" Name="ModuleName" Type="System.String" Default="YourModule" Description="Module Name" %>
+<%@ Property Category="Naming Convention" Name="FriendlyName" Type="System.String" Default="Your Module" Description="Descriptive module name" %>
+<%@ Property Category="Naming Convention" Name="Namespace" Type="System.String" Default="Namespace" Description="Used to generate the Namespace declaration, no spaces or punctuation" %>
+<%@ Property Category="Naming Convention" Name="CompanyName" Type="System.String" Default="YourCompany" Description="Descriptive name to generate the copyright declaration and documentation." %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+Imports System.Reflection
+Imports System.Runtime.InteropServices
+
+' General Information about an assembly is controlled through the following 
+' set of attributes. Change these attribute values to modify the information
+' associated with an assembly.
+<Assembly: AssemblyTitle("<%=ModuleName%>")>
+<Assembly: AssemblyDescription("<%=FriendlyName%>")>
+<Assembly: AssemblyConfiguration("")>
+<Assembly: AssemblyCompany("<%=CompanyName%>")>
+<Assembly: AssemblyProduct("<%=FriendlyName%>")>
+<Assembly: AssemblyCopyright("Copyright © <%= DateTime.Now.Year.ToString() %> <%=CompanyName%>")>
+<Assembly: AssemblyTrademark("")>
+<Assembly: AssemblyCulture("")>
+
+' Setting ComVisible to false makes the types in this assembly not visible 
+' to COM components.  If you need to access a type in this assembly from 
+' COM, set the ComVisible attribute to true on that type.
+<Assembly: ComVisible(False)>
+
+' The following GUID is for the ID of the typelib if this project is exposed to COM
+<Assembly: Guid("5ef01dd5-84a1-49f3-9232-067440288455")>
+
+' Version information for an assembly consists of the following four values:
+'
+'      Major Version
+'      Minor Version 
+'      Build Number
+'      Revision
+'
+' You can specify all the values or you can default the Revision and Build Numbers 
+' by using the '*' as shown below:
+<Assembly: AssemblyVersion("00.00.01.*")>
+<Assembly: AssemblyFileVersion("00.00.01")>

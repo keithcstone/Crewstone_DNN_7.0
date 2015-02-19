@@ -1,0 +1,196 @@
+﻿<%-- 
+Name: TableViewModel.js.cst
+Author: Keith Stone
+Description: Generates the Javascript table view model.
+Revision: 2014.03.06
+Note: 
+--%>
+<%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="JavaScript" Description="Generates the Javascript table view model" %>
+<%@ Property Category="Naming Convention" Name="ModuleName" Type="System.String" Default="YourModule" Description="Module Name" %>
+<%@ Property Category="Naming Convention" Name="FriendlyName" Type="System.String" Default="Your Module" Description="Descriptive module name" %>
+<%@ Property Category="Naming Convention" Name="Namespace" Type="System.String" Default="Namespace" Description="Used to generate the Namespace declaration, no spaces or punctuation" %>
+<%@ Property Category="Naming Convention" Name="CompanyName" Type="System.String" Default="YourCompany" Description="Descriptive name to generate the copyright declaration and documentation." %>
+<%@ Property Category="DataSource" Name="SourceTable" Type="SchemaExplorer.TableSchema" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+
+function <%= GetTableName(SourceTable) %>ViewModel(moduleid, moduleName, editPanelId, addPanelId, editable) {
+    //Make the self as 'this' reference
+    var self = this;
+
+    var dn<%= GetTableName(SourceTable) %>Sf = $.ServicesFramework(moduleid);
+
+    //Declare observable which will be bind with UI 
+    <% foreach (ColumnSchema column in SourceTable.PrimaryKey.MemberColumns) { %>
+	self.<%= column.Name %> = ko.observable(0);
+	<% } %>
+	<% foreach (ColumnSchema column in SourceTable.NonPrimaryKeyColumns) { %>
+	self.<%= column.Name %> = ko.observable(0);
+	<% } %>
+    self.Status = ko.observable("");
+    self.Editable = ko.observable(editable);
+
+    // Simple object representing the current edited Item
+    var <%= GetTableName(SourceTable) %> = {
+    <% foreach (ColumnSchema column in SourceTable.PrimaryKey.MemberColumns) { %>
+	    <%= column.Name %>: self.<%= column.Name %>,
+	<% } %>
+	<% foreach (ColumnSchema column in SourceTable.NonPrimaryKeyColumns) { %>
+	    <%= column.Name %>: self.<%= column.Name %>,
+	<% } %>
+        dummyfill: self.dummyfill
+    };
+
+    self.<%= GetTableName(SourceTable) %> = ko.observable();
+    self.<%= GetTableName(SourceTable) %>s = ko.observableArray(); // Contains the list of <%= GetTableName(SourceTable) %>s
+
+    // Initialize the view-model
+    $.ajax({
+        type: "GET",
+        url: dn<%= GetTableName(SourceTable) %>Sf.getServiceRoot(moduleName) + "<%= GetTableName(SourceTable) %>/list",
+        beforeSend: dn<%= GetTableName(SourceTable) %>Sf.setModuleHeaders,
+        dataType: "json",
+        success: function (data) {
+            self.<%= GetTableName(SourceTable) %>s(data); //Put the response in ObservableArray
+        }
+    });
+
+    // Calculate number of items
+    self.ItemCount = ko.computed(function () {
+        return self.<%= GetTableName(SourceTable) %>s().length;
+    });
+
+    //Add New <%= GetTableName(SourceTable) %>
+    self.create = function () {
+        if (<%= GetTableName(SourceTable) %>.ItemName() != "" && <%= GetTableName(SourceTable) %>.ItemDescription() != "") {
+            $.ajax({
+                type: "POST",
+                url: dn<%= GetTableName(SourceTable) %>Sf.getServiceRoot(moduleName) + "<%= GetTableName(SourceTable) %>/new",
+                beforeSend: dn<%= GetTableName(SourceTable) %>Sf.setModuleHeaders,
+                data: ko.toJSON(<%= GetTableName(SourceTable) %>),
+                dataType: "json",
+                processData: false,
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    var id = parseInt(data);
+                    if (id > 0) {
+                        self.get<%= GetTableName(SourceTable) %>(id);
+                        self.<%= GetTableName(SourceTable) %>s.push(self.<%= GetTableName(SourceTable) %>());
+                        self.reset();
+                    }
+                }
+            }).fail(function (xhr, textStatus, err) {
+                self.Status(err);
+            });
+        }
+        else {
+            alert('Please enter a name and description');
+        }
+
+    }
+    // Delete <%= GetTableName(SourceTable) %> details
+    self.delete = function (<%= GetTableName(SourceTable) %>) {
+        if (confirm('Are you sure to delete "' + <%= GetTableName(SourceTable) %>.ItemName + '"?')) {
+            var id = <%= GetTableName(SourceTable) %>.ItemId;
+            $.ajax({
+                type: "POST",
+                url: dn<%= GetTableName(SourceTable) %>Sf.getServiceRoot(moduleName) + "<%= GetTableName(SourceTable) %>/delete",
+                beforeSend: dn<%= GetTableName(SourceTable) %>Sf.setModuleHeaders,
+                cache: false,
+                data: ko.toJSON(<%= GetTableName(SourceTable) %>),
+                processData: false,
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    self.<%= GetTableName(SourceTable) %>s.remove(<%= GetTableName(SourceTable) %>);
+                }
+            }).fail(
+            function (xhr, textStatus, err) {
+                self.Status(err);
+            });
+        }
+    }
+
+    // Edit <%= GetTableName(SourceTable) %> details
+    self.addNew = function() {
+        $("#" + addPanelId).dialog({ modal: true, width: 450 });
+    }
+
+    // Edit <%= GetTableName(SourceTable) %> details
+    self.edit = function (<%= GetTableName(SourceTable) %>) {
+        self.<%= GetTableName(SourceTable) %>(<%= GetTableName(SourceTable) %>);
+        $("#" + editPanelId).dialog({ modal: true, width: 450 });
+    }
+
+    // Update product details
+    self.update = function () {
+        var full<%= GetTableName(SourceTable) %> = self.<%= GetTableName(SourceTable) %>();
+
+        $.ajax({
+            type: "POST",
+            cache: false,
+            url: dn<%= GetTableName(SourceTable) %>Sf.getServiceRoot(moduleName) + "<%= GetTableName(SourceTable) %>/edit",
+            beforeSend: dn<%= GetTableName(SourceTable) %>Sf.setModuleHeaders,
+            cache: false,
+            data: ko.toJSON(full<%= GetTableName(SourceTable) %>),
+            processData: false,
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                if (data == 'True') {
+                    // Refresh the observable array to update the change
+                    self.refresh<%= GetTableName(SourceTable) %>List();
+                    self.cancel();
+                } else {
+                    alert("An update error occurred: " + data);
+                }
+            }
+        }).fail(
+        function (xhr, textStatus, err) {
+            self.Status(err);
+        });
+    }
+
+    // Get single <%= GetTableName(SourceTable) %> details
+    self.get<%= GetTableName(SourceTable) %> = function (id) {
+        $.ajax({
+            type: "POST",
+            url: dn<%= GetTableName(SourceTable) %>Sf.getServiceRoot(moduleName) + "<%= GetTableName(SourceTable) %>/byid",
+            beforeSend: dn<%= GetTableName(SourceTable) %>Sf.setModuleHeaders,
+            cache: false,
+            data: ko.toJSON({ "<%= GetTableName(SourceTable) %>Id": id }),
+            async: false,
+            processData: false,
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                self.<%= GetTableName(SourceTable) %>(data);
+            }
+        }).fail(
+        function (xhr, textStatus, err) {
+            self.Status(err);
+        });
+    }
+
+    // Reset <%= GetTableName(SourceTable) %> details
+    self.reset = function () {
+        $("#" + addPanelId).dialog('close');
+        self.ItemId(0);
+        self.AssignedUserId(0);
+        self.ItemName("");
+        self.ItemDescription("");
+    }
+
+    self.refresh<%= GetTableName(SourceTable) %>List = function () {
+        var data = self.<%= GetTableName(SourceTable) %>s().slice(0);
+        self.<%= GetTableName(SourceTable) %>s([]);
+        self.<%= GetTableName(SourceTable) %>s(data);
+    };
+
+    // Cancel <%= GetTableName(SourceTable) %> details
+    self.cancel = function () {
+        $("#" + editPanelId).dialog('close');
+        self.<%= GetTableName(SourceTable) %>(null);
+    }
+}

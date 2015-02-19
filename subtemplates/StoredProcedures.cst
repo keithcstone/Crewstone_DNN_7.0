@@ -1,0 +1,696 @@
+﻿<%-- 
+Name: StoredProcedures.cst
+Author: Keith Stone
+Description: Generates the standard set of CRUD stored procedures for DotNetNuke BLL
+Revision: 2014.04.29
+Note: For the latest version of this template, http://www.crewstone.com		
+--%>
+
+<%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="T-SQL" Description="Generates SELECT/INSERT/UPDATE/DELETE stored procedure based on a database table schema." Debug="True" %>
+<%@ Property Category="DataSource" Name="MultiSourceTable" Type="SchemaExplorer.TableSchemaCollection" Description="Table that the stored procedures should be based on." %>
+<%@ Property Category="DataSource" Name="ObjectQualifier" Type="System.String" Default="" Optional="True" Description="Prefix for objects to be generated." %>
+<%@ Property Category="Naming Convention" Name="ModuleName" Type="System.String" Default="YourModule" Description="" %>
+<%@ Property Category="Database Options" Name="IncludeDrop" Type="System.Boolean" Default="True" Description="If true drop statements will be generated to drop existing stored procedures." %>
+<%@ Property Category="Database Options" Name="IncludeInsert" Type="System.Boolean" Default="True" Description="If true insert statements will be generated." %>
+<%@ Property Category="Database Options" Name="IncludeUpdate" Type="System.Boolean" Default="True" Description="If true update statements will be generated." %>
+<%@ Property Category="Database Options" Name="IncludePaging" Type="System.Boolean" Default="True" Description="If true paging/sorting statements will be generated." %>
+<%@ Property Category="Database Options" Name="IncludeDelete" Type="System.Boolean" Default="True" Description="If true delete statements will be generated." %>
+<%@ Property Category="Database Options" Name="IncludeGet" Type="System.Boolean" Default="True" Description="If true get statements will be generated." %>
+<%@ Property Category="Database Options" Name="IncludeList" Type="System.Boolean" Default="True" Description="If true list statements will be generated." %>
+<%@ Property Category="Database Options" Name="IncludeForeignKeyProcs" Type="System.Boolean" Default="True" Description="If true get statements will be generated for every foreign key in the table." %>
+<%@ Property Category="Style" Name="PagingKeyword" Type="System.String" Default="GetPage" Description="Suffix to use for all generated PAGING/SORTING stored procedures." %>
+<%@ Property Category="Style" Name="InsertKeyword" Type="System.String" Default="Add" Description="Suffix to use for all generated INSERT stored procedures." %>
+<%@ Property Category="Style" Name="UpdateKeyword" Type="System.String" Default="Update" Description="Suffix to use for all generated UPDATE stored procedures." %>
+<%@ Property Category="Style" Name="DeleteKeyword" Type="System.String" Default="Delete" Description="Suffix to use for all generated DELETE stored procedures." %>
+<%@ Property Category="Style" Name="SelectKeyword" Type="System.String" Default="Get" Description="Suffix to use for all generated SELECT stored procedures." %>
+<%@ Property Category="Style" Name="ListKeyword" Type="System.String" Default="List" Description="Suffix to use for all generated SELECT stored procedures." %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Collections.Generic" %>
+
+/************************************************************/
+/*****              SqlDataProvider                     *****/
+/*****                                                  *****/
+/*****                                                  *****/
+/***** Note: To manually execute this script you must   *****/
+/*****       perform a search and replace operation     *****/
+/*****       for {databaseOwner} and {objectQualifier}  *****/
+/*****                                                  *****/
+/************************************************************/
+
+<% 
+bool TimeStampPresent = false;
+string TimeStampName = ""; %>
+
+
+<% 
+foreach(SchemaExplorer.TableSchema SourceTable in MultiSourceTable) 
+{ 
+%> 
+<% if (SourceTable.PrimaryKey == null) throw new ApplicationException("SourceTable does not contain a primary key."); %>
+<% if (SourceTable.PrimaryKey != null) { %>
+/* =====================================================================================
+ *   TABLE: <%= GetTableName(SourceTable, false) %>
+ * ===================================================================================== */
+<%  %>
+
+
+/** Create Table **/
+if not exists (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}[{objectQualifier}<%=GetTableName(SourceTable, false)%>]') and OBJECTPROPERTY(id, N'IsTable') = 1)
+	BEGIN
+		CREATE TABLE {databaseOwner}[{objectQualifier}<%=GetTableName(SourceTable, false)%>]
+		(
+		<% for (int z = 0; z < SourceTable.Columns.Count; z++) 
+		{
+			String colName = SourceTable.Columns[z].Name;
+			String colType = GetSqlDbType(SourceTable.Columns[z]);
+			
+			String constrain = "";
+	
+			//Response.Write("/*" +SourceTable.Columns[z].Size+ "*/");
+			
+			SchemaExplorer.ExtendedPropertyCollection exProps = SourceTable.Columns[z].ExtendedProperties;
+			if (exProps.Contains("CS_IsIdentity") && (bool)exProps["CS_IsIdentity"].Value)
+			{
+				constrain += "IDENTITY(" + exProps["CS_IdentitySeed"].Value+ ", " + exProps["CS_IdentityIncrement"].Value + ") ";
+			}
+			/*
+			foreach(SchemaExplorer.ExtendedProperty p in exProps)
+			{
+				Response.Write(p.Name + " = " + p.Value + Environment.NewLine);
+			}
+			//*/
+			
+			if (!SourceTable.Columns[z].AllowDBNull)
+			{
+				constrain += "NOT NULL ";
+			}
+
+			
+		%>
+			[<%=colName%>] <%=colType%> <%=constrain%> <% if (z < SourceTable.Columns.Count - 1) { %>,<% } %>
+		<%
+		} 
+		%>
+		)
+		
+
+		
+		<% 
+		
+		bool isPkClustered = false;
+		if (SourceTable.HasPrimaryKey)
+		{
+			String primaryKeyName = "";
+			if (SourceTable.PrimaryKey.Name == "")
+			{
+				primaryKeyName = "PK_{objectQualifier}" + GetTableName(SourceTable, false);
+			}
+			else
+			{
+				primaryKeyName = SourceTable.PrimaryKey.Name;
+			}
+
+			String colNames = "";
+			for (int z = 0; z < SourceTable.PrimaryKey.MemberColumns.Count; z++) 
+			{
+				
+				colNames += " [" + SourceTable.PrimaryKey.MemberColumns[z].Name + "]";
+				if (z < SourceTable.PrimaryKey.MemberColumns.Count - 1)
+				{
+					colNames += ",";
+				}
+			}			
+			
+		%>
+		ALTER TABLE {databaseOwner}[{objectQualifier}<%=GetTableName(SourceTable, false)%>] 
+			ADD CONSTRAINT [<%=primaryKeyName%>] PRIMARY KEY CLUSTERED  ( <%=colNames%> )
+		<%
+		} // End: SourceTable.HasPrimaryKey
+			
+		
+		%>
+		
+		
+
+		
+		-- Uncomment following line to create index on ModuleID
+		-- CREATE NONCLUSTERED INDEX [IX_{objectQualifier}YourCompany_test2] ON {databaseOwner}[{objectQualifier}YourCompany_test2] ([ModuleID])
+
+
+
+
+		/******************************** Update Default Values of columns  *****************************/
+		<%
+		List<int> indices = new List<int>();
+		for (int z = 0; z < SourceTable.Columns.Count; z++) 
+		{
+			String colName = SourceTable.Columns[z].Name;
+			
+			
+			SchemaExplorer.ExtendedPropertyCollection exProps = SourceTable.Columns[z].ExtendedProperties;
+			if (exProps.Contains("CS_Default"))
+            {
+                Object v = exProps["CS_Default"].Value;
+			
+			    if (v != null && v.ToString().Length > 0)
+			    {
+				    indices.Add(z);
+			    }
+            }
+		}
+		
+		if (indices.Count > 0)
+		{
+		%>
+		ALTER TABLE {databaseOwner}[{objectQualifier}<%=GetTableName(SourceTable, false)%>] WITH NOCHECK ADD 	
+		<%
+			for (int z = 0; z < indices.Count; z++) 
+			{
+				int index = indices[z]; // for every index in indices
+			
+				String colName = SourceTable.Columns[index].Name;
+				SchemaExplorer.ExtendedPropertyCollection exProps = SourceTable.Columns[index].ExtendedProperties;
+				Object v = exProps["CS_Default"].Value;
+				
+				String comma = ",";
+				if (z == indices.Count-1)
+				{
+					comma = "";
+				}
+				
+		%>
+			CONSTRAINT [DF_<%=GetTableName(SourceTable, false)%>_<%=colName%>] DEFAULT <%=v.ToString()%> FOR [<%=colName%>]<%=comma%>
+		<%	} // end for-loop%>
+		
+		<%
+		} // end if (indices.Count > 0)
+		%>
+	
+	
+		
+		/********************************** Update Description of columns  *******************************/
+		<%
+		for (int z = 0; z < SourceTable.Columns.Count; z++) 
+		{
+			String colName = SourceTable.Columns[z].Name;
+			String colDesc = SourceTable.Columns[z].Description;
+			
+			if (colDesc != null && colDesc.Length > 0)
+			{
+		%>
+
+        IF NOT EXISTS (SELECT * FROM ::fn_listextendedproperty(N'MS_Description' , N'SCHEMA',N'{databaseOwner}', N'TABLE',N'[{objectQualifier}<%=GetTableName(SourceTable, false)%>]', N'COLUMN',N'<%=colName%>'))
+        EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'<%=colDesc%>' , @level0type=N'SCHEMA',@level0name=N'{databaseOwner}', @level1type=N'TABLE',@level1name=N'[{objectQualifier}<%=GetTableName(SourceTable, false)%>]', @level2type=N'COLUMN',@level2name=N'<%=colName%>'
+        GO
+		<%
+			} // end if
+		} // end for
+		%>
+
+	END
+GO
+
+<% if (IncludeDrop) { %>
+
+	<%-- DROP GET PROCEDURE -------------------------------------------------------------------------------------%>
+	<% if (IncludeGet) { %>
+/****** Object:  Stored Procedure <%= GetStoredProcName(SourceTable,SelectKeyword) %>    Script Date: <%= DateTime.Now.ToLongDateString() %> ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'<%= GetStoredProcName(SourceTable,SelectKeyword) %>') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure <%= GetStoredProcName(SourceTable,SelectKeyword) %>
+GO
+
+	<% } %>
+	<%-- DROP LIST PROCEDURE -------------------------------------------------------------------------------------%>
+	<% if (IncludeList) { %>
+/****** Object:  Stored Procedure <%= GetStoredProcName(SourceTable,ListKeyword) %>    Script Date: <%= DateTime.Now.ToLongDateString() %> ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'<%= GetStoredProcName(SourceTable,ListKeyword) %>') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure <%= GetStoredProcName(SourceTable,ListKeyword) %>
+GO
+
+	<% } %>
+	<%-- DROP GET FOREIGN KEY PROCEDURES -----------------------------------------------------------------------------%>
+	<% if (IncludeForeignKeyProcs) { %>
+		<% for (int K = 0; K < SourceTable.ForeignKeys.Count; K++) { %>
+		<% TableKeySchema fk = SourceTable.ForeignKeys[K]; %>
+/****** Object:  Stored Procedure <%= GetStoredProcName(SourceTable,SelectKeyword) %>By<%= GetTableName(fk.PrimaryKeyTable) %>    Script Date: <%= DateTime.Now.ToLongDateString() %> ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'<%= GetStoredProcName(SourceTable,SelectKeyword) %>By<%= GetTableName(fk.PrimaryKeyTable) %>') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure <%= GetStoredProcName(SourceTable,SelectKeyword) %>By<%= GetTableName(fk.PrimaryKeyTable) %>
+GO
+		<% } %>
+		<% if (SourceTable.ForeignKeys.Count > 0) { %>
+if exists (select * from dbo.sysobjects where id = object_id(N'<%= GetStoredProcName(SourceTable,SelectKeyword) %>Dependancies') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure <%= GetStoredProcName(SourceTable,SelectKeyword) %>Dependancies 
+GO
+		<% } %>
+	<% } %>
+	<%-- DROP INSERT PROCEDURE -----------------------------------------------------------------------------------%>
+	<% if (IncludeInsert) { %>
+/****** Object:  Stored Procedure <%= GetStoredProcName(SourceTable,InsertKeyword) %>    Script Date: <%= DateTime.Now.ToLongDateString() %> ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'<%= GetStoredProcName(SourceTable,InsertKeyword) %>') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure <%= GetStoredProcName(SourceTable,InsertKeyword) %>
+GO
+
+	<% } %>
+	<%-- DROP UPDATE PROCEDURE -------------------------------------------------------------------------------------%>
+	<% if (IncludeUpdate) { %>
+/****** Object:  Stored Procedure <%= GetStoredProcName(SourceTable,UpdateKeyword) %>    Script Date: <%= DateTime.Now.ToLongDateString() %> ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'<%= GetStoredProcName(SourceTable,UpdateKeyword) %>') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure <%= GetStoredProcName(SourceTable,UpdateKeyword) %>
+GO
+
+	<% } %>
+	<%-- DROP DELETE PROCEDURE -------------------------------------------------------------------------------------%>
+	<% if (IncludeDelete) { %>
+/****** Object:  Stored Procedure <%= GetStoredProcName(SourceTable,DeleteKeyword) %>    Script Date: <%= DateTime.Now.ToLongDateString() %> ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'<%= GetStoredProcName(SourceTable,DeleteKeyword) %>') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure <%= GetStoredProcName(SourceTable,DeleteKeyword) %>
+GO
+	<% } %>
+	<%-- DROP PAGING PROCEDURE -------------------------------------------------------------------------------------%>
+	<% if (IncludePaging) { %>
+/****** Object:  Stored Procedure <%= GetStoredProcName(SourceTable,PagingKeyword) %>    Script Date: <%= DateTime.Now.ToLongDateString() %> ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'<%= GetStoredProcName(SourceTable,PagingKeyword) %>') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure <%= GetStoredProcName(SourceTable,PagingKeyword) %>
+GO
+	<% } %>	
+	
+<% } %>
+<% } %>
+
+<%-- GET PROCEDURE -------------------------------------------------------------------------------------%>
+<% if (IncludeGet) { %>
+/* -------------------------------------------------------------------------------------
+/   <%= GetStoredProcName(SourceTable,SelectKeyword) %>
+/  ------------------------------------------------------------------------------------- */
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS OFF 
+GO
+
+CREATE PROCEDURE <%= GetStoredProcName(SourceTable,SelectKeyword) %>
+	<% for (int i = 0; i < SourceTable.PrimaryKey.MemberColumns.Count; i++) { %>
+	<%= GetSqlParameterStatement(SourceTable.PrimaryKey.MemberColumns[i]) %><% if (i < SourceTable.PrimaryKey.MemberColumns.Count - 1) { %>,<% } %>
+	<% } %>
+	<% if (SourceTable.Columns.Contains("moduleId")) {%>,@moduleId int <% } %>
+AS
+
+SELECT
+	<% for (int i = 0; i < SourceTable.Columns.Count; i++) { 
+	       if (SourceTable.Columns[i].ExtendedProperties["CS_LookupValue"] != null) { %>
+ 	[<%= GetObjectQualifier() %><%= GetLookupTable(SourceTable.Columns[i]) %>].[<%= GetLookupValue(SourceTable.Columns[i]) %>] as <%= GetLookupValue(SourceTable.Columns[i], true) %>,
+        <% } %>
+	[<%= GetObjectQualifier() %><%= GetTableName(SourceTable, false) %>].[<%= SourceTable.Columns[i].Name %>]<% if (i < SourceTable.Columns.Count - 1) { %>,<% } %>
+	<% } %>
+FROM [<%= GetObjectQualifier() %><%= GetTableName(SourceTable, false) %>]
+	<% for (int i = 0; i < SourceTable.Columns.Count; i++) { 
+	       if (SourceTable.Columns[i].ExtendedProperties["CS_LookupValue"] != null) { 
+		if (SourceTable.Columns[i].AllowDBNull) {%>
+   LEFT OUTER JOIN <%= GetLookupTable(SourceTable.Columns[i]) %> ON [<%= GetObjectQualifier() %><%= GetTableName(SourceTable, false) %>].[<%= SourceTable.Columns[i].Name %>] = [<%= GetObjectQualifier() %><%= GetLookupTable(SourceTable.Columns[i]) %>].[<%= GetLookupValue(SourceTable.Columns[i]) %>]
+ 	<% } else { %>
+   INNER JOIN <%= GetLookupTable(SourceTable.Columns[i]) %> ON [<%= GetObjectQualifier() %><%= GetTableName(SourceTable, false) %>].[<%= SourceTable.Columns[i].Name %>] = [<%= GetObjectQualifier() %><%= GetLookupTable(SourceTable.Columns[i]) %>].[<%= GetLookupValue(SourceTable.Columns[i]) %>]
+	<% } } } %>
+WHERE
+	<% for (int i = 0; i < SourceTable.PrimaryKey.MemberColumns.Count; i++) { %>
+	<% if (i > 0) { %>AND <% } %>[<%= GetObjectQualifier() %><%= GetTableName(SourceTable, false) %>].[<%= SourceTable.PrimaryKey.MemberColumns[i].Name %>] = @<%= SourceTable.PrimaryKey.MemberColumns[i].Name %>
+	<% } %>
+	<% if (SourceTable.Columns.Contains("moduleId")) {%>AND [<%= GetObjectQualifier() %><%= GetTableName(SourceTable, false) %>].[moduleid]=@moduleId <% } %>
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+<% } %>
+
+<%-- LIST PROCEDURE -------------------------------------------------------------------------------------%>
+<% if (IncludeList) { %>
+/* -------------------------------------------------------------------------------------
+/   <%= GetStoredProcName(SourceTable,ListKeyword) %> 
+/  ------------------------------------------------------------------------------------- */
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS OFF 
+GO
+
+CREATE PROCEDURE <%= GetStoredProcName(SourceTable,ListKeyword) %>
+<% if (SourceTable.Columns.Contains("moduleid")) { %> @ModuleID int <% }; %>  
+<% if (SourceTable.Columns.Contains("portalid")) { %> @PortalId int <% }; %>
+AS
+
+SELECT
+	<% for (int i = 0; i < SourceTable.Columns.Count; i++) { 
+	       if (SourceTable.Columns[i].ExtendedProperties["CS_LookupValue"] != null) { %>
+ 	[<%= GetObjectQualifier() %><%= GetLookupTable(SourceTable.Columns[i]) %>].[<%= GetLookupValue(SourceTable.Columns[i]) %>] as [<%= GetLookupValue(SourceTable.Columns[i], true) %>],
+        <% } %>
+	[<%= GetObjectQualifier() %><%= GetTableName(SourceTable, false) %>].[<%= SourceTable.Columns[i].Name %>]<% if (i < SourceTable.Columns.Count - 1) { %>,<% } %>
+	<% } %>
+FROM [<%= GetObjectQualifier() %><%= GetTableName(SourceTable, false) %>]
+	<% for (int i = 0; i < SourceTable.Columns.Count; i++) { 
+	       if (SourceTable.Columns[i].ExtendedProperties["CS_LookupValue"] != null) {  
+		if (SourceTable.Columns[i].AllowDBNull) {%>
+    LEFT OUTER JOIN <%= GetLookupTable(SourceTable.Columns[i]) %> ON [<%= GetObjectQualifier() %><%= GetTableName(SourceTable, false) %>].[<%= SourceTable.Columns[i].Name %>] = [<%= GetObjectQualifier() %><%= GetLookupTable(SourceTable.Columns[i]) %>].[<%= GetLookupValue(SourceTable.Columns[i]) %>]
+ 	<% } else { %>
+    INNER JOIN <%= GetLookupTable(SourceTable.Columns[i]) %> ON [<%= GetObjectQualifier() %><%= GetTableName(SourceTable, false) %>].[<%= SourceTable.Columns[i].Name %>] = [<%= GetObjectQualifier() %><%= GetLookupTable(SourceTable.Columns[i]) %>].[<%= GetLookupValue(SourceTable.Columns[i]) %>]
+	<% } } } %>
+<% if (SourceTable.Columns.Contains("moduleid")) { %> WHERE [<%= GetObjectQualifier() %><%= GetTableName(SourceTable, false) %>].[ModuleID]=@ModuleID <% } %>
+<% if (SourceTable.Columns.Contains("portalid")) { %> WHERE [<%= GetObjectQualifier() %><%= GetTableName(SourceTable, false) %>].[PortalId]=@PortalId <% } %>
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+<% } %>
+
+<%-- GET FOREIGN KEY PROCEDURE -------------------------------------------------------------------------------------%>
+<% if (IncludeForeignKeyProcs) { %>
+<% for (int K = 0; K < SourceTable.ForeignKeys.Count; K++) { %>
+<% TableKeySchema fk = SourceTable.ForeignKeys[K]; %>
+/* -------------------------------------------------------------------------------------
+/   <%= GetStoredProcName(SourceTable,SelectKeyword,GetTableName(fk.PrimaryKeyTable)) %>
+/  ------------------------------------------------------------------------------------- */
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS OFF 
+GO
+
+CREATE PROCEDURE <%= GetStoredProcName(SourceTable,SelectKeyword,GetTableName(fk.PrimaryKeyTable)) %>
+	<%= GetFKMemberColumns(fk) %>
+AS
+
+SELECT
+	<% for (int i = 0; i < SourceTable.Columns.Count; i++) { 
+	       if (SourceTable.Columns[i].ExtendedProperties["CS_LookupValue"] != null) { %>
+ 	[<%= GetObjectQualifier() %><%= GetLookupTable(SourceTable.Columns[i]) %>].[<%= GetLookupValue(SourceTable.Columns[i]) %>] as [<%= GetLookupValue(SourceTable.Columns[i], true) %>],
+        <% } %>
+	[<%= GetObjectQualifier() %><%= GetTableName(SourceTable, false) %>].[<%= SourceTable.Columns[i].Name %>]<% if (i < SourceTable.Columns.Count - 1) { %>,<% } %>
+	<% } %>
+FROM [<%= GetObjectQualifier() %><%= GetTableName(SourceTable, false) %>]
+	<% for (int i = 0; i < SourceTable.Columns.Count; i++) { 
+	       if (SourceTable.Columns[i].ExtendedProperties["CS_LookupValue"] != null) {  
+		if (SourceTable.Columns[i].AllowDBNull) {%>
+    LEFT OUTER JOIN <%= GetLookupTable(SourceTable.Columns[i]) %> ON [<%= GetObjectQualifier() %><%= GetTableName(SourceTable, false) %>].[<%= SourceTable.Columns[i].Name %>] = [<%= GetObjectQualifier() %><%= GetLookupTable(SourceTable.Columns[i]) %>].[<%= GetLookupValue(SourceTable.Columns[i]) %>]
+ 	<% } else { %>
+    INNER JOIN <%= GetLookupTable(SourceTable.Columns[i]) %> ON [<%= GetObjectQualifier() %><%= GetTableName(SourceTable, false) %>].[<%= SourceTable.Columns[i].Name %>] = [<%= GetObjectQualifier() %><%= GetLookupTable(SourceTable.Columns[i]) %>].[<%= GetLookupValue(SourceTable.Columns[i]) %>]
+	<% } } } %>
+WHERE
+	<%= GetFKMemberColumnsWhere(GetTableName(SourceTable, false),fk) %>
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+<% } %>
+	<% if (SourceTable.ForeignKeys.Count > 0) { %>
+/* -------------------------------------------------------------------------------------
+/   <%= GetStoredProcName(SourceTable,SelectKeyword) %>Dependancies
+/  ------------------------------------------------------------------------------------- */
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS OFF 
+GO
+
+CREATE PROCEDURE <%= GetStoredProcName(SourceTable,SelectKeyword) %>Dependancies
+	<% for (int i = 0; i < SourceTable.PrimaryKey.MemberColumns.Count; i++) { %>
+	<%= GetSqlParameterStatement(SourceTable.PrimaryKey.MemberColumns[i]) %><% if (i < SourceTable.PrimaryKey.MemberColumns.Count - 1) { %>,<% } %>
+	<% } %>
+	<% if (SourceTable.Columns.Contains("moduleId")) {%>,@moduleId int <% } %>
+AS
+<% for (int K = 0; K < SourceTable.ForeignKeys.Count; K++) { %>
+<% TableKeySchema fk = SourceTable.ForeignKeys[K]; %>
+
+SELECT Count(*) 
+FROM [<%= GetObjectQualifier() %><%= GetTableName(fk.PrimaryKeyTable) %>]
+WHERE
+	<%= GetFKMemberColumnsWhere(GetTableName(SourceTable, false),fk) %>
+<% } %>
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+	<% } %>
+<% } %>
+
+<%-- INSERT PROCEDURE -------------------------------------------------------------------------------------%>
+<% if (IncludeInsert) { %>
+/* -------------------------------------------------------------------------------------
+/   <%= GetStoredProcName(SourceTable,InsertKeyword) %>
+/  ------------------------------------------------------------------------------------- */
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS OFF 
+GO
+
+<% if (SourceTable.PrimaryKey.MemberColumns.Count == 1 && (SourceTable.PrimaryKey.MemberColumns[0].DataType == DbType.Guid || SourceTable.PrimaryKey.MemberColumns[0].DataType == DbType.Int16 || SourceTable.PrimaryKey.MemberColumns[0].DataType == DbType.Int32 || SourceTable.PrimaryKey.MemberColumns[0].DataType == DbType.Int64)) {
+	ColumnSchema primaryKey = SourceTable.PrimaryKey.MemberColumns[0];
+%>
+CREATE PROCEDURE <%= GetStoredProcName(SourceTable,InsertKeyword) %>
+	<% for (int i = 0; i < SourceTable.NonPrimaryKeyColumns.Count; i++) { %>
+	<% if (SourceTable.NonPrimaryKeyColumns[i].NativeType != "timestamp") { %>
+	<% if (i != 0) { %>,<% } %><%= GetSqlParameterStatement(SourceTable.NonPrimaryKeyColumns[i]) %>
+	<% } } %>
+AS
+DECLARE @myERROR int -- Local @@ERROR
+       , @myRowCount int -- Local @@ROWCOUNT
+
+<% if (primaryKey.DataType == DbType.Guid) { %>
+SET @<%= primaryKey.Name %> = NEWID()
+
+<% } %>
+INSERT INTO <%= GetObjectQualifier() %><%= GetTableName(SourceTable, false) %> (
+	<% if (primaryKey.DataType == DbType.Guid) { %>
+	[<%= primaryKey.Name %>],
+	<% } %>
+	<% for (int i = 0; i < SourceTable.NonPrimaryKeyColumns.Count; i++) { %>
+	<% if (SourceTable.NonPrimaryKeyColumns[i].NativeType != "timestamp") { %>
+	<% if (i != 0) { %>,<% } %>[<%= SourceTable.NonPrimaryKeyColumns[i].Name %>]
+	<% } %><% } %>
+) VALUES (
+	<% if (primaryKey.DataType == DbType.Guid) { %>
+	@<%= primaryKey.Name %>,
+	<% } %>
+	<% for (int i = 0; i < SourceTable.NonPrimaryKeyColumns.Count; i++) { %>
+	<% if (SourceTable.NonPrimaryKeyColumns[i].NativeType != "timestamp") { %>
+	<% if (i != 0) { %>,<% } %>@<%= SourceTable.NonPrimaryKeyColumns[i].Name %>
+	<% } %><% } %>
+)
+
+select SCOPE_IDENTITY()
+<% } else { %>
+CREATE PROCEDURE <%= GetStoredProcName(SourceTable,InsertKeyword) %>
+	<% for (int i = 0; i < SourceTable.Columns.Count; i++) { %>
+	<% if (SourceTable.Columns[i].NativeType != "timestamp") { %>
+	<% if (i != 0) { %>,<% } %><%= GetSqlParameterStatement(SourceTable.Columns[i]) %>
+	<% } %><% } %>
+AS
+DECLARE @myERROR int -- Local @@ERROR
+       , @myRowCount int -- Local @@ROWCOUNT
+
+-- THIS STORED PROCEDURE NEEDS TO BE MANUALLY COMPLETED
+-- MULITPLE PRIMARY KEY MEMBERS OR NON-GUID/INT PRIMARY KEY
+
+INSERT INTO <%= GetObjectQualifier() %><%= GetTableName(SourceTable, false) %> (
+	<% for (int i = 0; i < SourceTable.Columns.Count; i++) { %>
+	<% if (SourceTable.Columns[i].NativeType != "timestamp") { %>
+	<% if (i != 0) { %>,<% } %>[<%= SourceTable.Columns[i].Name %>]
+	<% } %><% } %>
+) VALUES (
+	<% for (int i = 0; i < SourceTable.Columns.Count; i++) { %>
+	<% if (SourceTable.Columns[i].NativeType != "timestamp") { %>
+	<% if (i != 0) { %>,<% } %>@<%= SourceTable.Columns[i].Name %>
+	<% } %><% } %>
+)
+
+select SCOPE_IDENTITY()
+<% } %>
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+<% } %>
+
+<%-- UPDATE PROCEDURE -------------------------------------------------------------------------------------%>
+<% if (IncludeUpdate) { %>
+/* -------------------------------------------------------------------------------------
+/   <%= GetStoredProcName(SourceTable,UpdateKeyword) %>
+/  ------------------------------------------------------------------------------------- */
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS OFF 
+GO
+
+<% TimeStampPresent = false;
+   TimeStampName = ""; %>
+
+CREATE PROCEDURE <%= GetStoredProcName(SourceTable,UpdateKeyword) %>
+	<% for (int i = 0; i < SourceTable.PrimaryKey.MemberColumns.Count; i++) { %>
+	<%= GetSqlParameterStatement(SourceTable.PrimaryKey.MemberColumns[i]) %>, <% if (SourceTable.PrimaryKey.MemberColumns[i].Description.Length > 0) { %>-- <%= SourceTable.PrimaryKey.MemberColumns[i].Description %><% } %>
+	<% } %>
+	<% for (int i = 0; i < SourceTable.NonPrimaryKeyColumns.Count; i++) { %>
+	<%= GetSqlParameterStatement(SourceTable.NonPrimaryKeyColumns[i]) %><% if (i < SourceTable.NonPrimaryKeyColumns.Count - 1) { %>,<% } %> <% if (SourceTable.NonPrimaryKeyColumns[i].Description.Length > 0) { %>-- <%= SourceTable.NonPrimaryKeyColumns[i].Description %><% } %>
+	<% } %>
+
+AS
+DECLARE @myERROR int -- Local @@ERROR
+       , @myRowCount int -- Local @@ROWCOUNT
+
+UPDATE <%= GetObjectQualifier() %><%= GetTableName(SourceTable, false) %> SET
+	<% for (int i = 0; i < SourceTable.NonPrimaryKeyColumns.Count; i++) { %>
+	  <% if (SourceTable.NonPrimaryKeyColumns[i].NativeType != "timestamp") { %>
+	   <% if (i != 0) { %>,<% } %>[<%= SourceTable.NonPrimaryKeyColumns[i].Name %>] = @<%= SourceTable.NonPrimaryKeyColumns[i].Name %>
+	<% } else { TimeStampPresent = false; TimeStampName = SourceTable.NonPrimaryKeyColumns[i].Name; } %>
+	<% } %>
+WHERE
+    <% if (TimeStampPresent) { %>[<%= TimeStampName%>] = @<%= TimeStampName %> AND<% } %>
+	<% for (int i = 0; i < SourceTable.PrimaryKey.MemberColumns.Count; i++) { %>
+	<% if (i > 0) { %>AND <% } %>[<%= GetObjectQualifier() %><%= GetTableName(SourceTable, false) %>].[<%= SourceTable.PrimaryKey.MemberColumns[i].Name %>] = @<%= SourceTable.PrimaryKey.MemberColumns[i].Name %>
+	<% } %>
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+<% } %>
+
+<%-- DELETE PROCEDURE -------------------------------------------------------------------------------------%>
+<% if (IncludeDelete) { %>
+/* -------------------------------------------------------------------------------------
+/   <%= GetStoredProcName(SourceTable,DeleteKeyword) %>
+/  ------------------------------------------------------------------------------------- */
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS OFF 
+GO
+<% 	TimeStampPresent = false;
+   	TimeStampName = ""; 
+ 	for (int i = 0; i < SourceTable.NonPrimaryKeyColumns.Count; i++) { 
+		if (SourceTable.NonPrimaryKeyColumns[i].NativeType == "timestamp") { 
+	 		TimeStampPresent = false; 
+			TimeStampName = SourceTable.NonPrimaryKeyColumns[i].Name; 
+			} 
+	} %>
+	
+CREATE PROCEDURE <%= GetStoredProcName(SourceTable,DeleteKeyword) %>
+	<% for (int i = 0; i < SourceTable.PrimaryKey.MemberColumns.Count; i++) { %>
+	<%= GetSqlParameterStatement(SourceTable.PrimaryKey.MemberColumns[i]) %><% if (i < SourceTable.PrimaryKey.MemberColumns.Count - 1) { %>,<% } %>
+	<% } %>
+    <% if (TimeStampPresent) { %>,@<%= TimeStampName%>] timestamp<% } %>
+	AS
+DECLARE @myERROR int -- Local @@ERROR
+       , @myRowCount int -- Local @@ROWCOUNT
+
+DELETE FROM <%= GetObjectQualifier() %><%= GetTableName(SourceTable, false) %>
+WHERE <% if (TimeStampPresent) { %>[<%= TimeStampName%>] = @<%= TimeStampName %> AND<% } %>
+	<% for (int i = 0; i < SourceTable.PrimaryKey.MemberColumns.Count; i++) { %>
+	<% if (i > 0) { %>AND <% } %>[<%= GetObjectQualifier() %><%= GetTableName(SourceTable, false) %>].[<%= SourceTable.PrimaryKey.MemberColumns[i].Name %>] = @<%= SourceTable.PrimaryKey.MemberColumns[i].Name %>
+	<% } %>
+GO
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+<% } %>
+
+<% if (IncludePaging) { %>
+/* -------------------------------------------------------------------------------------
+/   <%= GetStoredProcName(SourceTable,PagingKeyword)   %>
+/  ------------------------------------------------------------------------------------- */
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS OFF 
+GO
+
+CREATE PROCEDURE <%= GetStoredProcName(SourceTable,PagingKeyword) %>
+	@SortCol NVARCHAR(30),
+	@RequiredPage INT,
+	@RecordsPerPage INT,
+	@TotalRows INT OUTPUT
+AS
+DECLARE @tabTempSort TABLE(
+	RowNum INT IDENTITY(1, 1) PRIMARY KEY CLUSTERED,
+	<% GetColumnDef(SourceTable.PrimaryKey.MemberColumns); %>)
+	
+INSERT @tabTempSort 
+(
+	<% GetSelectColumns(SourceTable.PrimaryKey.MemberColumns); %>
+)
+SELECT	
+	<% GetSelectColumns(SourceTable.PrimaryKey.MemberColumns); %>
+FROM 
+	<%= GetObjectQualifier() %><%= GetTableName(SourceTable, false) %>
+ORDER BY 
+	<% GetOrderByClause(SourceTable.Columns);%>
+
+SELECT 
+	<% GetSelectColumnsAlias(SourceTable.Columns, "t1");%>
+FROM 
+	<%= GetObjectQualifier() %><%= GetTableName(SourceTable, false) %> t1
+INNER JOIN 
+	@tabTempSort t2 
+ON
+	<% GetJoinClause(SourceTable.PrimaryKey.MemberColumns);%>	
+WHERE 
+	RowNum BETWEEN (@RequiredPage - 1) * @RecordsPerPage + 1 
+	AND @RequiredPage * @RecordsPerPage 
+
+SELECT @TotalRows = COUNT(*) FROM @tabTempSort
+GO	
+
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO
+<% } %>
+
+<% 
+} 
+%> 
+/****** Object:  Stored Procedure {databaseOwner}<%= GetObjectQualifier() %><%=ModuleName%>Purge    Script Date: Monday, February 09, 2009 ******/
+if exists (select * from dbo.sysobjects where id = object_id(N'<%= GetTableOwner() %><%= GetObjectQualifier() %><%=ModuleName%>Purge') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+drop procedure <%= GetTableOwner() %><%= GetObjectQualifier() %><%=ModuleName%>Purge
+GO
+
+/* -------------------------------------------------------------------------------------
+/   <%=ModuleName%>Purge
+/  ------------------------------------------------------------------------------------- */
+SET QUOTED_IDENTIFIER ON 
+GO
+SET ANSI_NULLS OFF 
+GO
+	
+CREATE PROCEDURE <%= GetTableOwner() %><%= GetObjectQualifier() %><%=ModuleName%>Purge 
+ @PortalId int 
+AS
+DECLARE @myERROR int -- Local @@ERROR
+       , @myRowCount int -- Local @@ROWCOUNT
+
+BEGIN
+
+	SET NOCOUNT ON;
+<% 
+foreach(SchemaExplorer.TableSchema SourceTable in MultiSourceTable) 
+{ 
+%> 
+    DELETE FROM [<%= GetObjectQualifier() %><%= GetTableName(SourceTable, false) %>] WHERE [<%= GetObjectQualifier() %><%= GetTableName(SourceTable, false) %>].[PortalId]=@PortalId;
+<% 
+} 
+%> 
+END
+GO
+SET QUOTED_IDENTIFIER OFF 
+GO
+SET ANSI_NULLS ON 
+GO

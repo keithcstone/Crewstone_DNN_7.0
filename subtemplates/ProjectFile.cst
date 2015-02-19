@@ -1,0 +1,410 @@
+﻿<%-- 
+Name: ProjectFile.cst
+Author: Keith Stone
+Description: Generates the Project File
+Revision: 2014.08.16
+Note: 
+
+Need to add references to DotNetNuke.dll and Imports Microsoft.ApplicationBlocks.Data
+--%>
+<%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="XML"  Description="Generates the Visual Studio Project File." %>
+<%@ Property Name="MultiSourceTable" Type="SchemaExplorer.TableSchemaCollection" Category="Context" Description="Table that the object is based on." %>
+<%@ Property Name="DateCreated" Type="System.String" Default="" Optional="True" Category="Auditing" Description="The name of the field that designates the date/time a row was created" %>
+<%@ Property Name="CreatedBy" Type="System.String" Default="" Optional="True" Category="Auditing" Description="The name of the field that designates the DNN userid that created a row" %>
+<%@ Property Name="DateUpdated" Type="System.String" Default="" Optional="True" Category="Auditing" Description="The name of the field that designates the date/time a row was updated" %>
+<%@ Property Name="UpdatedBy" Type="System.String" Default="" Optional="True" Category="Auditing" Description="The name of the field that designates the DNN userid that updated a row" %>
+<%@ Property Category="Naming Convention" Name="ModuleName" Type="System.String" Default="YourModule" Description="Module Name" %>
+<%@ Property Category="Naming Convention" Name="FriendlyName" Type="System.String" Default="Your Module" Description="Descriptive module name" %>
+<%@ Property Category="Naming Convention" Name="Namespace" Type="System.String" Default="Namespace" Description="Used to generate the Namespace declaration, no spaces or punctuation" %>
+<%@ Property Category="Naming Convention" Name="CompanyName" Type="System.String" Default="YourCompany" Description="Descriptive name to generate the copyright declaration and documentation." %>
+<%@ Property Category="Project Options" Name="Language" Type="System.String" Default="vb" Optional="True" Description="vb for Visual Basic, cs for CSharp" %>
+<%@ Property Category="Project Options" Name="ProjectIdGUID" Type="System.Guid" Default="" Optional="True" Description="GUID ID language project" %>
+<%@ Property Category="Project Options" Name="ProjectGUID" Type="System.Guid" Default="" Optional="True" Description="GUID for language project" %>
+<%@ Property Category="Project Options" Name="ProjectTypeGUID" Type="System.Guid" Default="" Optional="True" Description="GUID for language type" %>
+<%@ Property Category="Project Options" Name="BuildIdGUID" Type="System.Guid" Default="" Optional="True" Description="GUID ID build project" %>
+<%@ Property Category="Project Options" Name="BuildGUID" Type="System.Guid" Default="" Optional="True" Description="GUID for build project" %>
+<%@ Property Category="Web Control Options" Name="CreateViewControl" Type="System.Boolean" Default="True" Description="If true, a View web control will be created." %>
+<%@ Property Category="Web Control Options" Name="CreateListControl" Type="System.Boolean" Default="True" Description="If true, a List web control will be created." %>
+<%@ Property Category="Web Control Options" Name="CreateEditControl" Type="System.Boolean" Default="True" Description="If true, a View web control will be created." %>
+<%@ Property Category="Web Control Options" Name="CreateSettingsControl" Type="System.Boolean" Default="True" Description="If true, a Settings web control will be created." %>
+
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid></ProjectGuid>
+    <ProjectTypeGuids></ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <RootNamespace>dws.Modules</RootNamespace>
+    <AssemblyName>dws.Modules.<%= ModuleName %></AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <OutputPath>..\..\bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile><%=Namespace%>.Modules.<%= ModuleName %>.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\Bin\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DotNetNuke">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\bin\dotnetnuke.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.ApplicationBlocks.Data, Version=2.0.0.0, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Microsoft.ApplicationBlocks.Data.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Web.Mobile" />
+  </ItemGroup>
+  <ItemGroup>
+   <%foreach(SchemaExplorer.TableSchema SourceTable in MultiSourceTable){%>
+	
+	<%if(CreateEditControl){%>
+	<Compile Include="Edit<%= GetTableName(SourceTable) %>.ascx.designer.<%=Language%>">
+      <DependentUpon>Edit<%= GetTableName(SourceTable) %>.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Edit<%= GetTableName(SourceTable) %>.ascx.<%=Language%>">
+      <DependentUpon>Edit<%= GetTableName(SourceTable) %>.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+	<%}%>
+	
+	<%if(CreateListControl){%>
+    <Compile Include="List<%= GetTableName(SourceTable) %>.ascx.designer.<%=Language%>">
+      <DependentUpon>List<%= GetTableName(SourceTable) %>.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="List<%= GetTableName(SourceTable) %>.ascx.<%=Language%>">
+      <DependentUpon>List<%= GetTableName(SourceTable) %>.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <%}%>
+	<%if(CreateViewControl){%> 
+	<Compile Include="View<%= GetTableName(SourceTable) %>.ascx.designer.<%=Language%>">
+      <DependentUpon>View<%= GetTableName(SourceTable) %>.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="View<%= GetTableName(SourceTable) %>.ascx.<%=Language%>">
+      <DependentUpon>View<%= GetTableName(SourceTable) %>.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+	<%}%>
+	<%}%>   <%-- End for each --%> 
+	
+	<%if(CreateSettingsControl){%> 
+	<Compile Include="Settings.ascx.designer.<%=Language%>">
+      <DependentUpon>Settings.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Settings.ascx.<%=Language%>">
+      <DependentUpon>Settings.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+	<%}%>
+	
+	<Compile Include="My Project\AssemblyInfo.<%=Language%>" />
+    <Compile Include="Providers\DataProvider.<%=Language%>" />
+	<Compile Include="Providers\SqlDataProvider\SqlDataProvider.<%=Language%>" />
+	
+	<%foreach(SchemaExplorer.TableSchema SourceTable in MultiSourceTable){%>	
+	<Compile Include="Providers\<%= GetTableName(SourceTable) %>Info.<%=Language%>" />
+	<Compile Include="Providers\<%= GetTableName(SourceTable) %>Controller.<%=Language%>" />
+    <%--<Compile Include="Providers\<%= GetTableName(SourceTable) %>PartialClasses.<%=Language%>" />--%>
+    <%}%>   <%-- End for each --%> 
+	
+	</ItemGroup>
+	<ItemGroup>	
+	<%foreach(SchemaExplorer.TableSchema SourceTable in MultiSourceTable){%>	
+
+    <%if(CreateEditControl){%> 
+	<Content Include="App_LocalResources\Edit<%= GetTableName(SourceTable) %>.ascx.resx" />
+    <%}%>
+	<%if(CreateListControl){%> 
+	<Content Include="App_LocalResources\List<%= GetTableName(SourceTable) %>.ascx.resx" />
+    <%}%>
+	
+	<%if(CreateViewControl){%> 
+	<Content Include="App_LocalResources\View<%= GetTableName(SourceTable) %>.ascx.resx" />
+	<%}%>
+	
+    <%}%>     <%-- End for each --%>
+	
+	<%if(CreateSettingsControl){%> 
+	<Content Include="App_LocalResources\Settings.ascx.resx" />
+    <%}%>
+	</ItemGroup>
+    <ItemGroup>
+	<%foreach(SchemaExplorer.TableSchema SourceTable in MultiSourceTable){%>	
+    <%if(CreateEditControl){%>
+	<Content Include="Edit<%= GetTableName(SourceTable) %>.ascx" />
+    <%}%>
+	<%if(CreateListControl){%>
+	<Content Include="List<%= GetTableName(SourceTable) %>.ascx" />
+    <%}%>
+	<%if(CreateViewControl){%>
+    <Content Include="View<%= GetTableName(SourceTable) %>.ascx" />
+	<%}%>
+    <%}%><%-- End for each --%>
+	<%if(CreateSettingsControl){%>
+    <Content Include="Settings.ascx" />
+    <%}%>
+</ItemGroup>
+<ItemGroup>
+    <Folder Include="App_Data\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v9.0\WebApplications\Microsoft.WebApplication.targets" Condition="" />
+	<!-- 
+	To modify your build process, add your task inside one of the targets below and uncomment it. 
+    Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+	-->
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>62596</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://production.local/482/DesktopModules/DNN_CS_unmodified</IISUrl>
+          <OverrideIISAppRootUrl>True</OverrideIISAppRootUrl>
+          <IISAppRootUrl>http://production.local/482</IISAppRootUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>
+    </SchemaVersion>
+    <ProjectGuid>{279C5C96-5031-407A-919C-EF50FD06454D}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{F184B08F-C81C-45F6-A57F-5ABD9991F28F}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <RootNamespace><%= Namespace %>.Modules.<%= ModuleName %></RootNamespace>
+    <AssemblyName><%= ModuleName %></AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <MyType>Custom</MyType>
+    <UseIISExpress>false</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>..\..\bin\</OutputPath>
+    <DocumentationFile><%= ModuleName %>.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\bin\</OutputPath>
+    <DocumentationFile><%= ModuleName %>.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DotNetNuke, Version=7.0.2.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\DotNetNuke.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ApplicationBlocks.Data, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Microsoft.ApplicationBlocks.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Web.Mobile" />
+  </ItemGroup>
+  <ItemGroup>
+    <Import Include="Microsoft.VisualBasic" />
+    <Import Include="System" />
+    <Import Include="System.Collections" />
+    <Import Include="System.Collections.Generic" />
+    <Import Include="System.Data" />
+    <Import Include="System.Linq" />
+    <Import Include="System.Diagnostics" />
+    <Import Include="System.Collections.Specialized" />
+    <Import Include="System.Configuration" />
+    <Import Include="System.Text" />
+    <Import Include="System.Text.RegularExpressions" />
+    <Import Include="System.Web" />
+    <Import Include="System.Web.Caching" />
+    <Import Include="System.Web.SessionState" />
+    <Import Include="System.Web.Security" />
+    <Import Include="System.Web.Profile" />
+    <Import Include="System.Web.UI" />
+    <Import Include="System.Web.UI.WebControls" />
+    <Import Include="System.Web.UI.WebControls.WebParts" />
+    <Import Include="System.Web.UI.HtmlControls" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Components\FeatureController.<%=Language%>" />
+    <Compile Include="Data\DataProvider.<%=Language%>" />
+    <Compile Include="Providers\DataProviders\SqlDataProvider\SqlDataProvider.<%=Language%>" />
+    <Compile Include="Settings.ascx.designer.<%=Language%>">
+      <DependentUpon>Settings.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Settings.ascx.<%=Language%>">
+      <DependentUpon>Settings.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="<%= ModuleName %>SettingsBase.<%=Language%>">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Edit.ascx.designer.<%=Language%>">
+      <DependentUpon>Edit.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Edit.ascx.<%=Language%>">
+      <DependentUpon>Edit.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="My Project\AssemblyInfo.<%=Language%>" />
+    <Compile Include="<%= ModuleName %>ModuleBase.<%=Language%>">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="View.ascx.designer.<%=Language%>">
+      <DependentUpon>View.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="View.ascx.<%=Language%>">
+      <DependentUpon>View.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Documentation\Documentation.css" />
+    <Content Include="Documentation\Documentation.html" />
+    <Content Include="Edit.ascx" />
+    <Content Include="License.txt" />
+    <Content Include="module.css" />
+    <Content Include="ReleaseNotes.txt" />
+    <Content Include="Settings.ascx" />
+    <Content Include="View.ascx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="<%= ModuleName %>.dnn" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_LocalResources\Edit.ascx.resx" />
+    <Content Include="App_LocalResources\Settings.ascx.resx" />
+    <Content Include="App_LocalResources\View.ascx.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="BuildScripts\ModulePackage.targets" />
+    <Content Include="BuildScripts\MSBuild.Community.Tasks.Targets" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Providers\DataProviders\SqlDataProvider\00.00.01.sqldataprovider" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Providers\DataProviders\SqlDataProvider\UnInstall.sqldataprovider" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionExplicit>On</OptionExplicit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionCompare>Binary</OptionCompare>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionStrict>Off</OptionStrict>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionInfer>On</OptionInfer>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>True</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>62640</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://dnndev.me/desktopmodules/<%= ModuleName %></IISUrl>
+          <OverrideIISAppRootUrl>True</OverrideIISAppRootUrl>
+          <IISAppRootUrl>http://dnndev.me/</IISAppRootUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup>
+    <Extension>zip</Extension>
+    <DNNFileName><%= ModuleName %></DNNFileName>
+    <PackageName><%= ModuleName %></PackageName>
+    <MSBuildCommunityTasksPath>$(SolutionDir)\packages\MSBuildTasks.1.4.0.74\tools</MSBuildCommunityTasksPath>
+  </PropertyGroup>
+  <Import Project="BuildScripts\ModulePackage.targets" />
+  <Target Name="AfterBuild" DependsOnTargets="PackageModule">
+  </Target>
+</Project>

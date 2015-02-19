@@ -1,0 +1,108 @@
+﻿<%-- 
+Name: Settings.ascx.cs.cst
+Author: Keith Stone
+Description: DotNetNuke Settings Control for C#
+Revision: 2014.02.23
+Note: For the latest version of this template, http://www.crewstone.com		
+--%>
+<%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="C#" Description="Generates the code-behind for the Settings.ascx web control." %>
+<%@ Property Category="DataSource" Name="ObjectQualifier" Type="System.String" Default="" Optional="True" Description="Prefix for objects to be generated." %>
+<%@ Property Category="Naming Convention" Name="CompanyName" Type="System.String" Default="YourCompany" Description="Used to generate the copyright declaration." %>
+<%@ Property Category="Naming Convention" Name="Namespace" Type="System.String" Default="NameSpace"  Description="Used to generate the Namespace declaration." %>
+<%@ Property Category="Naming Convention" Name="ModuleName" Type="System.String" Default="YourModule" Description="" %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+/*
+' Copyright (c) <%= DateTime.Now.Year.ToString() %> <%=CompanyName%>
+'  All rights reserved.
+' 
+' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+' TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+' THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+' CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+' DEALINGS IN THE SOFTWARE.
+' 
+*/
+using DotNetNuke;
+using System.Web.UI;
+
+namespace <%= Namespace %>.Modules.<%= ModuleName %>
+{
+
+	/// -----------------------------------------------------------------------------
+	/// <summary>
+	/// The Settings class manages Module Settings
+	/// </summary>
+	/// <remarks>
+	/// </remarks>
+	/// <history>
+	/// </history>
+	/// -----------------------------------------------------------------------------
+	partial class Settings : Entities.Modules.ModuleSettingsBase
+	{
+
+		protected System.Web.UI.WebControls.Textbox txtTemplate;
+		protected System.Web.UI.WebControls.Checkbox chkPurge;
+
+		#region "Base Method Implementations"
+
+		/// -----------------------------------------------------------------------------
+		/// <summary>
+		/// LoadSettings loads the settings from the Database and displays them
+		/// </summary>
+		/// <remarks>
+		/// </remarks>
+		/// <history>
+		/// </history>
+		/// -----------------------------------------------------------------------------
+		public override void LoadSettings()
+		{
+			try {
+				if ((Page.IsPostBack == false)) {
+					if (!string.IsNullOrEmpty(Convert.ToString(TabModuleSettings("template")))) {
+						txtTemplate.Text = Convert.ToString(TabModuleSettings("template"));
+					}
+					if (!string.IsNullOrEmpty(Convert.ToString(ModuleSettings("<%=ModuleName%>PurgeBeforeImport")))) {
+						chkPurge.Checked = bool.Parse(ModuleSettings("<%=ModuleName%>PurgeBeforeImport").ToString());
+					}
+				}
+			//Module failed to load
+			} catch (Exception exc) {
+				ProcessModuleLoadException(this, exc);
+			}
+		}
+
+		/// -----------------------------------------------------------------------------
+		/// <summary>
+		/// UpdateSettings saves the modified settings to the Database
+		/// </summary>
+		/// <remarks>
+		/// </remarks>
+		/// <history>
+		/// </history>
+		/// -----------------------------------------------------------------------------
+		public override void UpdateSettings()
+		{
+			try {
+				Entities.Modules.ModuleController objModules = new Entities.Modules.ModuleController();
+
+				objModules.UpdateTabModuleSetting(TabModuleId, "template", txtTemplate.Text);
+				objModules.UpdateModuleSetting(this.ModuleId, "<%=ModuleName%>PurgeBeforeImport", chkPurge.Checked.ToString());
+
+				// refresh cache
+				SynchronizeModule();
+			//Module failed to load
+			} catch (Exception exc) {
+				ProcessModuleLoadException(this, exc);
+			}
+		}
+
+		#endregion
+
+	}
+
+}
