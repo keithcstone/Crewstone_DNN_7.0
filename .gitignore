@@ -50,3 +50,6 @@ Desktop.ini
 
 # Misc readme.txt
 readme.txt
+
+# Backup files
+*.bak
