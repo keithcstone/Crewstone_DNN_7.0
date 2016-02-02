@@ -2,7 +2,7 @@
 Name: ITableRepository.cs.cst
 Author: Keith Stone
 Description: Generates the DNN ITableRepository Class for C#
-Revision: 2014.03.06
+Revision: 2016.02.02
 Note: For the latest version of this template, http://www.crewstone.com		
 --%>
 <%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="C#" Description="Generates the DNN ITableRepository Class for C#" %>
@@ -40,26 +40,72 @@ namespace <%= Namespace %>.Modules.<%=ModuleName%>.Components
     public interface I<%= GetTableName(SourceTable) %>Repository
     {
         ///<summary>
+        /// Clear change for <%= GetTableName(SourceTable) %> for module scope
         ///</summary>
-        void ClearCache(int moduleid);
-
+        <% if(SourceTable.Columns.Contains("moduleId")) {%>
+        void ClearCache(int moduleId);
+        <%  } else if (SourceTable.Columns.Contains("portalId")) { %>
+        void ClearCache(int portalId);
+        <% } %>
+        
         ///<summary>
+        /// Create a new <%= GetTableName(SourceTable) %>
         ///</summary>
         int Create<%= GetTableName(SourceTable) %>(I<%= GetTableName(SourceTable) %>Model t);
 
+        <% if(SourceTable.PrimaryKey.MemberColumns.Count == 1) { %>
         ///<summary>
+        /// Delete a single <%= GetTableName(SourceTable) %> based on key
         ///</summary>
-        void Delete<%= GetTableName(SourceTable) %>(int itemId, int moduleId);
-
+        <% if(SourceTable.Columns.Contains("moduleId")) {%>
+        void Delete<%= GetTableName(SourceTable) %>(int <%= GetPrimaryKeyName(SourceTable) %>, int moduleId);
+        <%  } else if (SourceTable.Columns.Contains("portalId")) { %>
+        void Delete<%= GetTableName(SourceTable) %>(int <%= GetPrimaryKeyName(SourceTable) %>, int portalId);
+        <% } else { %>
+        void Delete<%= GetTableName(SourceTable) %>(int <%= GetPrimaryKeyName(SourceTable) %>);
+        <% } %>
+        <% } %>
+        
         ///<summary>
+        /// Delete a single <%= GetTableName(SourceTable) %> based on object
         ///</summary>
+        void Delete<%= GetTableName(SourceTable) %>(I<%= GetTableName(SourceTable) %>Model t);
+        
+        ///<summary>
+        /// Retrieve all <%= GetTableName(SourceTable) %>s for module
+        ///</summary>
+        <% if(SourceTable.Columns.Contains("moduleId")) {%>
         IEnumerable<I<%= GetTableName(SourceTable) %>Model> Get<%= GetTableName(SourceTable) %>s(int moduleId);
+        <%  } else if (SourceTable.Columns.Contains("portalId")) { %>
+        IEnumerable<I<%= GetTableName(SourceTable) %>Model> Get<%= GetTableName(SourceTable) %>s(int portalId);
+        <% } else { %>
+        IEnumerable<I<%= GetTableName(SourceTable) %>Model> Get<%= GetTableName(SourceTable) %>s();
+        <% } %>
 
+        <% foreach(IndexSchema index in SourceTable.Indexes) { %>
+        <%     if(!index.IsPrimaryKey) { %>
         ///<summary>
+        /// Retrieve all <%= GetTableName(SourceTable) %>s for module by <%= GetIndexParameters(index.MemberColumns,false,"cs") %>
         ///</summary>
-        I<%= GetTableName(SourceTable) %>Model Get<%= GetTableName(SourceTable) %>(int itemId, int moduleId);
-
+        IEnumerable<I<%= GetTableName(SourceTable) %>Model> Get<%= GetTableName(SourceTable) %>sBy<%= index.Name%>(<%= GetIndexParameters(index.MemberColumns,true,"cs") %>);
+        <%     } %>
+        <% } %>
+            
+        <% if(SourceTable.PrimaryKey.MemberColumns.Count == 1) { %>
         ///<summary>
+        /// Retrieve a single <%= GetTableName(SourceTable) %>
+        ///</summary>
+        <% if(SourceTable.Columns.Contains("moduleId")) {%>
+        I<%= GetTableName(SourceTable) %>Model Get<%= GetTableName(SourceTable) %>(int <%= GetPrimaryKeyName(SourceTable) %>, int moduleId);
+        <%  } else if (SourceTable.Columns.Contains("portalId")) { %>
+        I<%= GetTableName(SourceTable) %>Model Get<%= GetTableName(SourceTable) %>(int <%= GetPrimaryKeyName(SourceTable) %>, int portalId);
+        <% } else { %>
+        I<%= GetTableName(SourceTable) %>Model Get<%= GetTableName(SourceTable) %>(int <%= GetPrimaryKeyName(SourceTable) %>);
+        <% } %>
+        <% } %>
+        
+        ///<summary>
+        /// Update a single <%= GetTableName(SourceTable) %>
         ///</summary>
         void Update<%= GetTableName(SourceTable) %>(I<%= GetTableName(SourceTable) %>Model t);
     }

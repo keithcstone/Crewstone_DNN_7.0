@@ -2,7 +2,7 @@
 Name: DnnMaster.cst
 Author: Keith Stone
 Description: Master driver for all DotNetNuke C# and VB.Net module templates
-Revision: 2015.01.24
+Revision: 2016.02.02
 Note: For the latest version of this template, http://www.crewstone.com		
 --%>
 <%@ CodeTemplate Language="C#" Src="SubTemplates/DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="VB" Description="This template Generates the files necessary to create a new DotNetNuke 7.x module" Debug="True" %>
@@ -1285,9 +1285,10 @@ Note: For the latest version of this template, http://www.crewstone.com
     				this.ITableModelTemplate.SetProperty("Namespace", Namespace);		
     				this.ITableModelTemplate.RenderToFile(EntitiesDirectory + ITableModelTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Table", GetTableName(SourceTable)), true);
     				
-                    Response.WriteLine("File " + TableModelTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Table", GetTableName(SourceTable)) + " Created Successfully");				// TableModelTemplate
+                    Response.WriteLine("File " + ITableModelTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Table", GetTableName(SourceTable)) + " Created Successfully");				
 				}
                 
+                // TableModelTemplate
                 this.TableModelTemplate.SetProperty("SourceTable", SourceTable);
                 this.TableModelTemplate.SetProperty("DataModel", DataModel);
 				this.TableModelTemplate.SetProperty("ObjectQualifier", ObjectQualifier);
@@ -1302,7 +1303,32 @@ Note: For the latest version of this template, http://www.crewstone.com
 				    this.TableModelTemplate.RenderToFile(ComponentsDirectory + TableModelTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("TableModel", GetTableName(SourceTable)), true);
                         
 				Response.WriteLine("File " + TableModelTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("TableModel", GetTableName(SourceTable)) + " Created Successfully");
-					
+ 
+                if (DataModel.ToUpper().Equals("DAL2")) 
+                {
+                    // ITableRepository Template
+                    // Debugger.Break(); 
+        			this.ITableRepositoryTemplate.SetProperty("CompanyName", CompanyName);
+        			this.ITableRepositoryTemplate.SetProperty("ModuleName", ModuleName);
+        			this.ITableRepositoryTemplate.SetProperty("FriendlyName", FriendlyName );
+        			this.ITableRepositoryTemplate.SetProperty("Namespace", Namespace);	
+    		        this.ITableRepositoryTemplate.SetProperty("SourceTable", SourceTable);	
+    				this.ITableRepositoryTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);  
+                    this.ITableRepositoryTemplate.RenderToFile(ComponentsDirectory + ITableRepositoryTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Table", GetTableName(SourceTable)), true);
+        			Response.WriteLine("File " + ITableRepositoryTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Table", GetTableName(SourceTable)) + " Created Successfully");
+                            
+        			// TableRepositoryTemplate Template
+                    // Debugger.Break(); 
+        			this.TableRepositoryTemplate.SetProperty("CompanyName", CompanyName);
+        			this.TableRepositoryTemplate.SetProperty("ModuleName", ModuleName);
+        			this.TableRepositoryTemplate.SetProperty("FriendlyName", FriendlyName );
+        			this.TableRepositoryTemplate.SetProperty("Namespace", Namespace);	
+    		        this.TableRepositoryTemplate.SetProperty("SourceTable", SourceTable);	
+    				this.TableRepositoryTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);  
+                    this.TableRepositoryTemplate.RenderToFile(ComponentsDirectory + TableRepositoryTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Table", GetTableName(SourceTable)), true);
+        			Response.WriteLine("File " + TableRepositoryTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Table", GetTableName(SourceTable)) + " Created Successfully");
+				}
+                
 				if(CreateViewControl)
 				{
 					//  ListControlResxTemplate
@@ -1440,28 +1466,7 @@ Note: For the latest version of this template, http://www.crewstone.com
                     this.TableViewModelTemplate.RenderToFile(jsDirectory + TableViewModelTemplateName.Replace("TableViewModel", GetTableName(SourceTable)).Replace(".cst", ""), true);
         			Response.WriteLine("File " + TableViewModelTemplateName.Replace("TableViewModel", GetTableName(SourceTable)).Replace(".cst", "") + " Created Successfully");
             
-        			// ITableRepository Template
-                    // Debugger.Break(); 
-        			this.ITableRepositoryTemplate.SetProperty("CompanyName", CompanyName);
-        			this.ITableRepositoryTemplate.SetProperty("ModuleName", ModuleName);
-        			this.ITableRepositoryTemplate.SetProperty("FriendlyName", FriendlyName );
-        			this.ITableRepositoryTemplate.SetProperty("Namespace", Namespace);	
- 			        this.ITableRepositoryTemplate.SetProperty("SourceTable", SourceTable);	
-					this.ITableRepositoryTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);  
-                    this.ITableRepositoryTemplate.RenderToFile(jsDirectory + ITableRepositoryTemplateName.Replace("TableViewModel", GetTableName(SourceTable)).Replace(".cst", ""), true);
-        			Response.WriteLine("File " + ITableRepositoryTemplateName.Replace("TableViewModel", GetTableName(SourceTable)).Replace(".cst", "") + " Created Successfully");
-                            
-        			// TableRepositoryTemplate Template
-                    // Debugger.Break(); 
-        			this.TableRepositoryTemplate.SetProperty("CompanyName", CompanyName);
-        			this.TableRepositoryTemplate.SetProperty("ModuleName", ModuleName);
-        			this.TableRepositoryTemplate.SetProperty("FriendlyName", FriendlyName );
-        			this.TableRepositoryTemplate.SetProperty("Namespace", Namespace);	
- 			        this.TableRepositoryTemplate.SetProperty("SourceTable", SourceTable);	
-					this.TableRepositoryTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);  
-                    this.TableRepositoryTemplate.RenderToFile(jsDirectory + TableRepositoryTemplateName.Replace("TableViewModel", GetTableName(SourceTable)).Replace(".cst", ""), true);
-        			Response.WriteLine("File " + TableRepositoryTemplateName.Replace("TableViewModel", GetTableName(SourceTable)).Replace(".cst", "") + " Created Successfully");
-                }
+                 }
 				
 				if(CreateEditControl)
 				{

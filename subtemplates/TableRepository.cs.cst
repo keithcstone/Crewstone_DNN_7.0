@@ -2,7 +2,7 @@
 Name: TableRepository.cs.cst
 Author: Keith Stone
 Description: Generates the DNN TableRepository Class for C#
-Revision: 2014.03.06
+Revision: 2016.02.02
 Note: For the latest version of this template, http://www.crewstone.com		
 --%>
 <%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="C#" Description="Generates the DNN TableRepository Class for C#" %>
@@ -37,6 +37,9 @@ using DotNetNuke.Data;
 
 namespace <%= Namespace %>.Modules.<%=ModuleName%>.Components
 {
+    ///<summary>
+    /// Clear change for <%= GetTableName(SourceTable) %> for module scope
+    ///</summary>    
     public class <%= GetTableName(SourceTable) %>Repository : I<%= GetTableName(SourceTable) %>Repository
     {
         public void ClearCache(<%= GetScopeParameters(SourceTable,true,"cs") %>)        
@@ -54,22 +57,37 @@ namespace <%= Namespace %>.Modules.<%=ModuleName%>.Components
             }
         }
 
+        ///<summary>
+        /// Create a new <%= GetTableName(SourceTable) %>
+        ///</summary>
         public int Create<%= GetTableName(SourceTable) %>(I<%= GetTableName(SourceTable) %>Model t)
         {
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<<%= GetTableName(SourceTable) %>>();
                 rep.Insert((<%= GetTableName(SourceTable) %>)t);
+                <% if(SourceTable.PrimaryKey.MemberColumns.Count == 1) { %>
                 return t.<%= GetPrimaryKeyParameters(SourceTable,false,"cs") %>;
+                <% } else { %>
+                return -1;
+                <% } %>
             }
         }
 
+        <% if(SourceTable.PrimaryKey.MemberColumns.Count == 1) { %>
+        ///<summary>
+        /// Delete a single <%= GetTableName(SourceTable) %> based on key
+        ///</summary>
         public void Delete<%= GetTableName(SourceTable) %>(<%= GetPrimaryKeyParameters(SourceTable,true,"cs") %>, <%= GetScopeParameters(SourceTable,true,"cs") %>)
         {
             var t = Get<%= GetTableName(SourceTable) %>(<%= GetPrimaryKeyParameters(SourceTable,false,"cs") %>, <%= GetScopeParameters(SourceTable,false,"cs") %>);
             Delete<%= GetTableName(SourceTable) %>(t);
         }
-
+        <% } %>
+        
+        ///<summary>
+        /// Delete a single <%= GetTableName(SourceTable) %> based on object
+        ///</summary>
         public void Delete<%= GetTableName(SourceTable) %>(I<%= GetTableName(SourceTable) %>Model t)
         {
             using (IDataContext ctx = DataContext.Instance())
@@ -79,6 +97,9 @@ namespace <%= Namespace %>.Modules.<%=ModuleName%>.Components
             }
         }
 
+        ///<summary>
+        /// Retrieve all <%= GetTableName(SourceTable) %>s for module
+        ///</summary>
         public IEnumerable<I<%= GetTableName(SourceTable) %>Model> Get<%= GetTableName(SourceTable) %>s(<%= GetScopeParameters(SourceTable,true,"cs") %>)
         {
             IEnumerable<<%= GetTableName(SourceTable) %>> t;
@@ -90,6 +111,10 @@ namespace <%= Namespace %>.Modules.<%=ModuleName%>.Components
             return t;
         }
 
+        <% if(SourceTable.PrimaryKey.MemberColumns.Count == 1) { %>
+        ///<summary>
+        /// Retrieve a single <%= GetTableName(SourceTable) %>
+        ///</summary>        
         public I<%= GetTableName(SourceTable) %>Model Get<%= GetTableName(SourceTable) %>(<%= GetPrimaryKeyParameters(SourceTable,true,"cs") %>, <%= GetScopeParameters(SourceTable,true,"cs") %>)
         {
             <%= GetTableName(SourceTable) %> t;
@@ -100,18 +125,29 @@ namespace <%= Namespace %>.Modules.<%=ModuleName%>.Components
             }
             return t;
         }
+        <% } %>
 
-        public IEnumerable<I<%= GetTableName(SourceTable) %>Model> Get<%= GetTableName(SourceTable) %>ByName(<%= GetScopeParameters(SourceTable,true,"cs") %>, string itemname)
+        <% foreach(IndexSchema index in SourceTable.Indexes) { %>
+        <%     if(!index.IsPrimaryKey) { %>
+        ///<summary>
+        /// Retrieve all <%= GetTableName(SourceTable) %>s for module by <%= GetIndexParameters(index.MemberColumns,false,"cs") %>
+        ///</summary>
+        public IEnumerable<I<%= GetTableName(SourceTable) %>Model> Get<%= GetTableName(SourceTable) %>sBy<%= index.Name%>(<%= GetIndexParameters(index.MemberColumns,true,"cs") %>)
         {
             IEnumerable<<%= GetTableName(SourceTable) %>> t;
             using (IDataContext ctx = DataContext.Instance())
             {
                 var rep = ctx.GetRepository<<%= GetTableName(SourceTable) %>>();
-                t = rep.Find("WHERE <%= GetScopeParameters(SourceTable,true,"cs") %> = @0 AND ItemName LIKE @1", <%= GetScopeParameters(SourceTable,false,"cs") %> , itemname);
+                t = rep.Find("WHERE <%= GetIndexParametersWhere(index.MemberColumns) %>", <%= GetIndexParameters(index.MemberColumns,false,"cs") %> );
             }
             return t;
         }
-
+         <%     } %>
+         <% } %> 
+        
+        ///<summary>
+        /// Update a single <%= GetTableName(SourceTable) %>
+        ///</summary>      
         public void Update<%= GetTableName(SourceTable) %>(I<%= GetTableName(SourceTable) %>Model t)
         {
             using (IDataContext ctx = DataContext.Instance())

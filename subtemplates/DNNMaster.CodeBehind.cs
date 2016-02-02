@@ -154,7 +154,50 @@ public class _Main : CodeSmith.BaseTemplates.SqlCodeTemplate
         }
     }
     #endregion
-
+    
+    public string GetASPVariableType(ColumnSchema column)
+    {
+    	if (column.Name.EndsWith("TypeCode")) return column.Name;
+    	
+    	switch (column.DataType)
+    	{
+    		case DbType.AnsiString: return "String";
+    		case DbType.AnsiStringFixedLength: return "String";
+    		case DbType.Binary: return "String";
+    		case DbType.Boolean: return "Boolean";
+    		case DbType.Byte: return "Byte";
+    		case DbType.Currency: return "decimal";
+    		case DbType.Date: return "DateTime";
+    		case DbType.DateTime: return "DateTime";
+    		case DbType.DateTime2: return "DateTime";
+    		case DbType.Decimal: return "Decimal";
+    		case DbType.Double: return "double";
+    		case DbType.Guid: return "Guid";
+    		case DbType.Int16: return "Int16";
+    		case DbType.Int32: return "Int32";
+    		case DbType.Int64: return "Int64";
+    		case DbType.Object: return "object";
+    		case DbType.SByte: return "sbyte";
+    		case DbType.Single: return "Single";
+    		case DbType.String: return "String";
+    		case DbType.StringFixedLength: return "String";
+    		case DbType.Time: return "TimeSpan";
+    		case DbType.UInt16: return "ushort";
+    		case DbType.UInt32: return "uint";
+    		case DbType.UInt64: return "ulong";
+    		case DbType.VarNumeric: return "decimal";
+    		default:
+    		{
+    			return "__UNKNOWN__" + column.NativeType;
+    		}
+    	}
+    }
+ 
+    public string GetCamelCaseName(string value)
+    {
+    	return value.Substring(0, 1).ToLower() + value.Substring(1);
+    }
+    
     public string GetConvertStatement(ColumnSchema column)
     {
         switch (column.DataType)
@@ -509,7 +552,43 @@ public class _Main : CodeSmith.BaseTemplates.SqlCodeTemplate
     		}
     	 }
     }
-
+    
+    public string GetIndexParameters(ColumnSchemaCollection cols, bool includeTypes, string vbOrCsharp)
+    {
+        string parameters = "";
+        
+            for( int i = 0; i < cols.Count; i++ )
+            {
+                if(i != 0)
+                    parameters = parameters + ", ";
+                
+                if( includeTypes && vbOrCsharp == "vb" )
+                    parameters = parameters + "ByVal ";
+                    
+                if( includeTypes )
+                    parameters = parameters + (vbOrCsharp == "vb" ? GetCamelCaseName(cols[i].Name) + " As " + GetVBVariableType(cols[i]) : GetCSharpVariableType(cols[i]) + " " + GetCamelCaseName(cols[i].Name));
+                else
+                    parameters = parameters + (vbOrCsharp == "vb" ? GetCamelCaseName(cols[i].Name) : GetCamelCaseName(cols[i].Name));
+           }
+        
+        return parameters;
+    }
+    
+    public string GetIndexParametersWhere(ColumnSchemaCollection cols)
+    {
+        string parameters = "";
+        
+            for( int i = 0; i < cols.Count; i++ )
+            {
+                if(i != 0)
+                    parameters = parameters + " AND ";
+                                     
+                parameters = parameters + String.Format("{0} = @{1}",cols[i].Name,i);
+            }
+        
+        return parameters;
+    }
+    
     public string GetInfoToUI(string tableName, ColumnSchema column, string vbOrCsharp)
     {
          switch (column.DataType)
@@ -729,107 +808,6 @@ public class _Main : CodeSmith.BaseTemplates.SqlCodeTemplate
        
         return parameter;
     }
-   
-    public string GetPrimaryKeyParameters(TableSchema table, bool includeTypes, string vbOrCsharp)
-    {
-        string parameters = "";
-        
-        if (table.PrimaryKey != null)
-        {
-            for( int i = 0; i < table.PrimaryKey.MemberColumns.Count; i++ )
-            {
-                if(parameters.Length == 0)
-                {
-                    if( includeTypes && vbOrCsharp == "vb" )
-                        parameters = parameters + "ByVal ";
-                        
-                    if( includeTypes )
-                        parameters = parameters + (vbOrCsharp == "vb" ? GetCamelCaseName(table.PrimaryKey.MemberColumns[i].Name) + " As " + GetVBVariableType(table.PrimaryKey.MemberColumns[i]) : GetCSharpVariableType(table.PrimaryKey.MemberColumns[i]) + " " + GetCamelCaseName(table.PrimaryKey.MemberColumns[i].Name));
-                    else
-                        parameters = parameters + (vbOrCsharp == "vb" ? GetCamelCaseName(table.PrimaryKey.MemberColumns[i].Name) : GetCamelCaseName(table.PrimaryKey.MemberColumns[i].Name));
-                }
-                else
-                {
-                    parameters = parameters + ", ";
-                    
-                    if( includeTypes && vbOrCsharp == "vb" )
-                        parameters = parameters + "ByVal ";					
-                    
-                    if( includeTypes )
-                        parameters = parameters + (vbOrCsharp == "vb" ? GetCamelCaseName(table.PrimaryKey.MemberColumns[i].Name) + " As " + GetVBVariableType(table.PrimaryKey.MemberColumns[i]) : GetCSharpVariableType(table.PrimaryKey.MemberColumns[i]) + " " + GetCamelCaseName(table.PrimaryKey.MemberColumns[i].Name));				
-                    else
-                        parameters = parameters + (vbOrCsharp == "vb" ? GetCamelCaseName(table.PrimaryKey.MemberColumns[i].Name) : GetCamelCaseName(table.PrimaryKey.MemberColumns[i].Name));
-                }
-            }
-        }
-        else
-        {
-            throw new ApplicationException("This template will only work on tables with a primary key.");
-        }
-        return parameters;
-    }
-    
-    public string GetPrimaryKeyParametersForObject(TableSchema table, string obj)
-    {
-        string parameters = "";
-    	if (table.PrimaryKey != null)
-    	{
-    		for( int i = 0; i < table.PrimaryKey.MemberColumns.Count; i++ )
-    		{
-    			if(parameters.Length == 0)
-    			{
-    				parameters = parameters + obj + "." + table.PrimaryKey.MemberColumns[i].Name;
-    			}
-    			else
-    			{
-    				parameters = parameters + ", ";
-    				parameters = parameters + obj + "." + table.PrimaryKey.MemberColumns[i].Name;
-    			}
-    		}
-    	}
-    	else
-    	{
-    		throw new ApplicationException("This template will only work on tables with a primary key.");
-    	}
-    	return parameters;
-    }
-    
-    public string GetPrimaryKeyDecoration(TableSchema table, string vbOrCsharp)
-    {
-        const string decorationCS = "[PrimaryKey(\"{0}\", AutoIncrement = {1})]";
-        const string decorationVB = "<PrimaryKey(\"{0}\", AutoIncrement := {1})> _";
-        string keyColumns = "";
-        string autoIncrement = "";
-        string decoration = "";
-       
-        if (table.PrimaryKey != null)
-        {
-            for( int i = 0; i < table.PrimaryKey.MemberColumns.Count; i++ )
-            {
-                if(keyColumns.Length == 0)
-                { 
-                    keyColumns = keyColumns + (vbOrCsharp == "vb" ? table.PrimaryKey.MemberColumns[i].Name : table.PrimaryKey.MemberColumns[i].Name);
-                } else { 
-                    keyColumns = keyColumns + ", " + (vbOrCsharp == "vb" ? table.PrimaryKey.MemberColumns[i].Name : table.PrimaryKey.MemberColumns[i].Name);
-                }
-            }
-            
-            SchemaExplorer.ExtendedPropertyCollection exProps = table.PrimaryKey.MemberColumns[0].ExtendedProperties;
-			if (exProps.Contains("CS_IsIdentity") && (bool)exProps["CS_IsIdentity"].Value)
-			{
-				autoIncrement = (vbOrCsharp == "vb" ? "True" : "true");
-			} else {
-                autoIncrement = (vbOrCsharp == "vb" ? "False" : "false");
-            }
-            
-            decoration = (vbOrCsharp == "vb" ? String.Format(decorationVB,keyColumns,autoIncrement) : String.Format(decorationCS,keyColumns,autoIncrement));
-        }
-        else
-        {
-            decoration = (vbOrCsharp == "vb" ? " _" : "");
-        }
-        return decoration;
-    }
     
     public string GetModuleIdParameter(TableSchema table, bool includeType, bool prependComma, string vbOrCSharp)
     {	
@@ -940,10 +918,6 @@ public class _Main : CodeSmith.BaseTemplates.SqlCodeTemplate
     	return statement;
     }
 
-    public string GetCamelCaseName(string value)
-    {
-    	return value.Substring(0, 1).ToLower() + value.Substring(1);
-    }
 
     public string GetMemberVariableName(ColumnSchema column)
     {
@@ -1059,7 +1033,7 @@ public class _Main : CodeSmith.BaseTemplates.SqlCodeTemplate
     	{
     		case DbType.AnsiString: return "string";
     		case DbType.AnsiStringFixedLength: return "string";
-    		case DbType.Binary: return "byte()";
+    		case DbType.Binary: return "byte[]";
     		case DbType.Boolean: return "bool";
     		case DbType.Byte: return "byte";
     		case DbType.Currency: return "decimal";
@@ -1126,44 +1100,7 @@ public class _Main : CodeSmith.BaseTemplates.SqlCodeTemplate
     	}
     }
 
-    public string GetASPVariableType(ColumnSchema column)
-    {
-    	if (column.Name.EndsWith("TypeCode")) return column.Name;
-    	
-    	switch (column.DataType)
-    	{
-    		case DbType.AnsiString: return "String";
-    		case DbType.AnsiStringFixedLength: return "String";
-    		case DbType.Binary: return "String";
-    		case DbType.Boolean: return "Boolean";
-    		case DbType.Byte: return "Byte";
-    		case DbType.Currency: return "decimal";
-    		case DbType.Date: return "DateTime";
-    		case DbType.DateTime: return "DateTime";
-    		case DbType.DateTime2: return "DateTime";
-    		case DbType.Decimal: return "Decimal";
-    		case DbType.Double: return "double";
-    		case DbType.Guid: return "Guid";
-    		case DbType.Int16: return "Int16";
-    		case DbType.Int32: return "Int32";
-    		case DbType.Int64: return "Int64";
-    		case DbType.Object: return "object";
-    		case DbType.SByte: return "sbyte";
-    		case DbType.Single: return "Single";
-    		case DbType.String: return "String";
-    		case DbType.StringFixedLength: return "String";
-    		case DbType.Time: return "TimeSpan";
-    		case DbType.UInt16: return "ushort";
-    		case DbType.UInt32: return "uint";
-    		case DbType.UInt64: return "ulong";
-    		case DbType.VarNumeric: return "decimal";
-    		default:
-    		{
-    			return "__UNKNOWN__" + column.NativeType;
-    		}
-    	}
-    }
- 
+    
     public string GetReaderMethod(ColumnSchema column)
     {
     	switch (column.DataType)
@@ -1287,7 +1224,95 @@ public class _Main : CodeSmith.BaseTemplates.SqlCodeTemplate
     		throw new ApplicationException("This template will only work on tables with a primary key.");
     	}
     }
-
+    public string GetPrimaryKeyParameters(TableSchema table, bool includeTypes, string vbOrCsharp)
+    {
+        string parameters = "";
+        
+        if (table.PrimaryKey != null)
+        {
+            for( int i = 0; i < table.PrimaryKey.MemberColumns.Count; i++ )
+            {
+                if(i!= 0)
+                    parameters = parameters + ", ";
+                    
+                if( includeTypes && vbOrCsharp == "vb" )
+                    parameters = parameters + "ByVal ";					
+                
+                if( includeTypes )
+                    parameters = parameters + (vbOrCsharp == "vb" ? GetCamelCaseName(table.PrimaryKey.MemberColumns[i].Name) + " As " + GetVBVariableType(table.PrimaryKey.MemberColumns[i]) : GetCSharpVariableType(table.PrimaryKey.MemberColumns[i]) + " " + GetCamelCaseName(table.PrimaryKey.MemberColumns[i].Name));				
+                else
+                    parameters = parameters + (vbOrCsharp == "vb" ? GetCamelCaseName(table.PrimaryKey.MemberColumns[i].Name) : GetCamelCaseName(table.PrimaryKey.MemberColumns[i].Name));
+            }
+        }
+        else
+        {
+            throw new ApplicationException("This template will only work on tables with a primary key.");
+        }
+        return parameters;
+    }
+    
+    public string GetPrimaryKeyParametersForObject(TableSchema table, string obj)
+    {
+        string parameters = "";
+    	if (table.PrimaryKey != null)
+    	{
+    		for( int i = 0; i < table.PrimaryKey.MemberColumns.Count; i++ )
+    		{
+    			if(parameters.Length == 0)
+    			{
+    				parameters = parameters + obj + "." + table.PrimaryKey.MemberColumns[i].Name;
+    			}
+    			else
+    			{
+    				parameters = parameters + ", ";
+    				parameters = parameters + obj + "." + table.PrimaryKey.MemberColumns[i].Name;
+    			}
+    		}
+    	}
+    	else
+    	{
+    		throw new ApplicationException("This template will only work on tables with a primary key.");
+    	}
+    	return parameters;
+    }
+    
+    public string GetPrimaryKeyDecoration(TableSchema table, string vbOrCsharp)
+    {
+        const string decorationCS = "[PrimaryKey(\"{0}\", AutoIncrement = {1})]";
+        const string decorationVB = "<PrimaryKey(\"{0}\", AutoIncrement := {1})> _";
+        string keyColumns = "";
+        string autoIncrement = "";
+        string decoration = "";
+       
+        if (table.PrimaryKey != null)
+        {
+            for( int i = 0; i < table.PrimaryKey.MemberColumns.Count; i++ )
+            {
+                if(keyColumns.Length == 0)
+                { 
+                    keyColumns = keyColumns + (vbOrCsharp == "vb" ? table.PrimaryKey.MemberColumns[i].Name : table.PrimaryKey.MemberColumns[i].Name);
+                } else { 
+                    keyColumns = keyColumns + ", " + (vbOrCsharp == "vb" ? table.PrimaryKey.MemberColumns[i].Name : table.PrimaryKey.MemberColumns[i].Name);
+                }
+            }
+            
+            SchemaExplorer.ExtendedPropertyCollection exProps = table.PrimaryKey.MemberColumns[0].ExtendedProperties;
+			if (exProps.Contains("CS_IsIdentity") && (bool)exProps["CS_IsIdentity"].Value)
+			{
+				autoIncrement = (vbOrCsharp == "vb" ? "True" : "true");
+			} else {
+                autoIncrement = (vbOrCsharp == "vb" ? "False" : "false");
+            }
+            
+            decoration = (vbOrCsharp == "vb" ? String.Format(decorationVB,keyColumns,autoIncrement) : String.Format(decorationCS,keyColumns,autoIncrement));
+        }
+        else
+        {
+            decoration = (vbOrCsharp == "vb" ? " _" : "");
+        }
+        return decoration;
+    }
+    
     public string GetSelectByColumnNameParameter(ColumnSchema column, bool includeTypes, bool wrapDbNullColumnsWithNullFunction, string vbOrCSharp)
     {
     	string parameter = "";
@@ -1463,7 +1488,7 @@ public class _Main : CodeSmith.BaseTemplates.SqlCodeTemplate
             else
                 returnDeclare = String.Format(vbDeclareNullable,column.Description,GetVBVariableType(column),GetCamelCaseName(column.Name),column.Name);
         } else {
-            if (!column.AllowDBNull || GetCSharpVariableType(column).Equals("string"))
+            if (!column.AllowDBNull || GetCSharpVariableType(column) == "string" || GetCSharpVariableType(column) == "byte[]")
                 returnDeclare = String.Format(csDeclare,column.Description,GetCSharpVariableType(column),GetCamelCaseName(column.Name),column.Name);
             else
                 returnDeclare = String.Format(csDeclareNullable,column.Description,GetCSharpVariableType(column),GetCamelCaseName(column.Name),column.Name);
@@ -1487,10 +1512,34 @@ public class _Main : CodeSmith.BaseTemplates.SqlCodeTemplate
             else
                 returnDeclare = String.Format(vbDeclareNullable,column.Description,GetVBVariableType(column),GetCamelCaseName(column.Name),column.Name);
         } else {
-            if (!column.AllowDBNull)
+            if (!column.AllowDBNull || GetCSharpVariableType(column) == "string" || GetCSharpVariableType(column) == "byte[]")
                 returnDeclare = String.Format(csDeclare,column.Description,GetCSharpVariableType(column),GetCamelCaseName(column.Name),column.Name);
             else
                 returnDeclare = String.Format(csDeclareNullable,column.Description,GetCSharpVariableType(column),GetCamelCaseName(column.Name),column.Name);
+        };
+        
+        return returnDeclare;
+    }
+        
+    public string GetTypedModelDeclaration(ColumnSchema column, string visibility, string vbOrCSharp)
+    {
+        const string csDeclare = "\r\n\t\t///<summary>\r\n\t\t/// Property for {3} ({0})\r\n\t\t///</summary>\r\n\t\t[ColumnName(\"{3}\")]\r\n\t\t{4} {1} {2} {{ get; set; }}"; 
+        const string csDeclareNullable = "\r\n\t\t///<summary>\r\n\t\t/// Property for {3} ({0})\r\n\t\t///</summary>\r\n\t\t[ColumnName(\"{3}\")]\r\n\t\t{4} Nullable<{1}> {2} {{ get; set; }}"; 
+        const string vbDeclare = "\t'<summary>\r\n\t\t\t' Property for {3} ({0})\r\n\t\t\t'</summary>\r\n\t\t\t<ColumnName(\"{3}\")> _\r\n\t\t\tPrivate Property {2}() As {1}\r\n\t\t\t\tGet\r\n\t\t\t\t\tReturn m_{2}\r\n\t\t\t\tEnd Get\r\n\t\t\t\tSet\r\n\t\t\t\t\tm_{2} = Value\r\n\t\t\t\tEnd Set\r\n\t\t\tEnd Property\r\n\t\t\tPrivate m_{2} As {1}\r\n";
+        const string vbDeclareNullable = "\t'<summary>\r\n\t\t\t' Property for {3} ({0})\r\n\t\t\t'</summary>\r\n\t\t\t<ColumnName(\"{3}\")> _\r\n\t\t\tPrivate Property {2}() As Nullable(Of {1})\r\n\t\t\t\tGet\r\n\t\t\t\t\tReturn m_{2}\r\n\t\t\t\tEnd Get\r\n\t\t\t\tSet\r\n\t\t\t\t\tm_{2} = Value\r\n\t\t\t\tEnd Set\r\n\t\t\tEnd Property\r\n\t\t\tPrivate m_{2} As Nullable(Of {1})\r\n";
+        string returnDeclare;
+        
+        if(vbOrCSharp == "vb" )
+        {
+            if (!column.AllowDBNull)
+                returnDeclare = String.Format(vbDeclare,column.Description,GetVBVariableType(column),GetCamelCaseName(column.Name),column.Name);
+            else
+                returnDeclare = String.Format(vbDeclareNullable,column.Description,GetVBVariableType(column),GetCamelCaseName(column.Name),column.Name);
+        } else {
+            if (!column.AllowDBNull || GetCSharpVariableType(column) == "string" || GetCSharpVariableType(column) == "byte[]")
+                returnDeclare = String.Format(csDeclare,column.Description,GetCSharpVariableType(column),GetCamelCaseName(column.Name),column.Name,visibility);
+            else
+                returnDeclare = String.Format(csDeclareNullable,column.Description,GetCSharpVariableType(column),GetCamelCaseName(column.Name),column.Name,visibility);
         };
         
         return returnDeclare;

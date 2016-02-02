@@ -2,7 +2,7 @@
 Name: TableModel.cs.cst
 Author: Keith Stone
 Description: Generates the DNN Table Model Class for C#
-Revision: 2014.05.21
+Revision: 2016.02.02
 Note: For the latest version of this template, http://www.crewstone.com		
 --%>
 <%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="C#" Description="Generates the DNN Table Model Class for C#" %>
@@ -33,7 +33,7 @@ Note: For the latest version of this template, http://www.crewstone.com
 */
 using System;
 using System.Web.Caching;
-using System.Xml.Serialization
+using System.Xml.Serialization;
 using DotNetNuke.Common.Utilities;
 using DotNetNuke.ComponentModel.DataAnnotations;
 using DotNetNuke.Entities.Content;
@@ -47,7 +47,7 @@ namespace <%= Namespace %>.Modules.<%=ModuleName%>.Entities
     <%=GetPrimaryKeyDecoration(SourceTable,"cs")%>
     <% } %>
     //configure caching using PetaPoco
-    [Cacheable("<%=ModuleName%>_<%=GetTableName(SourceTable)%>_Items_", CacheItemPriority.Default, 20)]
+    [Cacheable("<%=ModuleName%>_<%=GetTableName(SourceTable)%>s_", CacheItemPriority.Default, 20)]
     <% if(SourceTable.Columns.Contains("moduleId")) {%>
      //scope the objects to the ModuleId of a module on a page (or copy of a module on a page)
     [Scope("ModuleId")]
@@ -59,11 +59,11 @@ namespace <%= Namespace %>.Modules.<%=ModuleName%>.Entities
     {
         <% if (SourceTable.HasPrimaryKey) {
               foreach (ColumnSchema column in SourceTable.PrimaryKey.MemberColumns) { %>
-		<%= GetTypedModelDeclaration( column,"cs") %>
+	    <%= GetTypedModelDeclaration(column, "public", "cs") %>
 		<%    } 
            } %>
 		<% foreach (ColumnSchema column in SourceTable.NonPrimaryKeyColumns) { %>
-		<%= GetTypedModelDeclaration( column,"cs") %>
+		<%= GetTypedModelDeclaration(column, "public", "cs") %>
 		<% } %> 
 
     }
