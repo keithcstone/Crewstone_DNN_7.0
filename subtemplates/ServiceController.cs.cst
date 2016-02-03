@@ -1,0 +1,253 @@
+﻿<%-- 
+Name: ServiceController.cs.cst
+Author: Keith Stone
+Description: Generates the DNN TableRepository Class for C#
+Revision: 2016.02.03
+Note: For the latest version of this template, http://www.crewstone.com		
+--%>
+<%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="C#" Description="Generates the DNN TableRepository Class for C#" %>
+<%@ Property Category="Naming Convention" Name="ModuleName" Type="System.String" Default="YourModule" Description="Module Name" %>
+<%@ Property Category="Naming Convention" Name="FriendlyName" Type="System.String" Default="Your Module" Description="Descriptive module name" %>
+<%@ Property Category="Naming Convention" Name="Namespace" Type="System.String" Default="Namespace" Description="Used to generate the Namespace declaration, no spaces or punctuation" %>
+<%@ Property Category="Naming Convention" Name="CompanyName" Type="System.String" Default="YourCompany" Description="Descriptive name to generate the copyright declaration and documentation." %>
+<%@ Property Category="DataSource" Name="SourceTable" Type="SchemaExplorer.TableSchema" Description="Table that the object is based on." %>
+<%@ Property Category="DataSource" Name="ObjectQualifier" Type="System.String" Default="" Optional="True" Description="Prefix for objects to be generated." %>
+<%@ Property Category="DataSource" Name="DataModel" Type="System.String" Default="DAL" Optional="True" Description="Generate for DAL or DAL2 data model." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+/*
+' Module: <%=FriendlyName%>
+' Copyright (c) <%= DateTime.Now.Year.ToString() %> <%=CompanyName%>
+'  All rights reserved.
+' 
+' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+' TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+' THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+' CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+' DEALINGS IN THE SOFTWARE.
+' 
+*/
+using System;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Web.Http;
+using DotNetNuke.Services.Search.Controllers;
+using DotNetNuke.Services.Search.Entities;
+using DotNetNuke.Web.Api;
+using DotNetNuke.Security;
+using <%= Namespace %>.Modules.<%=ModuleName%>.Components;
+using <%= Namespace %>.Modules.<%=ModuleName%>.Components.Common;
+using <%= Namespace %>.Modules.<%=ModuleName%>.Entities;
+using System.Collections.Generic;
+
+namespace <%= Namespace %>.Modules.<%=ModuleName%>.Services.Controllers
+{
+    [SupportedModules(Constants.DESKTOPMODULE_NAME)]
+    public class <%= GetTableName(SourceTable) %>Controller : DnnApiController
+    {
+        <%= GetTableName(SourceTable) %>Repository _<%= GetTableName(SourceTable).ToLower %>Repository;
+
+        public <%= GetTableName(SourceTable) %>Controller()
+        {
+            _<%= GetTableName(SourceTable).ToLower %>Repository = new <%= GetTableName(SourceTable) %>Repository();
+        }
+        
+        /// <summary>
+        /// API that returns confirmation for testing
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost, HttpGet]  //[baseURL]/item/test
+        [ActionName("test")]
+        [AllowAnonymous]
+        public HttpResponseMessage HelloWorld()
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, "This is the test service for the <%= GetTableName(SourceTable) %> controller!");
+        }
+        /// <summary>
+        /// API that creates a new <%= GetTableName(SourceTable).ToLower %> in the <%= GetTableName(SourceTable).ToLower %> list
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]  //[baseURL]/<%= GetTableName(SourceTable).ToLower %>/new
+        [ValidateAntiForgeryToken]
+        [ActionName("new")]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        public HttpResponseMessage Add<%= GetTableName(SourceTable) %>(RequestItem <%= GetTableName(SourceTable).ToLower %>)
+        {
+            try
+            {
+                <%= GetTableName(SourceTable) %> new<%= GetTableName(SourceTable) %> = new <%= GetTableName(SourceTable) %>();
+                ///newItem.ModuleId = ActiveModule.ModuleID;
+                ///newItem.CreatedByUserId = UserInfo.UserID;
+                ///newItem.CreatedOnDate = DateTime.Now;
+                ///newItem.LastModifiedByUserId = UserInfo.UserID;
+                ///newItem.LastModifiedOnDate = DateTime.Now;
+		       <% foreach (ColumnSchema column in SourceTable.NonPrimaryKeyColumns) { %>
+		       new<%= GetTableName(SourceTable) %>.GetMemberVariableName(column) = <%= GetTableName(SourceTable).ToLower %>).GetMemberVariableName(column);
+		       <% } %>	
+                int <%= GetTableName(SourceTable).ToLower %>Id = _<%= GetTableName(SourceTable).ToLower %>Repository.Create<%= GetTableName(SourceTable) %>(new<%= GetTableName(SourceTable) %>);
+                return Request.CreateResponse(HttpStatusCode.OK, <%= GetTableName(SourceTable).ToLower %>Id);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+        
+           /// <summary>
+        /// API that deletes an <%= GetTableName(SourceTable).ToLower %> from the <%= GetTableName(SourceTable).ToLower %> list
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]  //[baseURL]/<%= GetTableName(SourceTable).ToLower %>/delete
+        [ValidateAntiForgeryToken]
+        [ActionName("delete")]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        public HttpResponseMessage Delete<%= GetTableName(SourceTable) %>(Request<%= GetTableName(SourceTable) %> del<%= GetTableName(SourceTable) %>)
+        {
+            try
+            {
+                _<%= GetTableName(SourceTable).ToLower %>Repository.Delete<%= GetTableName(SourceTable) %>(del<%= GetTableName(SourceTable) %>.<%= GetTableName(SourceTable) %>Id, ActiveModule.ModuleID);
+                return Request.CreateResponse(HttpStatusCode.OK, true.ToString());
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.NotFound, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// API that edits a single <%= GetTableName(SourceTable).ToLower %> in the <%= GetTableName(SourceTable).ToLower %> list
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]  //[baseURL]/<%= GetTableName(SourceTable).ToLower %>/edit
+        [ValidateAntiForgeryToken]
+        [ActionName("edit")]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.Edit)]
+        public HttpResponseMessage Update<%= GetTableName(SourceTable) %>(<%= GetTableName(SourceTable) %> <%= GetTableName(SourceTable).ToLower %>)
+        {
+            try
+            {
+                ///<%= GetTableName(SourceTable).ToLower %>.LastModifiedByUserId = UserInfo.UserID;
+                ///<%= GetTableName(SourceTable).ToLower %>.LastModifiedOnDate = DateTime.Now;
+                _<%= GetTableName(SourceTable).ToLower %>Repository.Update<%= GetTableName(SourceTable) %>(<%= GetTableName(SourceTable).ToLower %>);
+                return Request.CreateResponse(HttpStatusCode.OK, true.ToString());
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// API that returns an <%= GetTableName(SourceTable).ToLower %> list
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost,HttpGet]  //[baseURL]/<%= GetTableName(SourceTable).ToLower %>/list
+        [ValidateAntiForgeryToken]
+        [ActionName("list")]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
+        public HttpResponseMessage GetModule<%= GetTableName(SourceTable) %>s()
+        {
+            try
+            {
+                var <%= GetTableName(SourceTable).ToLower %>List = _<%= GetTableName(SourceTable).ToLower %>Repository.Get<%= GetTableName(SourceTable) %>s(ActiveModule.ModuleID);
+                return Request.CreateResponse(HttpStatusCode.OK, <%= GetTableName(SourceTable).ToLower %>List.ToList());
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// API that returns a single <%= GetTableName(SourceTable).ToLower %>
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost, HttpGet]  //[baseURL]/<%= GetTableName(SourceTable).ToLower %>/byid
+        [ValidateAntiForgeryToken]
+        [ActionName("byid")]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
+        public HttpResponseMessage Get<%= GetTableName(SourceTable) %>(RequestById <%= GetTableName(SourceTable).ToLower %>Req)
+        {
+            try
+            {
+                var <%= GetTableName(SourceTable).ToLower %> = _<%= GetTableName(SourceTable).ToLower %>Repository.Get<%= GetTableName(SourceTable) %>(<%= GetTableName(SourceTable).ToLower %>Req.ItemId, ActiveModule.ModuleID);
+                return Request.CreateResponse(HttpStatusCode.OK, <%= GetTableName(SourceTable).ToLower %>);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// API that searches for <%= GetTableName(SourceTable).ToLower %>s
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost, HttpGet]  //[baseURL]/<%= GetTableName(SourceTable).ToLower %>/search
+        [ValidateAntiForgeryToken]
+        [ActionName("search")]
+        [DnnModuleAuthorize(AccessLevel = SecurityAccessLevel.View)]
+        public HttpResponseMessage Search(SearchRequest request)
+        {
+            try
+            {
+                // Search lucene for only my module's search data
+                SearchQuery query = new SearchQuery
+                {
+                    ModuleId = request.ModuleId,
+                    PageSize = request.PageSize,
+                    PageIndex = (request.PageNum > 0 ? request.PageNum : 1),
+                    SortField = SortFields.Relevance,
+                    SortDirection = SortDirections.Descending,
+                    KeyWords = request.Term
+                };
+                SearchResults sr = SearchController.Instance.ModuleSearch(query);
+
+                // Convert each search result to an <%= GetTableName(SourceTable) %>
+                List<<%= GetTableName(SourceTable) %>> <%= GetTableName(SourceTable).ToLower %>List = new List<<%= GetTableName(SourceTable) %>>();
+                foreach (SearchResult r in sr.Results)
+                {
+                    // Add module result if it is an <%= GetTableName(SourceTable).ToLower %> (<%= GetTableName(SourceTable).ToLower %>s have a search doc description)
+                    if (!String.IsNullOrEmpty(r.Description))
+                        <%= GetTableName(SourceTable).ToLower %>List.Add(FeatureController.ConvertSearchDocTo<%= GetTableName(SourceTable) %>(r));    
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK, <%= GetTableName(SourceTable).ToLower %>List);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+        
+        public class Request<%= GetTableName(SourceTable) %>
+        {
+            <% if (SourceTable.HasPrimaryKey) {
+                  foreach (ColumnSchema column in SourceTable.PrimaryKey.MemberColumns) { %>
+    	    <%= GetTypedModelDeclaration(column, "public", "cs") %>
+    		<%    } 
+               } %>
+    		<% foreach (ColumnSchema column in SourceTable.NonPrimaryKeyColumns) { %>
+    		<%= GetTypedModelDeclaration(column, "public", "cs") %>
+    		<% } %> 
+        }
+
+        public class RequestById
+        {
+            public int ItemId { get; set; }
+        }
+        
+        public class SearchRequest
+        {
+            public string Term { get; set; }
+            public int PageSize { get; set; }
+            public int PageNum { get; set; }
+            public int ModuleId { get; set; }
+        }
+    }
+}

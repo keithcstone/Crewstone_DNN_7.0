@@ -1,0 +1,118 @@
+﻿<%-- 
+Name: ServiceController.vb.cst
+Author: Keith Stone
+Description: Generates the DNN TableRepository Class for VB.NET
+Revision: 2016.02.02
+Note: For the latest version of this template, http://www.crewstone.com		
+--%>
+<%@ CodeTemplate Language="C#" Src="DNNMaster.CodeBehind.cs" Inherits="_Main" TargetLanguage="VB" Description="Generates the DNN TableRepository Class for VB.NET" %>
+<%@ Property Category="Naming Convention" Name="ModuleName" Type="System.String" Default="YourModule" Description="Module Name" %>
+<%@ Property Category="Naming Convention" Name="FriendlyName" Type="System.String" Default="Your Module" Description="Descriptive module name" %>
+<%@ Property Category="Naming Convention" Name="Namespace" Type="System.String" Default="Namespace" Description="Used to generate the Namespace declaration, no spaces or punctuation" %>
+<%@ Property Category="Naming Convention" Name="CompanyName" Type="System.String" Default="YourCompany" Description="Descriptive name to generate the copyright declaration and documentation." %>
+<%@ Property Category="DataSource" Name="SourceTable" Type="SchemaExplorer.TableSchema" Description="Table that the object is based on." %>
+<%@ Assembly Name="SchemaExplorer" %>
+<%@ Assembly Name="System.Data" %>
+<%@ Assembly Name="CodeSmith.BaseTemplates" %>
+<%@ Assembly Name="CodeSmith.CustomProperties" %>
+<%@ Import Namespace="SchemaExplorer" %>
+<%@ Import Namespace="System.Data" %>
+'
+' Module: <%=FriendlyName%>
+' Copyright (c) <%= DateTime.Now.Year.ToString() %> <%=CompanyName%>
+'  All rights reserved.
+' 
+' THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+' TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+' THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+' CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+' DEALINGS IN THE SOFTWARE.
+'
+Imports System
+Imports System.Linq
+Imports System.Net
+Imports System.Net.Http
+Imports System.Web.Http
+Imports DotNetNuke.Services.Search.Controllers
+Imports DotNetNuke.Services.Search.Entities
+Imports DotNetNuke.Web.Api
+Imports DotNetNuke.Security
+Imports <%= Namespace %>.Modules.<%=ModuleName%>.Components
+Imports <%= Namespace %>.Modules.<%=ModuleName%>.Components.Common
+Imports <%= Namespace %>.Modules.<%=ModuleName%>.Entities
+
+Namespace <%= Namespace %>.Modules.<%=ModuleName%>.Services.Controllers
+	Public Class <%= GetTableName(SourceTable) %>Controller
+		Implements DnnApiController
+		Public Sub ClearCache(moduleid As Integer)
+			Using ctx As IDataContext = DataContext.Instance()
+				Dim rep = ctx.GetRepository(Of <%= GetTableName(SourceTable) %>)()
+				Try
+					' Setup fictitous <%= GetTableName(SourceTable) %> to delete (just to clear the scope cache)
+					Dim t = New <%= GetTableName(SourceTable) %>() With { _
+						Key .ItemId = -1, _
+						Key .ModuleId = moduleid _
+					}
+					Delete<%= GetTableName(SourceTable) %>(t)
+				Catch
+					' ignore
+				End Try
+			End Using
+		End Sub
+
+		Public Function Create<%= GetTableName(SourceTable) %>(t As I<%= GetTableName(SourceTable) %>Model) As Integer
+			Using ctx As IDataContext = DataContext.Instance()
+				Dim rep = ctx.GetRepository(Of <%= GetTableName(SourceTable) %>)()
+				rep.Insert(DirectCast(t, <%= GetTableName(SourceTable) %>))
+				Return t.ItemId
+			End Using
+		End Function
+
+		Public Sub Delete<%= GetTableName(SourceTable) %>(itemId As Integer, moduleId As Integer)
+			Dim t = Get<%= GetTableName(SourceTable) %>(itemId, moduleId)
+			Delete<%= GetTableName(SourceTable) %>(t)
+		End Sub
+
+		Public Sub Delete<%= GetTableName(SourceTable) %>(t As I<%= GetTableName(SourceTable) %>Model)
+			Using ctx As IDataContext = DataContext.Instance()
+				Dim rep = ctx.GetRepository(Of <%= GetTableName(SourceTable) %>)()
+				rep.Delete(DirectCast(t, <%= GetTableName(SourceTable) %>))
+			End Using
+		End Sub
+
+		Public Function Get<%= GetTableName(SourceTable) %>s(moduleId As Integer) As IEnumerable(Of I<%= GetTableName(SourceTable) %>Model)
+			Dim t As IEnumerable(Of <%= GetTableName(SourceTable) %>)
+			Using ctx As IDataContext = DataContext.Instance()
+				Dim rep = ctx.GetRepository(Of <%= GetTableName(SourceTable) %>)()
+				t = rep.[Get](moduleId)
+			End Using
+			Return t
+		End Function
+
+		Public Function Get<%= GetTableName(SourceTable) %>(itemId As Integer, moduleId As Integer) As I<%= GetTableName(SourceTable) %>Model
+			Dim t As <%= GetTableName(SourceTable) %>
+			Using ctx As IDataContext = DataContext.Instance()
+				Dim rep = ctx.GetRepository(Of <%= GetTableName(SourceTable) %>)()
+				t = rep.GetById(itemId, moduleId)
+			End Using
+			Return t
+		End Function
+
+		Public Function Get<%= GetTableName(SourceTable) %>ByName(moduleId As Integer, itemname As String) As IEnumerable(Of I<%= GetTableName(SourceTable) %>Model)
+			Dim t As IEnumerable(Of <%= GetTableName(SourceTable) %>)
+			Using ctx As IDataContext = DataContext.Instance()
+				Dim rep = ctx.GetRepository(Of <%= GetTableName(SourceTable) %>)()
+				t = rep.Find("WHERE ModuleId = @0 AND ItemName LIKE @1", moduleId, itemname)
+			End Using
+			Return t
+		End Function
+
+		Public Sub Update<%= GetTableName(SourceTable) %>(t As I<%= GetTableName(SourceTable) %>Model)
+			Using ctx As IDataContext = DataContext.Instance()
+				Dim rep = ctx.GetRepository(Of <%= GetTableName(SourceTable) %>)()
+				rep.Update(DirectCast(t, <%= GetTableName(SourceTable) %>))
+			End Using
+		End Sub
+
+	End Class
+End Namespace

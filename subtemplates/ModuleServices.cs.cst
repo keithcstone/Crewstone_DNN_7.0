@@ -1,8 +1,8 @@
 ﻿<%-- 
-Name: Services.cs.cst
+Name: ModuleServices.cs.cst
 Author: Keith Stone
 Description: Generates the Services mapping for CS
-Revision: 2014.03.16
+Revision: 2016.02.02
 Note: 
 
 Need to add references to DotNetNuke.dll and Imports Microsoft.ApplicationBlocks.Data

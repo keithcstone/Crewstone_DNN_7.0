@@ -133,7 +133,11 @@ Note: For the latest version of this template, http://www.crewstone.com
 			
 	// Services Template
 	private CodeTemplate _servicesTemplate;
-  	string ServicesTemplateName = "Services.$$.cst";
+  	string ServicesTemplateName = "ModuleServices.$$.cst";
+			
+	// Services Template
+	private CodeTemplate _serviceControllerTemplate;
+  	string ServiceControllerTemplateName = "ServiceController.$$.cst";
 
 	// Main Control Template
 	private CodeTemplate _mainControlTemplate;
@@ -563,7 +567,18 @@ Note: For the latest version of this template, http://www.crewstone.com
 			return _servicesTemplate;
 		}
 	}
-    
+        
+	[Browsable(false)]
+	public CodeTemplate ServiceControllerTemplate
+	{
+		get
+		{
+			if (_serviceControllerTemplate == null)
+				_serviceControllerTemplate = CompileTemplate(CodeTemplateInfo.DirectoryName + _subtemplateDirectory + ServiceControllerTemplateName.Replace("$$",Language));
+
+			return _serviceControllerTemplate;
+		}
+	}
 	[Browsable(false)] 
 	public CodeTemplate ITableModelTemplate
 	{
@@ -1226,7 +1241,7 @@ Note: For the latest version of this template, http://www.crewstone.com
 			this.ServicesTemplate.SetProperty("FriendlyName", FriendlyName );
 			this.ServicesTemplate.SetProperty("Namespace", Namespace);	
 			this.ServicesTemplate.RenderToFile(ServicesDirectory + ServicesTemplateName.Replace("$$",Language).Replace(".cst", ""), true);
-			Response.WriteLine("File " + ServicesTemplateName.Replace("$$",Language).Replace(".cst", "") + " Created Successfully");
+			Response.WriteLine("File " + ServicesTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Module", ModuleName) + " Created Successfully");
 
 			//  MainControlResxTemplate
 		    this.MainControlResxTemplate.SetProperty("MultiSourceTable", MultiSourceTable);	
@@ -1274,6 +1289,8 @@ Note: For the latest version of this template, http://www.crewstone.com
 			
 			foreach(SchemaExplorer.TableSchema SourceTable in MultiSourceTable)
 			{
+                Response.WriteLine("----- Beginning Table " + GetTableName(SourceTable) + " -----");				
+		
                 if (DataModel.ToUpper().Equals("DAL2")) {
     				// ITableModelTemplate
     				this.ITableModelTemplate.SetProperty("SourceTable", SourceTable);	
@@ -1303,7 +1320,18 @@ Note: For the latest version of this template, http://www.crewstone.com
 				    this.TableModelTemplate.RenderToFile(ComponentsDirectory + TableModelTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("TableModel", GetTableName(SourceTable)), true);
                         
 				Response.WriteLine("File " + TableModelTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("TableModel", GetTableName(SourceTable)) + " Created Successfully");
- 
+     			
+                // ServiceControllerTemplate Template
+                // Debugger.Break(); 
+    			this.ServiceControllerTemplate.SetProperty("CompanyName", CompanyName);
+    			this.ServiceControllerTemplate.SetProperty("ModuleName", ModuleName);
+    			this.ServiceControllerTemplate.SetProperty("FriendlyName", FriendlyName );
+    			this.ServiceControllerTemplate.SetProperty("Namespace", Namespace);	
+		        this.ServiceControllerTemplate.SetProperty("SourceTable", SourceTable);	
+				this.ServiceControllerTemplate.SetProperty("StrippedTablePrefixes", StrippedTablePrefixes);  
+                this.ServiceControllerTemplate.RenderToFile(ControllersDirectory + ServiceControllerTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Service", GetTableName(SourceTable)), true);
+    			Response.WriteLine("File " + ServiceControllerTemplateName.Replace("$$",Language).Replace(".cst", "").Replace("Service", GetTableName(SourceTable)) + " Created Successfully");
+
                 if (DataModel.ToUpper().Equals("DAL2")) 
                 {
                     // ITableRepository Template

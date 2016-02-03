@@ -1,8 +1,8 @@
 ﻿<%-- 
-Name: Services.vb.cst
+Name: ModuleServices.vb.cst
 Author: Keith Stone
 Description: Generates the Services mapping for VB
-Revision: 2014.03.16
+Revision: 2016.02.12
 Note: 
 
 Need to add references to DotNetNuke.dll and Imports Microsoft.ApplicationBlocks.Data
@@ -35,7 +35,7 @@ Imports DotNetNuke.Web.Api
 Imports <%=Namespace%>.Modules.<%=ModuleName%>.Components.Common
 
 Namespace <%=Namespace%>.Modules.<%=ModuleName%>.Services
-	Public Class YourModuleServices
+	Public Class <%=ModuleName%>Services
 		Implements IServiceRouteMapper
 		Public Sub RegisterRoutes(routeManager As IMapRoute)
 			routeManager.MapHttpRoute(Constants.DESKTOPMODULE_NAME, "default", "{controller}/{action}", New () {"<%=Namespace%>.Modules.<%=ModuleName%>.Services.Controllers"})

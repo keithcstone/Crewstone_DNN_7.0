@@ -38,7 +38,7 @@ using DotNetNuke.Data;
 namespace <%= Namespace %>.Modules.<%=ModuleName%>.Components
 {
     ///<summary>
-    /// Clear change for <%= GetTableName(SourceTable) %> for module scope
+    /// Clear cache for <%= GetTableName(SourceTable) %> for module scope
     ///</summary>    
     public class <%= GetTableName(SourceTable) %>Repository : I<%= GetTableName(SourceTable) %>Repository
     {
